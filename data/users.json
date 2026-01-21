@@ -1,0 +1,23 @@
+[
+  {
+    "id": "1",
+    "name": "Ryan",
+    "email": "ryan@company.com",
+    "role": "Admin",
+    "initials": "R"
+  },
+  {
+    "id": "2",
+    "name": "Gio",
+    "email": "gio@company.com",
+    "role": "Editor",
+    "initials": "G"
+  },
+  {
+    "id": "3",
+    "name": "Fynn",
+    "email": "fynn@company.com",
+    "role": "Viewer",
+    "initials": "F"
+  }
+]

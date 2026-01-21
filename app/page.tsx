@@ -1,5 +1,4 @@
 "use client"
-import { AppHeader } from "@/components/app-header"
 import { PromptInput } from "@/components/prompt-input"
 // import { GeneratedDashboard } from "@/components/generated-dashboard"
 
@@ -18,7 +17,6 @@ export default function HomePage() {
 
   return (
     <div className="min-h-screen flex flex-col">
-      <AppHeader />
       <main className="flex-1 p-6">
         <div className="flex flex-col items-center justify-center min-h-[calc(100vh-200px)]">
           <div className="text-center mb-8">

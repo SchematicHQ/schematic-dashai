@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button"
 import { Textarea } from "@/components/ui/textarea"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Toggle } from "@/components/ui/toggle"
+import { useSchematicEvents } from "@schematichq/schematic-react"
 
 export function PromptInput() {
   const [prompt, setPrompt] = useState("")
@@ -15,11 +16,17 @@ export function PromptInput() {
   const [anomalyDetection, setAnomalyDetection] = useState(false)
   const [autoInsights, setAutoInsights] = useState(true)
   const router = useRouter()
+  const { track } = useSchematicEvents()
 
   const handleSubmit = () => {
     if (prompt.trim()) {
       setIsGenerating(true)
-      // Navigate to dashboard after brief delay
+      
+      track({
+        event: "dashboard-prompt",
+        quantity: 1, //Math.round((Math.random() * (10.0 - 4.0) + 4.0) * 100) / 100
+      })
+      
       setTimeout(() => {
         router.push("/dashboard")
       }, 2000)

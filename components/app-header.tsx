@@ -3,6 +3,7 @@
 import Link from "next/link"
 import { Database, CreditCard, Users, Sparkles } from "lucide-react"
 import { Button } from "@/components/ui/button"
+import { UserButton, SignedIn, SignedOut, SignInButton } from "@clerk/nextjs"
 
 export function AppHeader() {
   return (
@@ -41,12 +42,18 @@ export function AppHeader() {
               Pricing
             </Button>
           </Link>
-          <Link href="/billing">
+          <Link href="/plan">
             <Button variant="outline" size="sm" className="gap-2 bg-transparent">
               <CreditCard className="h-4 w-4" />
-              Billing
+              Plan
             </Button>
           </Link>
+          <SignedOut>
+            <SignInButton />
+          </SignedOut>
+          <SignedIn>
+            <UserButton />
+          </SignedIn>
         </div>
       </div>
     </header>

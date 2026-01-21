@@ -1,6 +1,5 @@
 "use client"
 
-import { AppHeader } from "@/components/app-header"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Database, Plus, Check } from "lucide-react"
@@ -24,7 +23,6 @@ const availableSources = [
 export default function DataSourcesPage() {
   return (
     <div className="min-h-screen flex flex-col">
-      <AppHeader />
       <main className="flex-1 p-6">
         <div className="max-w-4xl mx-auto space-y-8">
           <div>
