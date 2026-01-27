@@ -1,0 +1,662 @@
+[
+  {
+    "id": "company-001",
+    "name": "Acme Corporation",
+    "tier": "free",
+    "usageLevel": "heavy"
+  },
+  {
+    "id": "company-002",
+    "name": "TechStart Solutions",
+    "tier": "free",
+    "usageLevel": "heavy"
+  },
+  {
+    "id": "company-003",
+    "name": "Digital Dynamics",
+    "tier": "free",
+    "usageLevel": "heavy"
+  },
+  {
+    "id": "company-004",
+    "name": "CloudVault Inc",
+    "tier": "free",
+    "usageLevel": "heavy"
+  },
+  {
+    "id": "company-005",
+    "name": "DataFlow Systems",
+    "tier": "free",
+    "usageLevel": "heavy"
+  },
+  {
+    "id": "company-006",
+    "name": "InnovateHub",
+    "tier": "free",
+    "usageLevel": "heavy"
+  },
+  {
+    "id": "company-007",
+    "name": "Streamline Analytics",
+    "tier": "free",
+    "usageLevel": "heavy"
+  },
+  {
+    "id": "company-008",
+    "name": "NextGen Ventures",
+    "tier": "free",
+    "usageLevel": "heavy"
+  },
+  {
+    "id": "company-009",
+    "name": "Quantum Metrics",
+    "tier": "free",
+    "usageLevel": "heavy"
+  },
+  {
+    "id": "company-010",
+    "name": "Velocity Labs",
+    "tier": "free",
+    "usageLevel": "heavy"
+  },
+  {
+    "id": "company-011",
+    "name": "Precision Data Co",
+    "tier": "free",
+    "usageLevel": "heavy"
+  },
+  {
+    "id": "company-012",
+    "name": "Agile Insights",
+    "tier": "free",
+    "usageLevel": "heavy"
+  },
+  {
+    "id": "company-013",
+    "name": "SmartScale Technologies",
+    "tier": "free",
+    "usageLevel": "heavy"
+  },
+  {
+    "id": "company-014",
+    "name": "CloudBridge Solutions",
+    "tier": "free",
+    "usageLevel": "heavy"
+  },
+  {
+    "id": "company-015",
+    "name": "DataPulse Analytics",
+    "tier": "free",
+    "usageLevel": "heavy"
+  },
+  {
+    "id": "company-016",
+    "name": "Nexus Intelligence",
+    "tier": "free",
+    "usageLevel": "heavy"
+  },
+  {
+    "id": "company-017",
+    "name": "Synergy Systems",
+    "tier": "free",
+    "usageLevel": "heavy"
+  },
+  {
+    "id": "company-018",
+    "name": "Catalyst Analytics",
+    "tier": "free",
+    "usageLevel": "heavy"
+  },
+  {
+    "id": "company-019",
+    "name": "Momentum Data",
+    "tier": "free",
+    "usageLevel": "heavy"
+  },
+  {
+    "id": "company-020",
+    "name": "Elevate Metrics",
+    "tier": "free",
+    "usageLevel": "heavy"
+  },
+  {
+    "id": "company-021",
+    "name": "BlueSky Analytics",
+    "tier": "free",
+    "usageLevel": "medium"
+  },
+  {
+    "id": "company-022",
+    "name": "GreenTech Solutions",
+    "tier": "free",
+    "usageLevel": "medium"
+  },
+  {
+    "id": "company-023",
+    "name": "RedStone Ventures",
+    "tier": "free",
+    "usageLevel": "medium"
+  },
+  {
+    "id": "company-024",
+    "name": "YellowWave Inc",
+    "tier": "free",
+    "usageLevel": "medium"
+  },
+  {
+    "id": "company-025",
+    "name": "PurpleCloud Systems",
+    "tier": "free",
+    "usageLevel": "medium"
+  },
+  {
+    "id": "company-026",
+    "name": "OrangeData Co",
+    "tier": "free",
+    "usageLevel": "medium"
+  },
+  {
+    "id": "company-027",
+    "name": "SilverLine Analytics",
+    "tier": "free",
+    "usageLevel": "medium"
+  },
+  {
+    "id": "company-028",
+    "name": "GoldBridge Technologies",
+    "tier": "free",
+    "usageLevel": "medium"
+  },
+  {
+    "id": "company-029",
+    "name": "BronzeMetrics",
+    "tier": "free",
+    "usageLevel": "medium"
+  },
+  {
+    "id": "company-030",
+    "name": "Platinum Insights",
+    "tier": "free",
+    "usageLevel": "medium"
+  },
+  {
+    "id": "company-031",
+    "name": "Titanium Data",
+    "tier": "free",
+    "usageLevel": "medium"
+  },
+  {
+    "id": "company-032",
+    "name": "SteelCore Solutions",
+    "tier": "free",
+    "usageLevel": "medium"
+  },
+  {
+    "id": "company-033",
+    "name": "IronWorks Analytics",
+    "tier": "free",
+    "usageLevel": "medium"
+  },
+  {
+    "id": "company-034",
+    "name": "CopperStream Systems",
+    "tier": "free",
+    "usageLevel": "medium"
+  },
+  {
+    "id": "company-035",
+    "name": "ZincMetrics",
+    "tier": "free",
+    "usageLevel": "medium"
+  },
+  {
+    "id": "company-036",
+    "name": "Aluminum Insights",
+    "tier": "free",
+    "usageLevel": "medium"
+  },
+  {
+    "id": "company-037",
+    "name": "NickelData Co",
+    "tier": "free",
+    "usageLevel": "medium"
+  },
+  {
+    "id": "company-038",
+    "name": "Cobalt Analytics",
+    "tier": "free",
+    "usageLevel": "medium"
+  },
+  {
+    "id": "company-039",
+    "name": "Chromium Solutions",
+    "tier": "free",
+    "usageLevel": "medium"
+  },
+  {
+    "id": "company-040",
+    "name": "Vanadium Systems",
+    "tier": "free",
+    "usageLevel": "medium"
+  },
+  {
+    "id": "company-041",
+    "name": "Manganese Metrics",
+    "tier": "free",
+    "usageLevel": "medium"
+  },
+  {
+    "id": "company-042",
+    "name": "Tungsten Insights",
+    "tier": "free",
+    "usageLevel": "medium"
+  },
+  {
+    "id": "company-043",
+    "name": "Molybdenum Data",
+    "tier": "free",
+    "usageLevel": "medium"
+  },
+  {
+    "id": "company-044",
+    "name": "Rhodium Analytics",
+    "tier": "free",
+    "usageLevel": "medium"
+  },
+  {
+    "id": "company-045",
+    "name": "Palladium Solutions",
+    "tier": "free",
+    "usageLevel": "medium"
+  },
+  {
+    "id": "company-046",
+    "name": "Iridium Systems",
+    "tier": "free",
+    "usageLevel": "medium"
+  },
+  {
+    "id": "company-047",
+    "name": "Osmium Metrics",
+    "tier": "free",
+    "usageLevel": "medium"
+  },
+  {
+    "id": "company-048",
+    "name": "Ruthenium Insights",
+    "tier": "free",
+    "usageLevel": "medium"
+  },
+  {
+    "id": "company-049",
+    "name": "Rhenium Data",
+    "tier": "free",
+    "usageLevel": "medium"
+  },
+  {
+    "id": "company-050",
+    "name": "Hafnium Analytics",
+    "tier": "free",
+    "usageLevel": "medium"
+  },
+  {
+    "id": "company-051",
+    "name": "Tantalum Solutions",
+    "tier": "free",
+    "usageLevel": "medium"
+  },
+  {
+    "id": "company-052",
+    "name": "Niobium Systems",
+    "tier": "free",
+    "usageLevel": "medium"
+  },
+  {
+    "id": "company-053",
+    "name": "Zirconium Metrics",
+    "tier": "free",
+    "usageLevel": "medium"
+  },
+  {
+    "id": "company-054",
+    "name": "Yttrium Insights",
+    "tier": "free",
+    "usageLevel": "medium"
+  },
+  {
+    "id": "company-055",
+    "name": "Strontium Data",
+    "tier": "free",
+    "usageLevel": "medium"
+  },
+  {
+    "id": "company-056",
+    "name": "Rubidium Analytics",
+    "tier": "free",
+    "usageLevel": "medium"
+  },
+  {
+    "id": "company-057",
+    "name": "Krypton Solutions",
+    "tier": "free",
+    "usageLevel": "medium"
+  },
+  {
+    "id": "company-058",
+    "name": "Bromine Systems",
+    "tier": "free",
+    "usageLevel": "medium"
+  },
+  {
+    "id": "company-059",
+    "name": "Selenium Metrics",
+    "tier": "free",
+    "usageLevel": "medium"
+  },
+  {
+    "id": "company-060",
+    "name": "Arsenic Insights",
+    "tier": "free",
+    "usageLevel": "medium"
+  },
+  {
+    "id": "company-061",
+    "name": "Germanium Data",
+    "tier": "free",
+    "usageLevel": "medium"
+  },
+  {
+    "id": "company-062",
+    "name": "Gallium Analytics",
+    "tier": "free",
+    "usageLevel": "medium"
+  },
+  {
+    "id": "company-063",
+    "name": "Zinc Solutions",
+    "tier": "free",
+    "usageLevel": "medium"
+  },
+  {
+    "id": "company-064",
+    "name": "Copper Systems",
+    "tier": "free",
+    "usageLevel": "medium"
+  },
+  {
+    "id": "company-065",
+    "name": "Nickel Metrics",
+    "tier": "free",
+    "usageLevel": "medium"
+  },
+  {
+    "id": "company-066",
+    "name": "Cobalt Insights",
+    "tier": "free",
+    "usageLevel": "medium"
+  },
+  {
+    "id": "company-067",
+    "name": "Iron Data",
+    "tier": "free",
+    "usageLevel": "medium"
+  },
+  {
+    "id": "company-068",
+    "name": "Manganese Analytics",
+    "tier": "free",
+    "usageLevel": "medium"
+  },
+  {
+    "id": "company-069",
+    "name": "Chromium Solutions",
+    "tier": "free",
+    "usageLevel": "medium"
+  },
+  {
+    "id": "company-070",
+    "name": "Vanadium Systems",
+    "tier": "free",
+    "usageLevel": "medium"
+  },
+  {
+    "id": "company-071",
+    "name": "Titanium Metrics",
+    "tier": "free",
+    "usageLevel": "light"
+  },
+  {
+    "id": "company-072",
+    "name": "Scandium Insights",
+    "tier": "free",
+    "usageLevel": "light"
+  },
+  {
+    "id": "company-073",
+    "name": "Calcium Data",
+    "tier": "free",
+    "usageLevel": "light"
+  },
+  {
+    "id": "company-074",
+    "name": "Potassium Analytics",
+    "tier": "free",
+    "usageLevel": "light"
+  },
+  {
+    "id": "company-075",
+    "name": "Sodium Solutions",
+    "tier": "free",
+    "usageLevel": "light"
+  },
+  {
+    "id": "company-076",
+    "name": "Magnesium Systems",
+    "tier": "free",
+    "usageLevel": "light"
+  },
+  {
+    "id": "company-077",
+    "name": "Beryllium Metrics",
+    "tier": "free",
+    "usageLevel": "light"
+  },
+  {
+    "id": "company-078",
+    "name": "Lithium Insights",
+    "tier": "free",
+    "usageLevel": "light"
+  },
+  {
+    "id": "company-079",
+    "name": "Helium Data",
+    "tier": "free",
+    "usageLevel": "light"
+  },
+  {
+    "id": "company-080",
+    "name": "Hydrogen Analytics",
+    "tier": "free",
+    "usageLevel": "light"
+  },
+  {
+    "id": "company-081",
+    "name": "Enterprise Solutions Inc",
+    "tier": "paid",
+    "usageLevel": "heavy"
+  },
+  {
+    "id": "company-082",
+    "name": "GlobalTech Industries",
+    "tier": "paid",
+    "usageLevel": "heavy"
+  },
+  {
+    "id": "company-083",
+    "name": "MegaCorp Analytics",
+    "tier": "paid",
+    "usageLevel": "heavy"
+  },
+  {
+    "id": "company-084",
+    "name": "Fortune Data Systems",
+    "tier": "paid",
+    "usageLevel": "heavy"
+  },
+  {
+    "id": "company-085",
+    "name": "Premier Metrics Group",
+    "tier": "paid",
+    "usageLevel": "heavy"
+  },
+  {
+    "id": "company-086",
+    "name": "Elite Insights Corp",
+    "tier": "paid",
+    "usageLevel": "medium"
+  },
+  {
+    "id": "company-087",
+    "name": "Advanced Analytics Ltd",
+    "tier": "paid",
+    "usageLevel": "medium"
+  },
+  {
+    "id": "company-088",
+    "name": "ProData Solutions",
+    "tier": "paid",
+    "usageLevel": "medium"
+  },
+  {
+    "id": "company-089",
+    "name": "Business Intelligence Co",
+    "tier": "paid",
+    "usageLevel": "medium"
+  },
+  {
+    "id": "company-090",
+    "name": "Strategic Metrics Inc",
+    "tier": "paid",
+    "usageLevel": "medium"
+  },
+  {
+    "id": "company-091",
+    "name": "Corporate Analytics Group",
+    "tier": "paid",
+    "usageLevel": "medium"
+  },
+  {
+    "id": "company-092",
+    "name": "Enterprise Data Systems",
+    "tier": "paid",
+    "usageLevel": "medium"
+  },
+  {
+    "id": "company-093",
+    "name": "Professional Insights",
+    "tier": "paid",
+    "usageLevel": "medium"
+  },
+  {
+    "id": "company-094",
+    "name": "Premium Analytics Co",
+    "tier": "paid",
+    "usageLevel": "medium"
+  },
+  {
+    "id": "company-095",
+    "name": "Executive Metrics",
+    "tier": "paid",
+    "usageLevel": "medium"
+  },
+  {
+    "id": "company-096",
+    "name": "Corporate Solutions",
+    "tier": "paid",
+    "usageLevel": "medium"
+  },
+  {
+    "id": "company-097",
+    "name": "Startup Analytics",
+    "tier": "paid",
+    "usageLevel": "light"
+  },
+  {
+    "id": "company-098",
+    "name": "Small Business Metrics",
+    "tier": "paid",
+    "usageLevel": "light"
+  },
+  {
+    "id": "company-099",
+    "name": "Boutique Data Co",
+    "tier": "paid",
+    "usageLevel": "light"
+  },
+  {
+    "id": "company-100",
+    "name": "Niche Insights Ltd",
+    "tier": "paid",
+    "usageLevel": "light"
+  },
+  {
+    "id": "company-101",
+    "name": "Global Enterprise Solutions",
+    "tier": "enterprise",
+    "usageLevel": "heavy"
+  },
+  {
+    "id": "company-102",
+    "name": "Fortune 500 Analytics",
+    "tier": "enterprise",
+    "usageLevel": "heavy"
+  },
+  {
+    "id": "company-103",
+    "name": "MegaCorp Intelligence",
+    "tier": "enterprise",
+    "usageLevel": "heavy"
+  },
+  {
+    "id": "company-104",
+    "name": "Enterprise Data Platform",
+    "tier": "enterprise",
+    "usageLevel": "heavy"
+  },
+  {
+    "id": "company-105",
+    "name": "Corporate Analytics Enterprise",
+    "tier": "enterprise",
+    "usageLevel": "medium"
+  },
+  {
+    "id": "company-106",
+    "name": "Enterprise Metrics Group",
+    "tier": "enterprise",
+    "usageLevel": "medium"
+  },
+  {
+    "id": "company-107",
+    "name": "Business Intelligence Enterprise",
+    "tier": "enterprise",
+    "usageLevel": "medium"
+  },
+  {
+    "id": "company-108",
+    "name": "Enterprise Insights Corp",
+    "tier": "enterprise",
+    "usageLevel": "medium"
+  },
+  {
+    "id": "company-109",
+    "name": "Strategic Enterprise Solutions",
+    "tier": "enterprise",
+    "usageLevel": "medium"
+  },
+  {
+    "id": "company-110",
+    "name": "Enterprise Data Services",
+    "tier": "enterprise",
+    "usageLevel": "light"
+  }
+]
