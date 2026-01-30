@@ -1,6 +1,10 @@
 import { SchematicClient } from "@schematichq/schematic-typescript-node"
 import { promises as fs } from "fs"
 import path from "path"
+import { config } from "dotenv"
+
+// Load .env.local from parent directory (one level up from scripts folder)
+config({ path: path.join(process.cwd(), ".env.local") })
 
 const companiesFilePath = path.join(process.cwd(), "scripts", "companies.json")
 
@@ -22,7 +26,7 @@ async function readCompanies(): Promise<Company[]> {
 }
 
 async function seedCompanies() {
-  const apiKey = ''
+  const apiKey = process.env.SCHEMATIC_SECRET_KEY
   if (!apiKey) {
     console.error("SCHEMATIC_SECRET_KEY environment variable is required")
     process.exit(1)
