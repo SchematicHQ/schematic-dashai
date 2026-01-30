@@ -8,8 +8,9 @@
     "lint": "eslint .",
     "start": "next start",
     "seed:companies": "tsx scripts/seed-companies.ts",
-    "seed:usage": "tsx scripts/seed-usage.ts",
-    "seed:all": "yarn seed:companies && yarn seed:usage"
+    "seed:events": "tsx scripts/seed-events.ts",
+    "seed:traits": "tsx scripts/seed-traits.ts",
+    "seed:all": "yarn seed:companies && yarn seed:traits && yarn seed:events"
   },
   "dependencies": {
     "@clerk/nextjs": "^6.31.8",
