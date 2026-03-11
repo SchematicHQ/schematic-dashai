@@ -1,0 +1,16 @@
+[
+  {
+    "id": "1",
+    "name": "Postgres",
+    "type": "Database",
+    "status": "connected",
+    "icon": "🐘"
+  },
+  {
+    "id": "2",
+    "name": "HubSpot",
+    "type": "CRM",
+    "status": "connected",
+    "icon": "🟠"
+  }
+]

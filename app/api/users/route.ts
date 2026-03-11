@@ -1,28 +1,19 @@
 import { NextRequest, NextResponse } from "next/server"
-import { promises as fs } from "fs"
-import path from "path"
 import { SchematicClient } from "@schematichq/schematic-typescript-node"
+import { readJsonStore, writeJsonStore } from "@/lib/json-store"
 
-const usersFilePath = path.join(process.cwd(), "data", "users.json")
+const USERS_BLOB_PATH = "data/users.json"
+const USERS_FS_PATH = "data/users.json"
 const COMPANY_ID = "demo"
 
-async function readUsers() {
-  try {
-    const fileContents = await fs.readFile(usersFilePath, "utf8")
-    return JSON.parse(fileContents)
-  } catch (error) {
-    console.error("Error reading users file:", error)
-    return []
-  }
+type UserRecord = { id: string; email: string; name: string; role: string; initials: string }
+
+async function readUsers(): Promise<UserRecord[]> {
+  return readJsonStore<UserRecord[]>(USERS_BLOB_PATH, USERS_FS_PATH)
 }
 
-async function writeUsers(users: unknown[]) {
-  try {
-    await fs.writeFile(usersFilePath, JSON.stringify(users, null, 2), "utf8")
-  } catch (error) {
-    console.error("Error writing users file:", error)
-    throw error
-  }
+async function writeUsers(users: UserRecord[]) {
+  await writeJsonStore(USERS_BLOB_PATH, USERS_FS_PATH, users)
 }
 
 async function updateSchematicTrait(userCount: number) {
@@ -79,7 +70,7 @@ export async function POST(request: NextRequest) {
     const users = await readUsers()
     
     // Check if user with email already exists
-    if (users.some((user: { email: string }) => user.email === email)) {
+    if (users.some((user) => user.email === email)) {
       return NextResponse.json(
         { message: "User with this email already exists" },
         { status: 409 }
@@ -95,7 +86,7 @@ export async function POST(request: NextRequest) {
       .slice(0, 2)
 
     // Generate new ID
-    const newId = String(Math.max(...users.map((u: { id: string }) => parseInt(u.id) || 0), 0) + 1)
+    const newId = String(Math.max(...users.map((u) => parseInt(u.id) || 0), 0) + 1)
 
     const newUser = {
       id: newId,
@@ -137,7 +128,7 @@ export async function DELETE(request: NextRequest) {
     const users = await readUsers()
     const initialLength = users.length
 
-    const filteredUsers = users.filter((user: { id: string; email: string }) => {
+    const filteredUsers = users.filter((user) => {
       if (id) return user.id !== id
       if (email) return user.email !== email
       return true

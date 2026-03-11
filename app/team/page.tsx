@@ -109,21 +109,21 @@ export default function TeamPage() {
           </div>
 
           {value === false && (
-            <div className="rounded-lg border border-amber-200 dark:border-amber-800 bg-amber-50 dark:bg-amber-950/50 p-4 flex items-center justify-between">
+            <div className="rounded-lg border border-violet-200 dark:border-violet-800/80 bg-violet-50/80 dark:bg-violet-950/40 p-4 flex items-center justify-between">
               <div className="flex items-center gap-3">
-                <AlertCircle className="h-5 w-5 text-amber-600 dark:text-amber-400" />
+                <AlertCircle className="h-5 w-5 text-violet-600 dark:text-violet-400 shrink-0" />
                 <div>
-                  <p className="text-sm font-medium text-amber-900 dark:text-amber-100">Seat limit reached</p>
-                  <p className="text-xs text-amber-700 dark:text-amber-300">Upgrade your plan to add more team members</p>
+                  <p className="text-sm font-medium text-violet-900 dark:text-violet-100">Seat limit reached</p>
+                  <p className="text-xs text-violet-700 dark:text-violet-300">Upgrade your plan to add more team members</p>
                 </div>
               </div>
               <Button
                 size="sm"
-                className="gap-2 bg-red-600 hover:bg-red-700 text-white border-0"
-                onClick={() => window.location.href = "/pricing"}
+                className="gap-2 bg-violet-600 hover:bg-violet-700 text-white border-0 shrink-0"
+                onClick={() => (window.location.href = "/pricing")}
               >
                 <ArrowUp className="h-4 w-4" />
-                Upgrade Now
+                Upgrade
               </Button>
             </div>
           )}
