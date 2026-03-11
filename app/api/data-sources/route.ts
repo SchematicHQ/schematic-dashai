@@ -2,6 +2,8 @@ import { NextRequest, NextResponse } from "next/server"
 import { SchematicClient } from "@schematichq/schematic-typescript-node"
 import { readJsonStore, writeJsonStore } from "@/lib/json-store"
 
+export const dynamic = "force-dynamic"
+
 const DATA_SOURCES_BLOB_PATH = "data/data-sources.json"
 const DATA_SOURCES_FS_PATH = "data/data-sources.json"
 const COMPANY_ID = "demo"
@@ -45,7 +47,12 @@ async function updateSchematicTrait(dataSourceCount: number) {
 export async function GET() {
   try {
     const sources = await readDataSources()
-    return NextResponse.json(sources)
+    return NextResponse.json(sources, {
+      headers: {
+        "Cache-Control": "no-store, no-cache, must-revalidate",
+        Pragma: "no-cache",
+      },
+    })
   } catch (error) {
     console.error("Error fetching data sources:", error)
     return NextResponse.json(

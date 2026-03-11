@@ -2,6 +2,8 @@ import { NextRequest, NextResponse } from "next/server"
 import { SchematicClient } from "@schematichq/schematic-typescript-node"
 import { readJsonStore, writeJsonStore } from "@/lib/json-store"
 
+export const dynamic = "force-dynamic"
+
 const USERS_BLOB_PATH = "data/users.json"
 const USERS_FS_PATH = "data/users.json"
 const COMPANY_ID = "demo"
@@ -45,7 +47,12 @@ async function updateSchematicTrait(userCount: number) {
 export async function GET() {
   try {
     const users = await readUsers()
-    return NextResponse.json(users)
+    return NextResponse.json(users, {
+      headers: {
+        "Cache-Control": "no-store, no-cache, must-revalidate",
+        Pragma: "no-cache",
+      },
+    })
   } catch (error) {
     console.error("Error fetching users:", error)
     return NextResponse.json(

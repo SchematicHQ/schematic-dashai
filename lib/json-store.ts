@@ -28,7 +28,7 @@ export async function readJsonStore<T = unknown[]>(
   }
 
   try {
-    const result = await get(blobPathname, { access: "private" })
+    const result = await get(blobPathname, { access: "private", useCache: false })
     if (!result || result.statusCode !== 200 || !result.stream) {
       return defaultData()
     }

@@ -36,7 +36,7 @@ export default function DataSourcesPage() {
 
   const fetchDataSources = async () => {
     try {
-      const response = await fetch("/api/data-sources")
+      const response = await fetch("/api/data-sources", { cache: "no-store" })
       if (response.ok) {
         const data = await response.json()
         setConnectedSources(data)
