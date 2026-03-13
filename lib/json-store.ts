@@ -30,12 +30,24 @@ export async function readJsonStore<T = unknown[]>(
   try {
     const result = await get(blobPathname, { access: "private", useCache: false })
     if (!result || result.statusCode !== 200 || !result.stream) {
-      return defaultData()
+      const data = await defaultData()
+      await put(blobPathname, JSON.stringify(data, null, 2), {
+        access: "private",
+        contentType: "application/json",
+        allowOverwrite: true,
+      })
+      return data
     }
     const text = await new Response(result.stream).text()
     return JSON.parse(text || "[]") as T
   } catch {
-    return defaultData()
+    const data = await defaultData()
+    await put(blobPathname, JSON.stringify(data, null, 2), {
+      access: "private",
+      contentType: "application/json",
+      allowOverwrite: true,
+    })
+    return data
   }
 }
 
