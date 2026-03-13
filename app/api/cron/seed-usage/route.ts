@@ -7,6 +7,7 @@ export const dynamic = "force-dynamic"
 export const maxDuration = 60
 
 const DAYS_IN_PERIOD = 30
+const EXTREME_DAYS_TO_HIT_QUOTA = 5
 const COMPANIES_PATH = "scripts/companies.json"
 const DECIMALS = 4
 
@@ -18,7 +19,7 @@ interface Company {
   id: string
   name: string
   tier: "free" | "paid" | "enterprise"
-  usageLevel: "heavy" | "medium" | "light"
+  usageLevel: "heavy" | "medium" | "light" | "extreme"
 }
 
 const FEATURES = { prompts: "dashboard-prompt" } as const
@@ -31,10 +32,11 @@ const PLAN_LIMITS = {
 
 /**
  * Target usage over 30 days (midpoint of the usage band). Fractional, rounded to 4 decimals.
+ * "extreme" is not used here; extreme uses calendar-based logic in getDailyQuantity.
  */
 function get30DayTarget(
   tier: "free" | "paid" | "enterprise",
-  usageLevel: "heavy" | "medium" | "light"
+  usageLevel: "heavy" | "medium" | "light" | "extreme"
 ): number {
   const limit = PLAN_LIMITS[tier].prompts
   let midPercent: number
@@ -48,22 +50,37 @@ function get30DayTarget(
     case "light":
       midPercent = 0.175 // midpoint of 5–30%
       break
+    case "extreme":
+      return round4(limit) // 100% target; actual daily amount is calendar-based
   }
   return round4(Math.max(0.0001, limit * midPercent))
 }
 
 /**
- * Per-day quantity with jitter: base = target/30, then multiplied by a random
- * factor in [0.7, 1.3] so each run produces slightly different amounts while
- * 30-day totals still average to the target. Rounded to 4 decimals.
+ * Per-day quantity with jitter. Normal levels: base = target/30 × jitter.
+ * Extreme: hit 100% of quota in first 5 days of month (limit/5 per day), then
+ * a small overage (1% of limit per day) so they stay over quota. Rounded to 4 decimals.
  */
 function getDailyQuantity(
   tier: "free" | "paid" | "enterprise",
-  usageLevel: "heavy" | "medium" | "light"
+  usageLevel: "heavy" | "medium" | "light" | "extreme"
 ): number {
+  const limit = PLAN_LIMITS[tier].prompts
+  const jitter = 0.7 + 0.6 * Math.random() // [0.7, 1.3], mean 1.0
+
+  if (usageLevel === "extreme") {
+    const dayOfMonth = new Date().getDate()
+    let baseDaily: number
+    if (dayOfMonth <= EXTREME_DAYS_TO_HIT_QUOTA) {
+      baseDaily = limit / EXTREME_DAYS_TO_HIT_QUOTA // 100% in 5 days
+    } else {
+      baseDaily = limit * 0.01 // 1% of limit per day = over-quota usage
+    }
+    return round4(Math.max(0.0001, baseDaily * jitter))
+  }
+
   const target = get30DayTarget(tier, usageLevel)
   const baseDaily = target / DAYS_IN_PERIOD
-  const jitter = 0.7 + 0.6 * Math.random() // [0.7, 1.3], mean 1.0
   return round4(Math.max(0.0001, baseDaily * jitter))
 }
 

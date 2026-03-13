@@ -4,6 +4,7 @@ import Link from "next/link"
 import { Database, CreditCard, Users, Sparkles } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { UserButton, SignedIn, SignedOut, SignInButton } from "@clerk/nextjs"
+import { CreditsBadge } from "@/components/credits-badge"
 
 export function AppHeader() {
   return (
@@ -37,6 +38,7 @@ export function AppHeader() {
           </nav>
         </div>
         <div className="flex items-center gap-4">
+          <CreditsBadge />
           <Link href="/pricing">
             <Button variant="ghost" size="sm" className="text-muted-foreground">
               Pricing

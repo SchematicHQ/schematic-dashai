@@ -12,7 +12,7 @@ interface Company {
   id: string
   name: string
   tier: "free" | "paid" | "enterprise"
-  usageLevel: "heavy" | "medium" | "light"
+  usageLevel: "heavy" | "medium" | "light" | "extreme"
 }
 
 async function readCompanies(): Promise<Company[]> {
@@ -54,34 +54,32 @@ const PLAN_LIMITS = {
 // Generate usage quantities based on tier, usage level, and feature type
 function getUsageQuantity(
   tier: "free" | "paid" | "enterprise",
-  usageLevel: "heavy" | "medium" | "light",
+  usageLevel: "heavy" | "medium" | "light" | "extreme",
   featureType: "prompts" | "seats" | "dataSources"
 ): number {
   const limit = PLAN_LIMITS[tier][featureType]
-  
-  // Calculate usage as a percentage of the limit based on usage level
+  if (usageLevel === "extreme") return limit // 100% of quota
+
   let minPercent: number
   let maxPercent: number
-  
   switch (usageLevel) {
     case "heavy":
-      minPercent = 0.7 // 70-100% of limit
+      minPercent = 0.7
       maxPercent = 1.0
       break
     case "medium":
-      minPercent = 0.3 // 30-70% of limit
+      minPercent = 0.3
       maxPercent = 0.7
       break
     case "light":
-      minPercent = 0.05 // 5-30% of limit
+      minPercent = 0.05
       maxPercent = 0.3
       break
+    default:
+      return limit
   }
-  
   const minUsage = Math.ceil(limit * minPercent)
   const maxUsage = Math.floor(limit * maxPercent)
-  
-  // Add 0.1 to random number to push values higher
   const randomValue = Math.min(1, Math.random() + 0.1)
   return Math.max(1, Math.floor(randomValue * (maxUsage - minUsage + 1)) + minUsage)
 }

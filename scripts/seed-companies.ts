@@ -12,7 +12,7 @@ interface Company {
   id: string
   name: string
   tier: "free" | "paid" | "enterprise"
-  usageLevel: "heavy" | "medium" | "light"
+  usageLevel: "heavy" | "medium" | "light" | "extreme"
 }
 
 async function readCompanies(): Promise<Company[]> {
