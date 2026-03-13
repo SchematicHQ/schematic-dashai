@@ -1,9 +1,13 @@
+/**
+ * One-time backfill: sends full target usage for every company in one run.
+ * For ongoing daily usage (spread over 30 days), use the Vercel cron instead:
+ *   GET /api/cron/seed-usage (runs daily via vercel.json; set CRON_SECRET).
+ */
 import { SchematicClient } from "@schematichq/schematic-typescript-node"
 import { promises as fs } from "fs"
 import path from "path"
 import { config } from "dotenv"
 
-// Load .env.local from parent directory (one level up from scripts folder)
 config({ path: path.join(process.cwd(), ".env.local") })
 
 const companiesFilePath = path.join(process.cwd(), "scripts", "companies.json")
