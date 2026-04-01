@@ -128,7 +128,8 @@ export async function GET(request: NextRequest) {
         eventType: "track" as const,
         body: {
           event: FEATURES.prompts,
-          company: { id: company.id },
+          company: { keys: { id: company.id } },
+          keys: { id: company.id },
           quantity,
         },
       }
