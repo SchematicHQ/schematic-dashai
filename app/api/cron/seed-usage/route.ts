@@ -121,41 +121,21 @@ export async function GET(request: NextRequest) {
     )
   }
 
-  const events = companies
-    .map((company) => {
-      const quantity = getDailyQuantity(company.tier, company.usageLevel)
-      return {
-        eventType: "track" as const,
-        body: {
-          event: FEATURES.prompts,
-          company: { keys: { id: company.id } },
-          keys: { id: company.id },
-          quantity,
-        },
-      }
-    })
-    .filter((e) => e.body.quantity > 0)
-
   const schematicClient = new SchematicClient({ apiKey })
-  const batchSize = 100
-  let failed = 0
 
-  for (let i = 0; i < events.length; i += batchSize) {
-    const batch = events.slice(i, i + batchSize)
-    try {
-      await schematicClient.events.createEventBatch({ events: batch })
-    } catch (error) {
-      console.error(`Event batch failed at index ${i}:`, error)
-      failed += batch.length
+  for (const company of companies) {
+    const quantity = getDailyQuantity(company.tier, company.usageLevel)
+    if (quantity > 0) {
+      schematicClient.track({
+        event: FEATURES.prompts,
+        company: { id: company.id },
+        user: { id: company.id },
+        quantity,
+      })
     }
   }
 
   await schematicClient.close()
 
-  return NextResponse.json({
-    ok: true,
-    companies: companies.length,
-    eventsSent: events.length - failed,
-    failed,
-  })
+  return NextResponse.json({ ok: true, companies: companies.length })
 }
