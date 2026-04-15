@@ -25,9 +25,9 @@ interface Company {
 const FEATURES = { prompts: "dashboard-prompt" } as const
 
 const PLAN_LIMITS = {
-  free: { prompts: 5 },
-  paid: { prompts: 50 },
-  enterprise: { prompts: 250 },
+  free: { prompts: 500 },
+  paid: { prompts: 1000 },
+  enterprise: { prompts: 2500 },
 } as const
 
 /**
@@ -59,7 +59,7 @@ function get30DayTarget(
 /**
  * Per-day quantity with jitter. Normal levels: base = target/30 × jitter.
  * Extreme: hit 100% of quota in first 5 days of month (limit/5 per day), then
- * a small overage (1% of limit per day) so they stay over quota. Rounded to 4 decimals.
+ * a small overage (1% of limit per day) so they stay over quota. Rounded to nearest integer.
  */
 function getDailyQuantity(
   tier: "free" | "paid" | "enterprise",
@@ -76,12 +76,12 @@ function getDailyQuantity(
     } else {
       baseDaily = limit * 0.01 // 1% of limit per day = over-quota usage
     }
-    return round4(Math.max(0.0001, baseDaily * jitter))
+    return Math.max(1, Math.round(baseDaily * jitter))
   }
 
   const target = get30DayTarget(tier, usageLevel)
   const baseDaily = target / DAYS_IN_PERIOD
-  return round4(Math.max(0.0001, baseDaily * jitter))
+  return Math.max(1, Math.round(baseDaily * jitter))
 }
 
 async function readCompanies(): Promise<Company[]> {

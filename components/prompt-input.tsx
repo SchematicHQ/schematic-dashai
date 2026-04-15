@@ -24,7 +24,7 @@ export function PromptInput() {
       
       track({
         event: "dashboard-prompt",
-        quantity: Math.round((Math.random() * (1.5 - 0.5) + 0.5) * 100) / 100,
+        quantity: Math.floor(Math.random() * 101) + 50,
       })
       
       setTimeout(() => {
