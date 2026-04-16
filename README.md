@@ -1,30 +1,21 @@
-# AI dashboard builder
+# Schematic DashAI
 
-*Automatically synced with your [v0.app](https://v0.app) deployments*
+Public reference implementations of a Schematic-powered AI dashboard across major frontend frameworks.
 
-[![Deployed on Vercel](https://img.shields.io/badge/Deployed%20on-Vercel-black?style=for-the-badge&logo=vercel)](https://vercel.com/ryans-projects-91f5b9c7/v0-ai-dashboard-builder)
-[![Built with v0](https://img.shields.io/badge/Built%20with-v0.app-black?style=for-the-badge)](https://v0.app/chat/oDmdiBbpYN5)
+## Structure
 
-## Overview
+Each folder is an independent project with its own dependencies and build configuration.
 
-This repository will stay in sync with your deployed chats on [v0.app](https://v0.app).
-Any changes you make to your deployed app will be automatically pushed to this repository from [v0.app](https://v0.app).
+- **`react/`** - Next.js (React) implementation. Deployed to Vercel.
+- **`vue/`** - Vue implementation. Coming soon.
+- **`angular/`** - Angular implementation. Coming soon.
 
-## Deployment
+## Getting Started
 
-Your project is live at:
+Navigate into the framework folder you want to work with and follow the README there.
 
-**[https://vercel.com/ryans-projects-91f5b9c7/v0-ai-dashboard-builder](https://vercel.com/ryans-projects-91f5b9c7/v0-ai-dashboard-builder)**
-
-## Build your app
-
-Continue building your app on:
-
-**[https://v0.app/chat/oDmdiBbpYN5](https://v0.app/chat/oDmdiBbpYN5)**
-
-## How It Works
-
-1. Create and modify your project using [v0.app](https://v0.app)
-2. Deploy your chats from the v0 interface
-3. Changes are automatically pushed to this repository
-4. Vercel deploys the latest version from this repository
+```bash
+cd react
+yarn install
+yarn dev
+```
