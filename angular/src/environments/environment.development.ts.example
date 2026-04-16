@@ -1,0 +1,9 @@
+// Copy this file to environment.development.ts and fill in your values:
+//   cp environment.development.ts.example environment.development.ts
+export const environment = {
+  production: false,
+  schematicPublishableKey: '', // Your Schematic publishable key (api_...)
+  schematicSecretKey: '', // Your Schematic secret key (sch_dev_...)
+  schematicComponentId: '', // Schematic embedded component ID (cmpn_...)
+  schematicPricingTableId: '', // Schematic pricing table component ID (cmpn_...)
+};
