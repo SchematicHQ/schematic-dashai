@@ -26,7 +26,7 @@ import {
           </div>
 
           @if (entitlement$ | async; as ent) {
-            @if (ent.value === false) {
+            @if (!(isPending$ | async) && ent.value === false) {
               <div
                 class="rounded-lg border border-violet-800/80 bg-violet-950/40 p-4 flex items-center justify-between"
               >
@@ -197,15 +197,17 @@ import {
                     }
                   }
                 </div>
-                <div class="mt-4 pt-4 border-t border-border">
-                  <p class="text-sm text-muted-foreground">
-                    <span class="font-medium text-foreground"
-                      >{{ ent.featureUsage }} of
-                      {{ ent.featureAllocation }}</span
-                    >
-                    seats used on your current plan
-                  </p>
-                </div>
+                @if (!(isPending$ | async)) {
+                  <div class="mt-4 pt-4 border-t border-border">
+                    <p class="text-sm text-muted-foreground">
+                      <span class="font-medium text-foreground"
+                        >{{ ent.featureUsage }} of
+                        {{ ent.featureAllocation }}</span
+                      >
+                      seats used on your current plan
+                    </p>
+                  </div>
+                }
               </div>
             </div>
           }
@@ -221,6 +223,7 @@ export class TeamComponent implements OnInit {
   // Observable pattern: entitlement via async pipe
   entitlement$: Observable<CheckFlagReturn> =
     this.schematic.entitlement$('user-seat');
+  isPending$ = this.schematic.isPending$();
 
   teamMembers = signal<TeamMember[]>([]);
   isLoading = signal(true);

@@ -4,9 +4,11 @@ import Link from "next/link"
 import { Database, CreditCard, Users, Sparkles } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { UserButton, SignedIn, SignedOut, SignInButton } from "@clerk/nextjs"
+import { useSchematicIsPending } from "@schematichq/schematic-react"
 import { CreditsBadge } from "@/components/credits-badge"
 
 export function AppHeader() {
+  const isPending = useSchematicIsPending()
   return (
     <header className="border-b border-border">
       <div className="flex items-center justify-between px-6 py-4">
@@ -38,6 +40,9 @@ export function AppHeader() {
           </nav>
         </div>
         <div className="flex items-center gap-4">
+          {isPending && (
+            <span className="text-xs text-muted-foreground animate-pulse">Loading...</span>
+          )}
           <CreditsBadge />
           <Link href="/pricing">
             <Button variant="ghost" size="sm" className="text-muted-foreground">

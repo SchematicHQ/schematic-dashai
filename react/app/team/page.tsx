@@ -7,7 +7,7 @@ import { Badge } from "@/components/ui/badge"
 import { Avatar, AvatarFallback } from "@/components/ui/avatar"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Plus, Trash2, X, AlertCircle, ArrowUp } from "lucide-react"
-import { useSchematicEntitlement } from "@schematichq/schematic-react"
+import { useSchematicEntitlement, useSchematicIsPending } from "@schematichq/schematic-react"
 
 interface TeamMember {
   id: string
@@ -26,6 +26,7 @@ export default function TeamPage() {
   
   // Get seat count entitlement from Schematic
   const { value, featureAllocation: allocation, featureUsage: usage } = useSchematicEntitlement("user-seat")
+  const isPending = useSchematicIsPending()
 
   const fetchUsers = async () => {
     try {
@@ -108,7 +109,7 @@ export default function TeamPage() {
             <p className="text-muted-foreground">Manage who has access to your dashboards</p>
           </div>
 
-          {value === false && (
+          {!isPending && value === false && (
             <div className="rounded-lg border border-violet-200 dark:border-violet-800/80 bg-violet-50/80 dark:bg-violet-950/40 p-4 flex items-center justify-between">
               <div className="flex items-center gap-3">
                 <AlertCircle className="h-5 w-5 text-violet-600 dark:text-violet-400 shrink-0" />
@@ -255,11 +256,13 @@ export default function TeamPage() {
                   ))
                 )}
               </div>
-              <div className="mt-4 pt-4 border-t border-border">
-                <p className="text-sm text-muted-foreground">
-                  <span className="font-medium text-foreground">{usage} of {allocation}</span> seats used on your current plan
-                </p>
-              </div>
+              {!isPending && (
+                <div className="mt-4 pt-4 border-t border-border">
+                  <p className="text-sm text-muted-foreground">
+                    <span className="font-medium text-foreground">{usage} of {allocation}</span> seats used on your current plan
+                  </p>
+                </div>
+              )}
             </CardContent>
           </Card>
         </div>

@@ -4,7 +4,7 @@ import { useState, useEffect } from "react"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Database, Plus, Check, Trash2, AlertCircle, ArrowUp } from "lucide-react"
-import { useSchematicEntitlement } from "@schematichq/schematic-react"
+import { useSchematicEntitlement, useSchematicIsPending } from "@schematichq/schematic-react"
 
 interface DataSource {
   id: string
@@ -31,6 +31,7 @@ export default function DataSourcesPage() {
   const [connectingName, setConnectingName] = useState<string | null>(null)
 
   const { featureAllocation: allocation } = useSchematicEntitlement("data-sources")
+  const isPending = useSchematicIsPending()
   // Only block when we have a numeric limit and we're at or over it (don't block if entitlement not configured)
   const atLimit = allocation != null && connectedSources.length >= allocation
 
@@ -110,7 +111,7 @@ export default function DataSourcesPage() {
             <p className="text-muted-foreground">Connect and manage your data sources</p>
           </div>
 
-          {atLimit && (
+          {!isPending && atLimit && (
             <div className="rounded-lg border border-violet-200 dark:border-violet-800/80 bg-violet-50/80 dark:bg-violet-950/40 p-4 flex items-center justify-between">
               <div className="flex items-center gap-3">
                 <AlertCircle className="h-5 w-5 text-violet-600 dark:text-violet-400 shrink-0" />
@@ -174,12 +175,14 @@ export default function DataSourcesPage() {
                       </div>
                     ))}
                   </div>
-                  <div className="mt-4 pt-4 border-t border-border">
-                    <p className="text-sm text-muted-foreground">
-                      <span className="font-medium text-foreground">{connectedSources.length} of {limitLabel}</span> data
-                      sources used on your current plan
-                    </p>
-                  </div>
+                  {!isPending && (
+                    <div className="mt-4 pt-4 border-t border-border">
+                      <p className="text-sm text-muted-foreground">
+                        <span className="font-medium text-foreground">{connectedSources.length} of {limitLabel}</span> data
+                        sources used on your current plan
+                      </p>
+                    </div>
+                  )}
                 </>
               )}
             </CardContent>

@@ -1,0 +1,21 @@
+{
+  "name": "dashai-angular-server",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "start": "npx tsx server.ts"
+  },
+  "dependencies": {
+    "@schematichq/schematic-typescript-node": "^1.2.1",
+    "cors": "^2.8.5",
+    "dotenv": "^17.4.2",
+    "express": "^4.21.0"
+  },
+  "devDependencies": {
+    "@types/cors": "^2.8.17",
+    "@types/express": "^5.0.0",
+    "@types/react": "^19.2.14",
+    "@types/react-dom": "^19.2.3",
+    "tsx": "^4.19.0"
+  }
+}

@@ -30,7 +30,7 @@ interface AvailableSource {
             </p>
           </div>
 
-          @if (atLimit()) {
+          @if (!isPending() && atLimit()) {
             <div
               class="rounded-lg border border-violet-800/80 bg-violet-950/40 p-4 flex items-center justify-between"
             >
@@ -134,15 +134,17 @@ interface AvailableSource {
                     </div>
                   }
                 </div>
-                <div class="mt-4 pt-4 border-t border-border">
-                  <p class="text-sm text-muted-foreground">
-                    <span class="font-medium text-foreground"
-                      >{{ connectedSources().length }} of
-                      {{ limitLabel() }}</span
-                    >
-                    data sources used on your current plan
-                  </p>
-                </div>
+                @if (!isPending()) {
+                  <div class="mt-4 pt-4 border-t border-border">
+                    <p class="text-sm text-muted-foreground">
+                      <span class="font-medium text-foreground"
+                        >{{ connectedSources().length }} of
+                        {{ limitLabel() }}</span
+                      >
+                      data sources used on your current plan
+                    </p>
+                  </div>
+                }
               }
             </div>
           </div>
@@ -197,6 +199,7 @@ export class DataSourcesComponent implements OnInit {
 
   // Signal pattern
   entitlement = toSignal(this.schematic.entitlement$('data-sources'));
+  isPending = toSignal(this.schematic.isPending$(), { initialValue: true });
 
   connectedSources = signal<DataSource[]>([]);
   isLoading = signal(true);

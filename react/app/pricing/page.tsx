@@ -4,12 +4,14 @@ import {
   EmbedProvider,
   SchematicEmbed,
 } from "@schematichq/schematic-components";
+import { useSchematicIsPending } from "@schematichq/schematic-react";
 import React, { useEffect, useState } from "react";
 
 export default function PlanPage() {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [accessToken, setAccessToken] = useState<string | null>(null);
+  const isPending = useSchematicIsPending();
 
   const fetchAccessToken = async () => {
     setIsLoading(true);
@@ -75,6 +77,11 @@ export default function PlanPage() {
       <div className="container mx-auto px-6 py-4">
         <EmbedProvider debug>
           <h1 className="text-2xl font-bold mb-4">Usage & Plan</h1>
+          {isPending && (
+            <p className="text-muted-foreground animate-pulse mb-2">
+              Schematic SDK loading...
+            </p>
+          )}
           <SchematicEmbed accessToken={accessToken} id={componentId} />
         </EmbedProvider>
       </div>

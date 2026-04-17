@@ -1,0 +1,9 @@
+[
+  {
+    "id": "1",
+    "name": "Snowflake",
+    "type": "Data Warehouse",
+    "status": "connected",
+    "icon": "❄️"
+  }
+]
