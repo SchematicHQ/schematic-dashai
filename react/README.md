@@ -2,15 +2,15 @@
 
 The reference implementation of Schematic DashAI. A Next.js app demonstrating how to integrate Schematic feature flags, entitlements, usage tracking, and embedded billing components. This version is hosted at [schematic-dashai.vercel.app](https://schematic-dashai.vercel.app/) and is the canonical source for the Angular and Vue ports.
 
+> **This is a reference implementation, not a standalone quickstart.** The app assumes a Schematic workspace configured with the specific features, plans, entitlements, and embedded components this demo expects. If you want to get Schematic running in your own app, follow the [Schematic quickstart](https://docs.schematichq.com) instead. What follows is for reading and referencing the code.
+
 ## Stack
 
-- **Next.js 16** (App Router)
-- **React 19**
-- **Clerk** for authentication
-- **Tailwind CSS v4** + **shadcn/ui** for styling
-- **Recharts** for data visualization
-- **lucide-react** for icons
-- **Vercel Blob** for persistent storage in production (falls back to local JSON files in dev)
+- Built on **Next.js 16** (App Router) and **React 19**.
+- Authentication is handled by **Clerk**.
+- Styling uses **Tailwind CSS v4** with **shadcn/ui** components.
+- Charts are rendered with **Recharts**; icons come from **lucide-react**.
+- Persistent storage uses **Vercel Blob** in production and local JSON files in development.
 
 ## Schematic Integration
 
@@ -24,41 +24,7 @@ Frontend uses `@schematichq/schematic-react`, which provides a provider and hook
 
 Backend (Next.js API routes in `app/api/`) uses `@schematichq/schematic-typescript-node` to issue embed access tokens, fetch credit balance, update traits, and run the daily usage cron.
 
-## Setup
-
-```bash
-yarn install
-```
-
-Copy `.env.example` to `.env.local` and fill in keys:
-
-```
-NEXT_PUBLIC_SCHEMATIC_PUBLISHABLE_KEY=api_...
-NEXT_PUBLIC_SCHEMATIC_COMPONENT_ID=cmpn_...       # Usage component for /plan
-NEXT_PUBLIC_SCHEMATIC_PRICING_TABLE_ID=cmpn_...   # Pricing table for /pricing
-SCHEMATIC_SECRET_KEY=sch_dev_...
-
-NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=pk_test_...
-CLERK_SECRET_KEY=sk_test_...
-
-BLOB_READ_WRITE_TOKEN=                             # Optional, Vercel Blob
-CRON_SECRET=                                        # Required for /api/cron routes
-```
-
-## Running
-
-```bash
-yarn dev
-```
-
-Opens `http://localhost:3000`.
-
-## Building
-
-```bash
-yarn build
-yarn start
-```
+The `/plan` and `/pricing` pages render `@schematichq/schematic-components` directly. Because the embedded components are themselves a React library, no bridge is needed here — the Angular and Vue ports each wrap these same components in a small `createRoot()` bridge.
 
 ## Project Structure
 
@@ -107,5 +73,7 @@ react/
 
 ## Reference
 
-- [Schematic React SDK](https://github.com/SchematicHQ/schematic-js/tree/main/react)
 - [Schematic documentation](https://docs.schematichq.com)
+- React SDK: [`@schematichq/schematic-react`](https://www.npmjs.com/package/@schematichq/schematic-react) ([source](https://github.com/SchematicHQ/schematic-js/tree/main/react))
+- Node backend SDK: [`@schematichq/schematic-typescript-node`](https://www.npmjs.com/package/@schematichq/schematic-typescript-node) ([source](https://github.com/SchematicHQ/schematic-typescript-node))
+- Embedded components: [`@schematichq/schematic-components`](https://www.npmjs.com/package/@schematichq/schematic-components) ([source](https://github.com/SchematicHQ/schematic-js/tree/main/components))

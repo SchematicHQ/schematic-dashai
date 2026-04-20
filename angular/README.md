@@ -2,14 +2,14 @@
 
 An Angular implementation of the Schematic DashAI reference app. Demonstrates how to integrate Schematic feature flags, entitlements, usage tracking, and embedded billing components into a modern Angular application.
 
+> **This is a reference implementation, not a standalone quickstart.** The app assumes a Schematic workspace configured with the specific features, plans, entitlements, and embedded components this demo expects. If you want to get Schematic running in your own app, follow the [Schematic quickstart](https://docs.schematichq.com) instead. What follows is for reading and referencing the code.
+
 ## Stack
 
-- **Angular 21** with standalone components
-- **Angular CLI** build tooling
-- **Tailwind CSS v4** for styling
-- **ng2-charts** / Chart.js for data visualization
-- **lucide-angular** for icons
-- **Express** backend for API routes (runs alongside `ng serve`)
+- Built with **Angular 21** using standalone components and the **Angular CLI** build tooling.
+- Styling uses **Tailwind CSS v4**.
+- Charts are rendered with **Chart.js** via **ng2-charts**; icons come from **lucide-angular**.
+- An **Express** backend runs alongside `ng serve` to handle API routes.
 
 ## Schematic Integration
 
@@ -27,59 +27,13 @@ Backend (`server/server.ts`) uses `@schematichq/schematic-typescript-node` to is
 
 The `/plan` and `/pricing` pages render `@schematichq/schematic-components` (a React library) inside an Angular component. `src/app/components/schematic-embed/` is a small bridge that mounts the React embed via `createRoot()` and tears it down on destroy.
 
-## Setup
+## What this port leaves out
 
-Install dependencies for both the app and the server:
+This is a reference implementation focused on showing the Angular SDK integration. A few pieces of the full React app are intentionally stubbed or omitted to keep the code focused:
 
-```bash
-yarn install
-cd server && yarn install && cd ..
-```
-
-Fill in `src/environments/environment.development.ts` with keys from your Schematic dashboard:
-
-```ts
-export const environment = {
-  schematicPublishableKey: 'api_...',
-  schematicComponentId: 'cmpn_...',       // Usage component for /plan page
-  schematicPricingTableId: 'cmpn_...',     // Pricing table for /pricing page
-};
-```
-
-For production builds, populate `environment.ts` the same way.
-
-Copy the server env template:
-
-```bash
-cp server/.env.example server/.env
-```
-
-Then fill in:
-
-```
-SCHEMATIC_SECRET_KEY=sch_dev_...
-SCHEMATIC_API_URL=                          # Optional, leave blank for default
-```
-
-## Running
-
-```bash
-yarn dev
-```
-
-This starts two processes via `concurrently`:
-- Angular dev server on `http://localhost:4200`
-- Express API server on `http://localhost:3001`
-
-The Angular dev server proxies `/api/*` to the Express server (see `proxy.conf.json`).
-
-## Building
-
-```bash
-yarn build
-```
-
-Outputs to `dist/`. Note that `yarn build` only builds the frontend. To deploy, you also need to host the `server/` directory as a standalone Node process (or port it to your platform's serverless runtime).
+- **Auth.** No real auth provider. `IdentityService.initialize()` calls `identify()` with a hardcoded `id: 'demo'` on bootstrap. Swap in your auth provider by replacing that call.
+- **Persistent storage.** The server writes team members and data sources to JSON files in `data/`. There's no production storage backend (no blob storage, no database). Fine for local demo; replace `server/server.ts`'s file I/O with your storage of choice before deploying.
+- **Daily usage cron.** The production app has a scheduled job that backfills usage events; this port does not include one. Events only fire from client `track()` calls.
 
 ## Project Structure
 
@@ -119,9 +73,9 @@ angular/
 
 Both patterns work. Pick the one that matches your team's style.
 
-**No auth.** Unlike the React version (which uses Clerk), this demo uses a hardcoded identify call to `id: 'demo'` on app bootstrap. Swap in your auth provider by replacing the `IdentityService.initialize()` call.
-
 ## Reference
 
-- [Schematic Angular SDK](https://github.com/SchematicHQ/schematic-js/tree/main/angular)
 - [Schematic documentation](https://docs.schematichq.com)
+- Angular SDK: [`@schematichq/schematic-angular`](https://www.npmjs.com/package/@schematichq/schematic-angular) ([source](https://github.com/SchematicHQ/schematic-js/tree/main/angular))
+- Node backend SDK: [`@schematichq/schematic-typescript-node`](https://www.npmjs.com/package/@schematichq/schematic-typescript-node) ([source](https://github.com/SchematicHQ/schematic-typescript-node))
+- Embedded components: [`@schematichq/schematic-components`](https://www.npmjs.com/package/@schematichq/schematic-components) ([source](https://github.com/SchematicHQ/schematic-js/tree/main/components))
