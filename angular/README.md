@@ -23,7 +23,7 @@ Frontend uses `@schematichq/schematic-angular`, which provides an injectable ser
 
 The pricing and plan pages intentionally demonstrate *both* patterns side by side: observable with `async` pipe and `toSignal()` converted signal. Use whichever fits your codebase.
 
-Backend (`server/server.ts`) uses `@schematichq/schematic-typescript-node` to issue embed access tokens, fetch credit balance, and update traits when team members or data sources change.
+Backend (`server/server.ts`) uses `@schematichq/schematic-typescript-node` to issue embed access tokens and update traits when team members or data sources change.
 
 The `/plan` and `/pricing` pages render `@schematichq/schematic-components` (a React library) inside an Angular component. `src/app/components/schematic-embed/` is a small bridge that mounts the React embed via `createRoot()` and tears it down on destroy.
 

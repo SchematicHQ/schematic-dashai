@@ -78,32 +78,6 @@ app.get('/api/accessToken', async (_req, res) => {
   }
 });
 
-// Credit Balance
-app.get('/api/credit-balance', async (_req, res) => {
-  try {
-    const client = getSchematicClient();
-    const resp = await client.entitlements.getFeatureUsageByCompany({
-      keys: { id: COMPANY_ID },
-    });
-    const { features } = resp.data;
-    const feature = features.filter(
-      (f: any) => f.priceBehavior === 'credit_burndown'
-    )[0];
-    await client.close();
-    if (feature) {
-      res.json({
-        allocation: feature.creditTotal,
-        usage: feature.creditUsed,
-      });
-    } else {
-      res.json(null);
-    }
-  } catch (error) {
-    console.error('Error fetching credit balance:', error);
-    res.status(500).json({ message: 'Error fetching credit balance' });
-  }
-});
-
 // Users CRUD
 interface UserRecord {
   id: string;

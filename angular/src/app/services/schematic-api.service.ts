@@ -2,11 +2,6 @@ import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 
-export interface CreditBalance {
-  allocation: number;
-  usage: number;
-}
-
 export interface TeamMember {
   id: string;
   name: string;
@@ -29,10 +24,6 @@ export class SchematicApiService {
 
   getAccessToken(): Observable<{ accessToken: string }> {
     return this.http.get<{ accessToken: string }>('/api/accessToken');
-  }
-
-  getCreditBalance(): Observable<CreditBalance> {
-    return this.http.get<CreditBalance>('/api/credit-balance');
   }
 
   getUsers(): Observable<TeamMember[]> {

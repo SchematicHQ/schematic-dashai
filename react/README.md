@@ -22,7 +22,7 @@ Frontend uses `@schematichq/schematic-react`, which provides a provider and hook
 - `useSchematicIsPending()` for SDK loading state
 - `useSchematicFlag(key)` for boolean feature flags
 
-Backend (Next.js API routes in `app/api/`) uses `@schematichq/schematic-typescript-node` to issue embed access tokens, fetch credit balance, update traits, and run the daily usage cron.
+Backend (Next.js API routes in `app/api/`) uses `@schematichq/schematic-typescript-node` to issue embed access tokens, update traits, and run the daily usage cron.
 
 ## Setup
 
@@ -67,7 +67,6 @@ react/
   app/
     api/
       accessToken/             # Issue embed access tokens
-      credit-balance/          # Fetch current credit usage
       data-sources/            # CRUD for data sources, updates trait
       users/                   # CRUD for team members, updates trait
       cron/seed-usage/         # Daily cron to backfill events

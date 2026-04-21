@@ -21,7 +21,7 @@ Frontend uses `@schematichq/schematic-vue`, which provides a Vue plugin and comp
 - `useSchematicEntitlement(key)` for feature gating (seat limits, data source allocations)
 - `useSchematicIsPending()` for SDK loading state
 
-Backend (`server/server.ts`) uses `@schematichq/schematic-typescript-node` to issue embed access tokens, fetch credit balance, and update traits when team members or data sources change.
+Backend (`server/server.ts`) uses `@schematichq/schematic-typescript-node` to issue embed access tokens and update traits when team members or data sources change.
 
 The `/plan` and `/pricing` pages render `@schematichq/schematic-components` (a React library) inside a Vue component. `src/components/SchematicEmbed.vue` is a small bridge that mounts the React embed via `createRoot()` and tears it down on unmount. This is the same pattern used in the Angular app.
 
