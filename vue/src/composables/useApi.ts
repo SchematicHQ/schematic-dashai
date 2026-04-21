@@ -1,8 +1,3 @@
-export interface CreditBalance {
-  allocation: number
-  usage: number
-}
-
 export interface TeamMember {
   id: string
   email: string
@@ -22,12 +17,6 @@ export interface DataSource {
 export async function getAccessToken(): Promise<{ accessToken: string }> {
   const res = await fetch('/api/accessToken')
   if (!res.ok) throw new Error('Failed to fetch access token')
-  return res.json()
-}
-
-export async function getCreditBalance(): Promise<CreditBalance | null> {
-  const res = await fetch('/api/credit-balance')
-  if (!res.ok) throw new Error('Failed to fetch credit balance')
   return res.json()
 }
 
