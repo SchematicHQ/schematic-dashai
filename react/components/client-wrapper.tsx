@@ -8,14 +8,17 @@ const SchematicWrapper = ({ children }: { children: React.ReactNode }) => {
   const { isSignedIn, user, isLoaded } = useUser()
   const { identify } = useSchematicEvents()
 
+  const clerkId = user?.id
+  const email = user?.primaryEmailAddress?.emailAddress
+
   useEffect(() => {
-    if (isLoaded && isSignedIn && user) {
+    if (isLoaded && isSignedIn && clerkId) {
       identify({
-        keys: { 
-          clerkid: user.id,
-          email: user.primaryEmailAddress?.emailAddress || "",
+        keys: {
+          clerkid: clerkId,
+          email: email || "",
         },
-        name: user.primaryEmailAddress?.emailAddress,
+        name: email,
         company: {
           keys: {
             'id': 'demo',
@@ -23,7 +26,7 @@ const SchematicWrapper = ({ children }: { children: React.ReactNode }) => {
         },
       })
     }
-  }, [isLoaded, isSignedIn, user, identify])
+  }, [isLoaded, isSignedIn, clerkId, email, identify])
 
   return <>{children}</>
 }
