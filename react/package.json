@@ -4,8 +4,10 @@
   "private": true,
   "scripts": {
     "build": "next build",
+    "build:types": "npx tsc && npx api-extractor run",
     "dev": "next dev",
     "lint": "eslint .",
+    "openapi": "./generate_openapi.sh -c ./components/api/config_checkoutexternal.yml && ./generate_openapi.sh -c ./components/api/config_componentspublic.yml",
     "start": "next start",
     "seed:companies": "tsx scripts/seed-companies.ts",
     "seed:events": "tsx scripts/seed-events.ts",
@@ -71,6 +73,7 @@
     "zod": "3.25.76"
   },
   "devDependencies": {
+    "@openapitools/openapi-generator-cli": "^2.39.1",
     "@tailwindcss/postcss": "^4.1.9",
     "@types/node": "^22",
     "@types/react": "^19",
