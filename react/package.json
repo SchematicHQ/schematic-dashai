@@ -3,9 +3,9 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "build": "next build",
+    "build": "next build --webpack",
     "build:types": "npx tsc && npx api-extractor run",
-    "dev": "next dev",
+    "dev": "next dev --webpack",
     "lint": "eslint .",
     "openapi": "./generate_openapi.sh -c ./components/api/config_checkoutexternal.yml && ./generate_openapi.sh -c ./components/api/config_componentspublic.yml",
     "start": "next start",
@@ -75,6 +75,7 @@
   "devDependencies": {
     "@openapitools/openapi-generator-cli": "^2.39.1",
     "@tailwindcss/postcss": "^4.1.9",
+    "@types/lodash": "^4.17.24",
     "@types/node": "^22",
     "@types/react": "^19",
     "@types/react-dom": "^19",
