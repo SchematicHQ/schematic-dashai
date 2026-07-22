@@ -1,12 +1,16 @@
 "use client";
 
-import { useState } from "react";
+import { /* useEffect, useMemo, */ useState } from "react";
 import type { Schematic } from "@schematichq/schematic-typescript-node";
 import {
   formatCurrency,
   getPlanPrice,
 } from "@schematichq/schematic-components";
 
+/* import {
+  ComponentspublicApi,
+  Configuration,
+} from "../components/api/componentspublic"; */
 import { PricingTable as Headless } from "./headless/pricing-table";
 import { PricingTablePeriod } from "@/app/pricing/page";
 
@@ -17,6 +21,22 @@ interface PricingTableProps {
 
 export function PricingTable({ catalog, periods }: PricingTableProps) {
   const [selectedPeriod, setSelectedPeriod] = useState("month");
+
+  /* const sessionId = useMemo(() => uuidv4(), []);
+  const api = useMemo(
+    () =>
+      new ComponentspublicApi(
+        new Configuration({
+          apiKey: process.env.NEXT_PUBLIC_SCHEMATIC_PUBLISHABLE_KEY,
+          headers: {
+            "X-Schematic-Components-Version":
+              process.env.SCHEMATIC_COMPONENTS_VERSION || "unknown",
+            "X-Schematic-Session-ID": sessionId,
+          },
+        }),
+      ),
+    [sessionId],
+  ); */
 
   return (
     <Headless.Root
@@ -42,7 +62,7 @@ export function PricingTable({ catalog, periods }: PricingTableProps) {
       </Headless.Label>
 
       <Headless.Section className="grid grid-cols-[repeat(auto-fill,minmax(300px,1fr))] gap-4 flex-wrap clear-right">
-        {catalog?.activePlans.map((plan) => {
+        {catalog?.activePlans.map((plan, idx) => {
           const planPrice = getPlanPrice(plan, selectedPeriod)?.price;
 
           return (
