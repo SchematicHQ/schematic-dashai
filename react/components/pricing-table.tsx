@@ -7,7 +7,6 @@ import {
   getPlanPrice,
 } from "@schematichq/schematic-components";
 
-import { PricingTable as Headless } from "./headless/pricing-table";
 import { PricingTablePeriod } from "@/app/pricing/page";
 
 interface PricingTableProps {
@@ -19,67 +18,73 @@ export function PricingTable({ catalog, periods }: PricingTableProps) {
   const [selectedPeriod, setSelectedPeriod] = useState("month");
 
   return (
-    <Headless.Root
-      className="pt-16"
-      onPeriodChange={(period) => {
-        setSelectedPeriod(period);
-      }}
-    >
-      <Headless.PeriodToggle className="flex self-center rounded-full border border-border float-end mb-4">
-        {periods.map((period) => (
-          <Headless.PeriodOption
-            key={period.value}
-            value={period.value}
-            className="flex grow basis-1/2 font-medium text-white px-6 py-3 text-nowrap leading-none rounded-full transition-all data-selected:font-semibold data-selected:bg-border"
-          >
-            {period.label}
-          </Headless.PeriodOption>
-        ))}
-      </Headless.PeriodToggle>
+    <div className="pt-16">
+      <div
+        role="radiogroup"
+        aria-label="Billing period"
+        className="flex self-center rounded-full border border-border float-end mb-4"
+      >
+        {periods.map((period) => {
+          const isSelected = period.value === selectedPeriod;
 
-      <Headless.Label className="text-2xl font-semibold text-white mb-4">
-        Plans
-      </Headless.Label>
+          return (
+            <button
+              key={period.value}
+              type="button"
+              role="radio"
+              aria-checked={isSelected}
+              data-selected={isSelected || undefined}
+              onClick={() => setSelectedPeriod(period.value)}
+              className="flex grow basis-1/2 font-medium text-white px-6 py-3 text-nowrap leading-none rounded-full transition-all data-selected:font-semibold data-selected:bg-border"
+            >
+              {period.label}
+            </button>
+          );
+        })}
+      </div>
 
-      <Headless.Section className="grid grid-cols-[repeat(auto-fill,minmax(300px,1fr))] gap-4 flex-wrap clear-right">
+      <h2 className="text-2xl font-semibold text-white mb-4">Plans</h2>
+
+      <ul className="grid grid-cols-[repeat(auto-fill,minmax(300px,1fr))] gap-4 flex-wrap clear-right">
         {catalog?.activePlans.map((plan) => {
           const planPrice = getPlanPrice(plan, selectedPeriod)?.price;
 
           return (
-            <Headless.Card
+            <li
               key={plan.id}
-              className="relative flex flex-col text-white border border-border bg-card rounded-xl p-6 shadow-2xl outline-4 outline-transparent data-active:outline-accent"
+              className="relative flex flex-col text-white border border-border bg-card rounded-xl p-6 shadow-2xl"
             >
-              <Headless.Name className="text-4xl font-bold leading-none tracking-tight">
+              <h3 className="text-4xl font-bold leading-none tracking-tight">
                 {plan.name}
-              </Headless.Name>
-              <Headless.Description className="text-muted-foreground text-lg mb-4">
+              </h3>
+              <p className="text-muted-foreground text-lg mb-4">
                 {plan.description}
-              </Headless.Description>
+              </p>
 
               {typeof planPrice === "number" && (
-                <Headless.Price className="text-3xl font-semibold tracking-tight mb-8">
+                <div className="text-3xl font-semibold tracking-tight mb-8">
                   {formatCurrency(planPrice)}
-                </Headless.Price>
+                </div>
               )}
 
-              <Headless.Entitlements className="grow list-disc pl-4 space-y-1 mb-8">
+              <ul className="grow list-disc pl-4 space-y-1 mb-8">
                 {plan.entitlements?.map((entitlement) => (
-                  <Headless.Entitlement key={entitlement.id}>
-                    {entitlement.feature?.name}
-                  </Headless.Entitlement>
+                  <li key={entitlement.id}>{entitlement.feature?.name}</li>
                 ))}
-              </Headless.Entitlements>
+              </ul>
 
-              <Headless.Footer>
-                <Headless.CallToAction className="flex justify-center w-full p-4 text-lg font-medium leading-none text-white bg-accent border border-accent rounded-lg transition-all">
+              <div>
+                <button
+                  type="button"
+                  className="flex justify-center w-full p-4 text-lg font-medium leading-none text-white bg-accent border border-accent rounded-lg transition-all"
+                >
                   Choose plan
-                </Headless.CallToAction>
-              </Headless.Footer>
-            </Headless.Card>
+                </button>
+              </div>
+            </li>
           );
         })}
-      </Headless.Section>
-    </Headless.Root>
+      </ul>
+    </div>
   );
 }
