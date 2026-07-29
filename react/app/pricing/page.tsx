@@ -1,5 +1,4 @@
 import crypto from "crypto";
-import { NextResponse } from "next/server";
 import {
   SchematicClient,
   type Schematic,
@@ -17,7 +16,11 @@ export default async function Page() {
   const secretKey = process.env.SCHEMATIC_SECRET_KEY;
   const apiKey = secretKey || publishableKey;
   if (!apiKey) {
-    return NextResponse.json({ message: "No Schematic key" }, { status: 400 });
+    return (
+      <div className="min-h-screen bg-background text-white p-6">
+        No Schematic key
+      </div>
+    );
   }
 
   const sessionId = crypto.randomUUID();

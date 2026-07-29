@@ -2,12 +2,9 @@
 
 import { useState } from "react";
 import type { Schematic } from "@schematichq/schematic-typescript-node";
-import {
-  formatCurrency,
-  getPlanPrice,
-} from "@schematichq/schematic-components";
 
 import { PricingTablePeriod } from "@/app/pricing/page";
+import { formatCurrency, getPlanPrice } from "@/components/utils";
 
 interface PricingTableProps {
   catalog: Schematic.PublicPlansResponseData;
