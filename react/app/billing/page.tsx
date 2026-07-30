@@ -1,6 +1,7 @@
 import { SchematicClient } from "@schematichq/schematic-typescript-node";
 
 import { PaymentMethod } from "@/components/payment-method";
+import { COMPANY_LOOKUP } from "@/lib/constants";
 
 export const dynamic = "force-dynamic";
 
@@ -16,7 +17,7 @@ export default async function Page() {
 
   const schematic = new SchematicClient({ apiKey });
   const companyResponse = await schematic.companies.lookupCompany({
-    keys: { id: "demo" },
+    keys: COMPANY_LOOKUP,
   });
 
   const company = companyResponse.data;

@@ -1,12 +1,12 @@
 import { NextRequest, NextResponse } from "next/server"
 import { SchematicClient } from "@schematichq/schematic-typescript-node"
+import { COMPANY_LOOKUP } from "@/lib/constants"
 import { readJsonStore, writeJsonStore } from "@/lib/json-store"
 
 export const dynamic = "force-dynamic"
 
 const DATA_SOURCES_BLOB_PATH = "data/data-sources.json"
 const DATA_SOURCES_FS_PATH = "data/data-sources.json"
-const COMPANY_ID = "demo"
 
 type DataSourceRecord = { id: string; name: string; type: string; status: string; icon: string }
 
@@ -29,9 +29,7 @@ async function updateSchematicTrait(dataSourceCount: number) {
     const schematicClient = new SchematicClient({ apiKey })
 
     await schematicClient.companies.upsertCompany({
-      keys: {
-        id: COMPANY_ID,
-      },
+      keys: COMPANY_LOOKUP,
       traits: {
         "data-source": dataSourceCount,
       },

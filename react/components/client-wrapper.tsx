@@ -4,6 +4,8 @@ import { ClerkProvider, useUser } from '@clerk/nextjs'
 import { SchematicProvider, useSchematicEvents } from '@schematichq/schematic-react'
 import { useEffect } from 'react'
 
+import { COMPANY_LOOKUP } from '@/lib/constants'
+
 const SchematicWrapper = ({ children }: { children: React.ReactNode }) => {
   const { isSignedIn, user, isLoaded } = useUser()
   const { identify } = useSchematicEvents()
@@ -20,9 +22,7 @@ const SchematicWrapper = ({ children }: { children: React.ReactNode }) => {
         },
         name: email,
         company: {
-          keys: {
-            'id': 'demo',
-          },
+          keys: COMPANY_LOOKUP,
         },
       })
     }

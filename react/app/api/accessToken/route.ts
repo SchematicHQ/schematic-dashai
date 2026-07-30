@@ -1,6 +1,8 @@
 import { SchematicClient } from "@schematichq/schematic-typescript-node";
 import { NextRequest, NextResponse } from "next/server";
 
+import { COMPANY_LOOKUP } from "@/lib/constants";
+
 /* eslint-disable-next-line @typescript-eslint/no-unused-vars */
 export async function GET(_request: NextRequest) {
   const apiKey = process.env.SCHEMATIC_SECRET_KEY;
@@ -12,9 +14,7 @@ export async function GET(_request: NextRequest) {
     const schematicClient = new SchematicClient({ apiKey });
 
     const resp = await schematicClient.accesstokens.issueTemporaryAccessToken({
-      lookup: {
-        'id': 'demo',
-      },
+      lookup: COMPANY_LOOKUP,
     });
 
     const accessToken = resp.data?.token;

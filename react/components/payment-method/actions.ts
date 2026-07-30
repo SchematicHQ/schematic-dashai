@@ -3,13 +3,12 @@
 import { revalidatePath } from "next/cache";
 import { SchematicClient } from "@schematichq/schematic-typescript-node";
 
+import { COMPANY_LOOKUP } from "@/lib/constants";
 import {
   CheckoutexternalApi,
   Configuration,
   type SetupIntentResponseData,
 } from "@/components/api/checkoutexternal";
-
-const COMPANY_LOOKUP = { id: "demo" };
 
 const BILLING_PATH = "/billing";
 
@@ -21,7 +20,7 @@ type ActionResult<T = void> =
 
 let cachedToken: { token: string; expiresAt: number } | undefined;
 
-async function getCheckoutApi() {
+async function getCheckoutApi(): Promise<CheckoutexternalApi> {
   const apiKey = process.env.SCHEMATIC_SECRET_KEY;
   if (!apiKey) {
     throw new Error("Missing SCHEMATIC_SECRET_KEY");
@@ -64,7 +63,7 @@ export async function setDefaultPaymentMethod(
 ): Promise<ActionResult> {
   try {
     const checkoutApi = await getCheckoutApi();
-    const res = await checkoutApi.updatePaymentMethod({
+    await checkoutApi.updatePaymentMethod({
       updatePaymentMethodRequestBody: { paymentMethodId },
     });
 

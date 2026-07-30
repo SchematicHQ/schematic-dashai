@@ -1,12 +1,12 @@
 import { NextRequest, NextResponse } from "next/server"
 import { SchematicClient } from "@schematichq/schematic-typescript-node"
+import { COMPANY_LOOKUP } from "@/lib/constants"
 import { readJsonStore, writeJsonStore } from "@/lib/json-store"
 
 export const dynamic = "force-dynamic"
 
 const USERS_BLOB_PATH = "data/users.json"
 const USERS_FS_PATH = "data/users.json"
-const COMPANY_ID = "demo"
 
 type UserRecord = { id: string; email: string; name: string; role: string; initials: string }
 
@@ -29,9 +29,7 @@ async function updateSchematicTrait(userCount: number) {
     const schematicClient = new SchematicClient({ apiKey })
     
     await schematicClient.companies.upsertCompany({
-      keys: {
-        id: COMPANY_ID,
-      },
+      keys: COMPANY_LOOKUP,
       traits: {
         "user-seat": userCount,
       },
