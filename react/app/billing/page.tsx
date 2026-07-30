@@ -22,12 +22,15 @@ export default async function Page() {
 
   const company = companyResponse.data;
 
+  const defaultPaymentMethod =
+    company.billingSubscription?.paymentMethod ?? company.defaultPaymentMethod;
+
   return (
     <div className="min-h-screen bg-background">
       <div className="container mx-auto px-6 py-4">
         <div className="max-w-xl pt-16">
           <PaymentMethod
-            paymentMethod={company.defaultPaymentMethod}
+            paymentMethod={defaultPaymentMethod}
             paymentMethods={company.paymentMethods}
           />
         </div>
