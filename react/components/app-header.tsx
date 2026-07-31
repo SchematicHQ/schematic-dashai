@@ -1,7 +1,13 @@
 "use client";
 
 import Link from "next/link";
-import { Database, CreditCard, Users, Sparkles } from "lucide-react";
+import {
+  CreditCard,
+  Database,
+  PanelBottom,
+  Sparkles,
+  Users,
+} from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { UserButton, Show, SignInButton } from "@clerk/nextjs";
 import { useSchematicIsPending } from "@schematichq/schematic-react";
@@ -60,8 +66,18 @@ export function AppHeader() {
               size="sm"
               className="gap-2 bg-transparent"
             >
-              <CreditCard className="h-4 w-4" />
+              <PanelBottom className="h-4 w-4" />
               Plan
+            </Button>
+          </Link>
+          <Link href="/plan">
+            <Button
+              variant="outline"
+              size="sm"
+              className="gap-2 bg-transparent"
+            >
+              <CreditCard className="h-4 w-4" />
+              Billing
             </Button>
           </Link>
           <Show when="signed-out">

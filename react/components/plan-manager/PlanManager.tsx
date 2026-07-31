@@ -1,7 +1,8 @@
 import type { ReactNode } from "react";
 import Link from "next/link";
 
-import type { ComponentHydrateResponseData } from "@/components/api/checkoutexternal";
+import type { Schematic } from "@schematichq/schematic-typescript-node";
+
 import {
   formatCurrency,
   getAutoTopupAmount,
@@ -23,29 +24,42 @@ import {
 } from "./utils";
 
 interface PlanManagerProps {
-  data: ComponentHydrateResponseData;
-  /** Where "Change plan" and the auto top-up controls send the company. */
+  company: Schematic.CompanyDetailResponseData;
+  featureUsage?: Schematic.FeatureUsageResponseData[];
+  creditGrants?: Schematic.BillingCreditGrantResponseData[];
+  // the plan group's component settings
+  displaySettings?: Partial<Schematic.ComponentSettingsResponseData>;
+  // trial copy, from the plan group rather than from the company
+  trialPaymentMethodRequired?: boolean;
+  postTrialPlanName?: string;
+  // where "change plan" and the auto top-up controls send the company
   changePlanHref?: string;
 }
 
 export function PlanManager({
-  data,
+  company,
+  featureUsage = [],
+  creditGrants = [],
+  displaySettings = {},
+  trialPaymentMethodRequired = false,
+  postTrialPlanName,
   changePlanHref = "/pricing",
 }: PlanManagerProps) {
-  const company = data.company;
-  const currentPlan = company?.plan;
-  const addOns = company?.addOns ?? [];
-  const billingSubscription = company?.billingSubscription;
-  const scheduledDowngrade = company?.scheduledDowngrade;
+  const currentPlan = company.plan;
+  const addOns = company.addOns;
+  const billingSubscription = company.billingSubscription;
+  const scheduledDowngrade = company.scheduledDowngrade;
 
-  const { showCredits, showHardLimit, showZeroPriceAsFree } =
-    data.displaySettings;
-  const canCheckout = data.capabilities?.checkout ?? false;
+  const {
+    showCredits = true,
+    showHardLimit = true,
+    showZeroPriceAsFree = true,
+  } = displaySettings;
 
-  const usageBasedEntitlements = (data.featureUsage?.features ?? []).filter(
+  const usageBasedEntitlements = featureUsage.filter(
     (usage) => typeof usage.priceBehavior === "string",
   );
-  const creditGroups = groupCreditsByReason(data.creditGrants);
+  const creditGroups = groupCreditsByReason(creditGrants);
 
   const subscriptionInterval =
     getSubscriptionPeriod(billingSubscription) ?? billingSubscription?.interval;
@@ -84,16 +98,15 @@ export function PlanManager({
               : "Trial in progress"
           }
         >
-          {data.trialPaymentMethodRequired ? (
+          {trialPaymentMethodRequired ? (
             <p className="text-sm text-muted-foreground">
               After the trial, subscription starts and you will be billed.
             </p>
-          ) : data.postTrialPlan ? (
+          ) : postTrialPlanName ? (
             <p className="text-sm text-muted-foreground">
-              After the trial, you will be downgraded to the{" "}
-              {data.postTrialPlan.name} plan and your subscription will be
-              cancelled. You will not be charged unless you subscribe to a paid
-              plan during the trial.
+              After the trial, you will be downgraded to the {postTrialPlanName}{" "}
+              plan and your subscription will be cancelled. You will not be
+              charged unless you subscribe to a paid plan during the trial.
             </p>
           ) : (
             currentPlan && (
@@ -243,7 +256,8 @@ export function PlanManager({
                   className="flex justify-between items-baseline flex-wrap gap-2"
                 >
                   <span className="font-medium">
-                    {group.quantity} {getFeatureName(group, group.quantity)}
+                    {group.total.value}{" "}
+                    {getFeatureName(group, group.total.value)}
                     {subscriptionInterval && <> per {subscriptionInterval}</>}
                   </span>
 
@@ -322,56 +336,21 @@ export function PlanManager({
 
         {creditGroups.bundles.length > 0 && (
           <Section label="Credit bundles">
-            {creditGroups.bundles.map((group) => {
-              const bundle = group.bundleId
-                ? data.creditBundles.find(({ id }) => id === group.bundleId)
-                : undefined;
-
-              return (
-                <div
-                  key={group.bundleId ?? group.id}
-                  className="flex justify-between items-center flex-wrap gap-2"
-                >
-                  <span className="font-medium">
-                    {group.grants.length > 1 && (
-                      <span className="text-muted-foreground">
-                        ({group.grants.length}){" "}
-                      </span>
-                    )}
-
-                    {bundle ? (
-                      <>
-                        {bundle.name} ({group.quantity}{" "}
-                        {getFeatureName(group, group.quantity)})
-                      </>
-                    ) : (
-                      <>
-                        {group.quantity}{" "}
-                        {getFeatureName(group, group.quantity)}
-                      </>
-                    )}
-                  </span>
-
-                  {group.total.used > 0 && (
-                    <span className="text-sm text-muted-foreground">
-                      {group.total.used} used
-                    </span>
-                  )}
-                </div>
-              );
-            })}
-          </Section>
-        )}
-
-        {creditGroups.promotional.length > 0 && (
-          <Section label="Promotional credits">
-            {creditGroups.promotional.map((group) => (
+            {/* purchased grants carry no bundle id here, so they are named by
+                their credit rather than by the bundle they came from */}
+            {creditGroups.bundles.map((group) => (
               <div
                 key={group.id}
                 className="flex justify-between items-center flex-wrap gap-2"
               >
                 <span className="font-medium">
-                  {group.quantity} {getFeatureName(group, group.quantity)}
+                  {group.grants.length > 1 && (
+                    <span className="text-muted-foreground">
+                      ({group.grants.length}){" "}
+                    </span>
+                  )}
+
+                  {group.total.value} {getFeatureName(group, group.total.value)}
                 </span>
 
                 {group.total.used > 0 && (
@@ -384,7 +363,28 @@ export function PlanManager({
           </Section>
         )}
 
-        {canCheckout && !customPlanBilling?.isAwaitingActivation && (
+        {creditGroups.promotional.length > 0 && (
+          <Section label="Promotional credits">
+            {creditGroups.promotional.map((group) => (
+              <div
+                key={group.id}
+                className="flex justify-between items-center flex-wrap gap-2"
+              >
+                <span className="font-medium">
+                  {group.total.value} {getFeatureName(group, group.total.value)}
+                </span>
+
+                {group.total.used > 0 && (
+                  <span className="text-sm text-muted-foreground">
+                    {group.total.used} used
+                  </span>
+                )}
+              </div>
+            ))}
+          </Section>
+        )}
+
+        {!customPlanBilling?.isAwaitingActivation && (
           <Link
             href={changePlanHref}
             className="flex justify-center w-full p-4 text-lg font-medium leading-none text-white bg-accent border border-accent rounded-lg transition-all"

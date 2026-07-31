@@ -8,7 +8,6 @@ import { formatInvoices } from "./utils";
 
 const DEFAULT_LIMIT = 2;
 
-// Expanding shows more history, but not an unbounded amount of it.
 const MAX_VISIBLE_INVOICE_COUNT = 12;
 
 interface InvoicesProps {
