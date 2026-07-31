@@ -1,46 +1,15 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import { SchematicClient } from "@schematichq/schematic-typescript-node";
 
-import { COMPANY_LOOKUP } from "@/lib/constants";
-import {
-  CheckoutexternalApi,
-  Configuration,
-  type SetupIntentResponseData,
-} from "@/components/api/checkoutexternal";
+import { getCheckoutApi } from "@/lib/checkout";
+import { type SetupIntentResponseData } from "@/components/api/checkoutexternal";
 
 const BILLING_PATH = "/billing";
-
-const TOKEN_REFRESH_MARGIN_MS = 60_000;
 
 type ActionResult<T = void> =
   | { ok: true; data: T }
   | { ok: false; error: string };
-
-let cachedToken: { token: string; expiresAt: number } | undefined;
-
-async function getCheckoutApi(): Promise<CheckoutexternalApi> {
-  const apiKey = process.env.SCHEMATIC_SECRET_KEY;
-  if (!apiKey) {
-    throw new Error("Missing SCHEMATIC_SECRET_KEY");
-  }
-
-  if (!cachedToken || cachedToken.expiresAt <= Date.now()) {
-    const { data } = await new SchematicClient({
-      apiKey,
-    }).accesstokens.issueTemporaryAccessToken({ lookup: COMPANY_LOOKUP });
-
-    cachedToken = {
-      token: data.token,
-      expiresAt: new Date(data.expiredAt).getTime() - TOKEN_REFRESH_MARGIN_MS,
-    };
-  }
-
-  return new CheckoutexternalApi(
-    new Configuration({ apiKey: cachedToken.token }),
-  );
-}
 
 export async function createSetupIntent(): Promise<
   ActionResult<SetupIntentResponseData>
