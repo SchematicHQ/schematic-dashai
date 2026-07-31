@@ -1,9 +1,9 @@
-import type { Schematic } from "@schematichq/schematic-typescript-node";
+import type { CompanyPlanWithBillingSubView } from "@/components/api/checkoutexternal";
 
 import { formatCurrency, shortenPeriod } from "@/components/utils";
 
 interface AddOnProps {
-  addOn: Schematic.CompanyPlanWithBillingSubView;
+  addOn: CompanyPlanWithBillingSubView;
   currency?: string;
   period?: string;
 }

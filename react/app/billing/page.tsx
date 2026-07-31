@@ -1,15 +1,12 @@
-import { SchematicClient } from "@schematichq/schematic-typescript-node";
-
 import { Invoices } from "@/components/invoices";
 import { PaymentMethod } from "@/components/payment-method";
 import { PlanManager } from "@/components/plan-manager";
-import { COMPANY_LOOKUP } from "@/lib/constants";
+import { getCheckoutApi } from "@/lib/checkout";
 
 export const dynamic = "force-dynamic";
 
 export default async function Page() {
-  const apiKey = process.env.SCHEMATIC_SECRET_KEY;
-  if (!apiKey) {
+  if (!process.env.SCHEMATIC_SECRET_KEY) {
     return (
       <div className="min-h-screen bg-background text-white p-6">
         No Schematic key
@@ -17,32 +14,23 @@ export default async function Page() {
     );
   }
 
-  const schematic = new SchematicClient({ apiKey });
-  const [companyResponse, usageResponse, planGroupResponse] = await Promise.all(
-    [
-      schematic.companies.lookupCompany({ keys: COMPANY_LOOKUP }),
-      schematic.entitlements.getFeatureUsageByCompany({ keys: COMPANY_LOOKUP }),
-      schematic.plangroups.getPlanGroup(),
-    ],
-  );
-
-  const company = companyResponse.data;
-  // invoices are listed per subscription, so there is nothing to fetch until
-  // the company has one.
-  const subscription = company.billingSubscription;
-  const [{ data: creditGrants }, invoicesResponse] = await Promise.all([
-    schematic.credits.listCompanyGrants({ companyId: company.id }),
-    subscription &&
-      schematic.billing.listInvoices({
-        companyId: company.id,
-        customerExternalId: subscription.customerExternalId,
-        subscriptionExternalId: subscription.subscriptionExternalId,
-      }),
+  const checkoutApi = await getCheckoutApi();
+  const [{ data: hydrated }, { data: invoices }] = await Promise.all([
+    checkoutApi.hydrate(),
+    checkoutApi.listInvoices(),
   ]);
-  const invoices = invoicesResponse ? invoicesResponse.data : undefined;
+
+  const company = hydrated.company;
+  if (!company) {
+    return (
+      <div className="min-h-screen bg-background text-white p-6">
+        No company
+      </div>
+    );
+  }
 
   const defaultPaymentMethod =
-    subscription?.paymentMethod ?? company.defaultPaymentMethod;
+    company.billingSubscription?.paymentMethod ?? company.defaultPaymentMethod;
 
   return (
     <div className="min-h-screen bg-background">
@@ -50,13 +38,13 @@ export default async function Page() {
         <div className="flex flex-col gap-4 max-w-xl pt-16">
           <PlanManager
             company={company}
-            featureUsage={usageResponse.data.features}
-            creditGrants={creditGrants}
-            displaySettings={planGroupResponse.data.componentSettings}
+            featureUsage={hydrated.featureUsage?.features}
+            creditGrants={hydrated.creditGrants}
+            displaySettings={hydrated.displaySettings}
             trialPaymentMethodRequired={
-              planGroupResponse.data.trialPaymentMethodRequired
+              hydrated.trialPaymentMethodRequired ?? false
             }
-            postTrialPlanName={planGroupResponse.data.trialExpiryPlan?.name}
+            postTrialPlanName={hydrated.postTrialPlan?.name}
           />
 
           <PaymentMethod

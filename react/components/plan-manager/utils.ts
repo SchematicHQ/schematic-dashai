@@ -1,10 +1,11 @@
-import type { Schematic } from "@schematichq/schematic-typescript-node";
-
 import {
   BillingCreditGrantReason,
   CustomPlanActivationStrategy,
   CustomPlanBillingStatus,
+  type BillingSubscriptionView,
+  type CompanyDetailResponseData,
   type CreditCompanyGrantView,
+  type CustomPlanBillingResponseData,
 } from "@/components/api/checkoutexternal";
 import type { CreditWithCompanyContext } from "@/components/types";
 import { groupCreditGrants, modifyDate, pluralize } from "@/components/utils";
@@ -25,7 +26,7 @@ export interface TrialEnd {
  * days until the last day, then hours, then minutes.
  */
 export function getTrialEnd(
-  billingSubscription?: Schematic.BillingSubscriptionView,
+  billingSubscription?: BillingSubscriptionView,
 ): TrialEnd {
   if (typeof billingSubscription?.trialEnd !== "number") {
     return {};
@@ -55,7 +56,7 @@ export function getTrialEnd(
 }
 
 export interface CustomPlanBilling {
-  billing: Schematic.CustomPlanBillingResponseData;
+  billing: CustomPlanBillingResponseData;
   planName?: string;
   deadline: Date;
   isAwaitingActivation: boolean;
@@ -69,7 +70,7 @@ export interface CustomPlanBilling {
  */
 export function getCustomPlanBilling(
   company?: Pick<
-    Schematic.CompanyDetailResponseData,
+    CompanyDetailResponseData,
     "customPlanBillings" | "plan" | "plans"
   >,
 ): CustomPlanBilling | undefined {
@@ -108,32 +109,15 @@ export interface CreditGroups {
 }
 
 /**
- * The secret-key grant payload has no bundle association and no singular/plural
- * credit names, so grants are keyed by credit rather than by bundle and the
- * names fall back to pluralizing `creditName`.
- */
-function toCreditGrantViews(
-  creditGrants: Schematic.BillingCreditGrantResponseData[],
-): CreditCompanyGrantView[] {
-  return creditGrants.map(
-    ({ creditId, price, transfers, ...creditGrant }) => ({
-      ...creditGrant,
-      billingCreditId: creditId,
-      creditDescription: "",
-    }),
-  );
-}
-
-/**
  * Credits are listed under the reason they were granted, since a plan
  * allowance, a purchased bundle and a promotional grant each read differently.
  * Grants are partitioned by reason before being grouped, because grouping mixes
  * grants together and a group only keeps one of their reasons.
  */
 export function groupCreditsByReason(
-  creditGrants: Schematic.BillingCreditGrantResponseData[] = [],
+  creditGrants: CreditCompanyGrantView[] = [],
 ): CreditGroups {
-  const byReason = toCreditGrantViews(creditGrants).reduce<
+  const byReason = creditGrants.reduce<
     Record<string, CreditCompanyGrantView[]>
   >(
     (acc, creditGrant) => {

@@ -1,11 +1,11 @@
-import type { Schematic } from "@schematichq/schematic-typescript-node";
+import type { PaymentMethodResponseData } from "@/components/api/checkoutexternal";
 
 import { getPaymentMethodDisplay } from "./utils";
 
 export function PaymentMethodSummary({
   paymentMethod,
 }: {
-  paymentMethod?: Schematic.PaymentMethodResponseData;
+  paymentMethod?: PaymentMethodResponseData;
 }) {
   if (!paymentMethod) {
     return <span className="leading-none">No payment method added yet</span>;

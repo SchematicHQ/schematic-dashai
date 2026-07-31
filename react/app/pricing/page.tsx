@@ -1,9 +1,9 @@
 import crypto from "crypto";
-import {
-  SchematicClient,
-  type Schematic,
-} from "@schematichq/schematic-typescript-node";
 
+import {
+  ComponentspublicApi,
+  Configuration,
+} from "@/components/api/componentspublic";
 import { PricingTable } from "@/components/pricing-table";
 
 export type PricingTablePeriod = {
@@ -13,9 +13,7 @@ export type PricingTablePeriod = {
 
 export default async function Page() {
   const publishableKey = process.env.NEXT_PUBLIC_SCHEMATIC_PUBLISHABLE_KEY;
-  const secretKey = process.env.SCHEMATIC_SECRET_KEY;
-  const apiKey = secretKey || publishableKey;
-  if (!apiKey) {
+  if (!publishableKey) {
     return (
       <div className="min-h-screen bg-background text-white p-6">
         No Schematic key
@@ -23,17 +21,18 @@ export default async function Page() {
     );
   }
 
-  const sessionId = crypto.randomUUID();
-  const schematic = new SchematicClient({ apiKey });
-  const res = await schematic.componentspublic.getPublicPlans({
-    headers: {
-      "X-Schematic-Components-Version":
-        process.env.SCHEMATIC_COMPONENTS_VERSION || "unknown",
-      "X-Schematic-Session-ID": sessionId,
-    },
-  });
+  const componentsPublicApi = new ComponentspublicApi(
+    new Configuration({
+      apiKey: publishableKey,
+      headers: {
+        "X-Schematic-Components-Version":
+          process.env.SCHEMATIC_COMPONENTS_VERSION || "unknown",
+        "X-Schematic-Session-ID": crypto.randomUUID(),
+      },
+    }),
+  );
 
-  const catalog: Schematic.PublicPlansResponseData = await res.data;
+  const { data: catalog } = await componentsPublicApi.getPublicPlans();
   const periods = [
     { label: "Billed monthly", value: "month" },
     { label: "Billed yearly", value: "year" },

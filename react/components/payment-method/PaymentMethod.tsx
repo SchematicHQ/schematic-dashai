@@ -1,15 +1,15 @@
 "use client";
 
 import { useState } from "react";
-import type { Schematic } from "@schematichq/schematic-typescript-node";
+import type { PaymentMethodResponseData } from "@/components/api/checkoutexternal";
 
 import { getMonthsToExpiration } from "./utils";
 import { PaymentDialog } from "./PaymentDialog";
 import { PaymentMethodSummary } from "./PaymentMethodSummary";
 
 interface PaymentMethodProps {
-  paymentMethod?: Schematic.PaymentMethodResponseData;
-  paymentMethods?: Schematic.PaymentMethodResponseData[];
+  paymentMethod?: PaymentMethodResponseData;
+  paymentMethods?: PaymentMethodResponseData[];
 }
 
 export function PaymentMethod({

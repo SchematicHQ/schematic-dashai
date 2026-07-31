@@ -1,10 +1,11 @@
 import { CreditCard, Landmark, Link, Wallet } from "lucide-react";
-import type { Schematic } from "@schematichq/schematic-typescript-node";
+
+import type { PaymentMethodResponseData } from "@/components/api/checkoutexternal";
 
 export function getExpirationDate({
   cardExpMonth,
   cardExpYear,
-}: Schematic.PaymentMethodResponseData) {
+}: PaymentMethodResponseData) {
   if (typeof cardExpMonth !== "number" || typeof cardExpYear !== "number") {
     return undefined;
   }
@@ -15,7 +16,7 @@ export function getExpirationDate({
 export function getMonthsToExpiration({
   cardExpMonth,
   cardExpYear,
-}: Schematic.PaymentMethodResponseData) {
+}: PaymentMethodResponseData) {
   if (typeof cardExpMonth !== "number" || typeof cardExpYear !== "number") {
     return undefined;
   }
@@ -29,7 +30,7 @@ export function getMonthsToExpiration({
 interface PaymentMethodDisplay {
   Icon: typeof CreditCard;
   label: string;
-  last4?: string;
+  last4?: string | null;
 }
 
 export function getPaymentMethodDisplay({
@@ -40,7 +41,7 @@ export function getPaymentMethodDisplay({
   billingName,
   cardLast4,
   paymentMethodType,
-}: Schematic.PaymentMethodResponseData): PaymentMethodDisplay {
+}: PaymentMethodResponseData): PaymentMethodDisplay {
   switch (paymentMethodType) {
     case "card":
       return { Icon: CreditCard, label: "Card ending in", last4: cardLast4 };

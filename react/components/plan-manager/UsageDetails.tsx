@@ -1,10 +1,10 @@
 import { Fragment, type ReactNode } from "react";
-import type { Schematic } from "@schematichq/schematic-typescript-node";
 
 import {
   EntitlementPriceBehavior,
   EntitlementValueType,
   FeatureType,
+  type FeatureUsageResponseData,
 } from "@/components/api/checkoutexternal";
 import {
   entitlementHasHardLimit,
@@ -17,7 +17,7 @@ import {
 } from "@/components/utils";
 
 interface UsageDetailsProps {
-  entitlement: Schematic.FeatureUsageResponseData;
+  entitlement: FeatureUsageResponseData;
   period: string;
   currency?: string;
   showCredits: boolean;

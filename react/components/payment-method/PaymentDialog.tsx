@@ -2,9 +2,11 @@
 
 import { useCallback, useEffect, useRef, useState, useTransition } from "react";
 import { ChevronDown, ChevronUp, X } from "lucide-react";
-import { type Schematic } from "@schematichq/schematic-typescript-node";
 
-import type { SetupIntentResponseData } from "@/components/api/checkoutexternal";
+import type {
+  PaymentMethodResponseData,
+  SetupIntentResponseData,
+} from "@/components/api/checkoutexternal";
 import {
   createSetupIntent,
   removePaymentMethod,
@@ -17,8 +19,8 @@ import { PaymentMethodSummary } from "./PaymentMethodSummary";
 export interface PaymentDialogProps {
   open: boolean;
   onClose: () => void;
-  currentMethod?: Schematic.PaymentMethodResponseData;
-  otherMethods: Schematic.PaymentMethodResponseData[];
+  currentMethod?: PaymentMethodResponseData;
+  otherMethods: PaymentMethodResponseData[];
 }
 
 export function PaymentDialog({

@@ -1,8 +1,12 @@
 import type { ReactNode } from "react";
 import Link from "next/link";
 
-import type { Schematic } from "@schematichq/schematic-typescript-node";
-
+import type {
+  CompanyDetailResponseData,
+  ComponentDisplaySettings,
+  CreditCompanyGrantView,
+  FeatureUsageResponseData,
+} from "@/components/api/checkoutexternal";
 import {
   formatCurrency,
   getAutoTopupAmount,
@@ -24,12 +28,11 @@ import {
 } from "./utils";
 
 interface PlanManagerProps {
-  company: Schematic.CompanyDetailResponseData;
-  featureUsage?: Schematic.FeatureUsageResponseData[];
-  creditGrants?: Schematic.BillingCreditGrantResponseData[];
-  // the plan group's component settings
-  displaySettings?: Partial<Schematic.ComponentSettingsResponseData>;
-  // trial copy, from the plan group rather than from the company
+  company: CompanyDetailResponseData;
+  featureUsage?: FeatureUsageResponseData[];
+  creditGrants?: CreditCompanyGrantView[];
+  displaySettings?: Partial<ComponentDisplaySettings>;
+  // trial copy, which describes the plan group rather than the company
   trialPaymentMethodRequired?: boolean;
   postTrialPlanName?: string;
   // where "change plan" and the auto top-up controls send the company
@@ -336,8 +339,6 @@ export function PlanManager({
 
         {creditGroups.bundles.length > 0 && (
           <Section label="Credit bundles">
-            {/* purchased grants carry no bundle id here, so they are named by
-                their credit rather than by the bundle they came from */}
             {creditGroups.bundles.map((group) => (
               <div
                 key={group.id}
@@ -349,7 +350,6 @@ export function PlanManager({
                       ({group.grants.length}){" "}
                     </span>
                   )}
-
                   {group.total.value} {getFeatureName(group, group.total.value)}
                 </span>
 

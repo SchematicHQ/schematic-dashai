@@ -1,13 +1,13 @@
 "use client";
 
 import { useState } from "react";
-import type { Schematic } from "@schematichq/schematic-typescript-node";
+import type { PublicPlansResponseData } from "@/components/api/componentspublic";
 
 import { PricingTablePeriod } from "@/app/pricing/page";
 import { formatCurrency, getPlanPrice } from "@/components/utils";
 
 interface PricingTableProps {
-  catalog: Schematic.PublicPlansResponseData;
+  catalog: PublicPlansResponseData;
   periods: PricingTablePeriod[];
 }
 
