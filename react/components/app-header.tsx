@@ -70,7 +70,7 @@ export function AppHeader() {
               Plan
             </Button>
           </Link>
-          <Link href="/plan">
+          <Link href="/billing">
             <Button
               variant="outline"
               size="sm"
