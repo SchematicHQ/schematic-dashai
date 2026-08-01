@@ -80,7 +80,7 @@ type PricesForPeriod<T> = {
  * `Plan` so that the public plan shape (which lacks the company-context fields
  * of `CompanyPlanDetailResponseData`) can be priced too.
  */
-type PlanPricing = PricesForPeriod<BillingPriceResponseData> & {
+export type PlanPricing = PricesForPeriod<BillingPriceResponseData> & {
   currencyPrices?: Plan["currencyPrices"];
 };
 

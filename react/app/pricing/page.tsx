@@ -4,12 +4,8 @@ import {
   ComponentspublicApi,
   Configuration,
 } from "@/components/api/componentspublic";
-import { PricingTable } from "@/components/pricing-table";
-
-export type PricingTablePeriod = {
-  label: string;
-  value: string;
-};
+import { PricingTable, toPricingTablePlans } from "@/components/pricing-table";
+import type { PricingTablePeriod } from "@/components/pricing-table";
 
 export default async function Page() {
   const publishableKey = process.env.NEXT_PUBLIC_SCHEMATIC_PUBLISHABLE_KEY;
@@ -33,15 +29,20 @@ export default async function Page() {
   );
 
   const { data: catalog } = await componentsPublicApi.getPublicPlans();
-  const periods = [
+  const periods: PricingTablePeriod[] = [
     { label: "Billed monthly", value: "month" },
     { label: "Billed yearly", value: "year" },
   ];
 
+  const plans = toPricingTablePlans(
+    catalog.activePlans,
+    periods.map(({ value }) => value),
+  );
+
   return (
     <div className="min-h-screen bg-background">
       <div className="container mx-auto px-6 py-4">
-        <PricingTable catalog={catalog} periods={periods} />
+        <PricingTable plans={plans} periods={periods} />
       </div>
     </div>
   );
