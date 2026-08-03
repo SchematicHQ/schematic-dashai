@@ -4,11 +4,19 @@ import {
   CustomPlanBillingStatus,
   type BillingSubscriptionView,
   type CompanyDetailResponseData,
+  type CompanyPlanCreditGrantView,
   type CreditCompanyGrantView,
   type CustomPlanBillingResponseData,
 } from "@/components/api/checkoutexternal";
 import type { CreditWithCompanyContext } from "@/components/types";
-import { groupCreditGrants, modifyDate, pluralize } from "@/components/utils";
+import {
+  getAutoTopupAmount,
+  getAutoTopupThresholdCredits,
+  groupCreditGrants,
+  isAutoTopupEnabled,
+  modifyDate,
+  pluralize,
+} from "@/components/utils";
 
 const SECONDS_IN_MS = 1000;
 const MINUTES_IN_MS = 60 * SECONDS_IN_MS;
@@ -100,6 +108,33 @@ export function getCustomPlanBilling(
     isAwaitingPayment:
       billing.activationStrategy === CustomPlanActivationStrategy.Publish,
   };
+}
+
+export interface AutoTopupNotice {
+  thresholdCredits: number;
+  amount: number;
+}
+
+/**
+ * The auto top-up terms to mention alongside a credit allowance, but only when
+ * top-up is actually on and fully configured — a partially configured grant has
+ * nothing meaningful to say.
+ */
+export function getAutoTopupNotice(
+  grant?: CompanyPlanCreditGrantView,
+): AutoTopupNotice | undefined {
+  const thresholdCredits = getAutoTopupThresholdCredits(grant);
+  const amount = getAutoTopupAmount(grant);
+
+  if (
+    !isAutoTopupEnabled(grant) ||
+    typeof thresholdCredits !== "number" ||
+    typeof amount !== "number"
+  ) {
+    return undefined;
+  }
+
+  return { thresholdCredits, amount };
 }
 
 export interface CreditGroups {
