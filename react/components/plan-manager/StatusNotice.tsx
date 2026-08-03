@@ -1,21 +1,34 @@
-import type { CompanyDetailResponseData } from "@/components/api/checkoutexternal";
+import { type CompanyDetailResponseData } from "@/components/api/checkoutexternal";
 import { toPrettyDate } from "@/components/utils";
-import { Notice } from "./Notice";
 import { getTrialEnd, type CustomPlanBilling } from "./utils";
+
+interface NoticeProps {
+  title: string;
+  description?: string;
+  children?: React.ReactNode;
+}
+
+export function Notice({ title, description, children }: NoticeProps) {
+  return (
+    <div className="flex flex-col items-center gap-2 text-center text-white border border-border bg-border/40 rounded-xl p-6">
+      <h3 className="text-lg font-semibold leading-none">{title}</h3>
+
+      {description && (
+        <p className="text-sm text-muted-foreground">{description}</p>
+      )}
+
+      {children}
+    </div>
+  );
+}
 
 interface StatusNoticeProps {
   company: CompanyDetailResponseData;
   customPlanBilling?: CustomPlanBilling;
-  // trial copy, which describes the plan group rather than the company
   trialPaymentMethodRequired?: boolean;
   postTrialPlanName?: string;
 }
 
-/**
- * The one thing the company most needs to know about its subscription. Several
- * of these states can hold at once, so they are checked in descending order of
- * urgency and only the first is shown.
- */
 export function StatusNotice({
   company,
   customPlanBilling,

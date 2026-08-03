@@ -1,13 +1,11 @@
-import type { CreditWithCompanyContext } from "@/components/types";
+import { type CreditWithCompanyContext } from "@/components/types";
 import { getFeatureName } from "@/components/utils";
 import { Row } from "./layout";
 import type { AutoTopupNotice } from "./utils";
 
 interface CreditGroupRowProps {
   group: CreditWithCompanyContext;
-  /** the interval the allowance renews on, when it renews */
   per?: string;
-  /** surfaces how many grants were merged into the group */
   showGrantCount?: boolean;
   autoTopup?: AutoTopupNotice;
 }

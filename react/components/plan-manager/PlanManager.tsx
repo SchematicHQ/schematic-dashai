@@ -1,20 +1,20 @@
 import Link from "next/link";
 
-import type {
-  CompanyDetailResponseData,
-  ComponentDisplaySettings,
-  CreditCompanyGrantView,
-  FeatureUsageResponseData,
+import {
+  type CompanyDetailResponseData,
+  type ComponentDisplaySettings,
+  type CreditCompanyGrantView,
+  type FeatureUsageResponseData,
 } from "@/components/api/checkoutexternal";
 import {
   formatCurrency,
   getSubscriptionPeriod,
   shortenPeriod,
 } from "@/components/utils";
+import { Section } from "./layout";
 import { AddOn } from "./AddOn";
 import { AutoTopupCard } from "./AutoTopupCard";
 import { CreditGroupRow } from "./CreditGroupRow";
-import { Section } from "./layout";
 import { StatusNotice } from "./StatusNotice";
 import { UsageDetails } from "./UsageDetails";
 import {
@@ -28,10 +28,8 @@ interface PlanManagerProps {
   featureUsage?: FeatureUsageResponseData[];
   creditGrants?: CreditCompanyGrantView[];
   displaySettings?: Partial<ComponentDisplaySettings>;
-  // trial copy, which describes the plan group rather than the company
   trialPaymentMethodRequired?: boolean;
   postTrialPlanName?: string;
-  // where "change plan" and the auto top-up controls send the company
   changePlanHref?: string;
 }
 
@@ -61,8 +59,6 @@ export function PlanManager({
 
   const subscriptionCurrency = billingSubscription?.currency;
 
-  // credits renew on whatever the subscription bills on; prices fall back to
-  // the plan's own configured period when the company has no subscription yet
   const subscriptionPeriod = getSubscriptionPeriod(billingSubscription);
   const currentPlanPeriod =
     subscriptionPeriod ?? currentPlan?.planPeriod ?? undefined;
@@ -70,8 +66,6 @@ export function PlanManager({
     ? shortenPeriod(currentPlanPeriod)
     : undefined;
 
-  // a free plan whose value comes from metered entitlements is priced by usage
-  // rather than by the plan itself
   const isFreePlan = currentPlan?.planPrice === 0;
   const isUsageBasedPlan = isFreePlan && usageBasedEntitlements.length > 0;
 

@@ -1,5 +1,4 @@
-import type { CompanyPlanWithBillingSubView } from "@/components/api/checkoutexternal";
-
+import { type CompanyPlanWithBillingSubView } from "@/components/api/checkoutexternal";
 import { formatCurrency, shortenPeriod } from "@/components/utils";
 import { Row } from "./layout";
 
@@ -10,8 +9,6 @@ interface AddOnProps {
 }
 
 export function AddOn({ addOn, currency, period }: AddOnProps) {
-  // a one-time add-on keeps its own period; everything else follows the
-  // subscription
   const resolvedPeriod =
     addOn.planPeriod === "one-time"
       ? addOn.planPeriod

@@ -1,6 +1,6 @@
 import Link from "next/link";
 
-import type { CompanyPlanCreditGrantView } from "@/components/api/checkoutexternal";
+import { type CompanyPlanCreditGrantView } from "@/components/api/checkoutexternal";
 import {
   getAutoTopupAmount,
   getAutoTopupThresholdCredits,
@@ -13,10 +13,6 @@ interface AutoTopupCardProps {
   editHref: string;
 }
 
-/**
- * The auto top-up settings the company can manage itself. Renders nothing when
- * none of the plan's grants offer self-service.
- */
 export function AutoTopupCard({ grants, editHref }: AutoTopupCardProps) {
   const selfServiceGrants = grants.filter(
     (grant) => grant.credit && isSelfServiceAutoTopupAvailable(grant),
