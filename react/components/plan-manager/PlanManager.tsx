@@ -19,7 +19,7 @@ import {
   toPrettyDate,
 } from "@/components/utils";
 import { AddOn } from "./AddOn";
-import { PlanNotice } from "./PlanNotice";
+import { Notice } from "./Notice";
 import { UsageDetails } from "./UsageDetails";
 import {
   getCustomPlanBilling,
@@ -94,7 +94,7 @@ export function PlanManager({
   return (
     <div className="flex flex-col gap-4">
       {isTrialSubscription && !willSubscriptionCancel ? (
-        <PlanNotice
+        <Notice
           title={
             typeof trialEnd.amount === "number"
               ? `Trial ends in ${trialEnd.amount} ${trialEnd.units}`
@@ -120,9 +120,9 @@ export function PlanManager({
               </p>
             )
           )}
-        </PlanNotice>
+        </Notice>
       ) : willSubscriptionCancel ? (
-        <PlanNotice title="Subscription canceled">
+        <Notice title="Subscription canceled">
           {typeof billingSubscription?.cancelAt === "number" && (
             <p className="text-sm text-muted-foreground">
               Access to {currentPlan?.name || "plan"} will end on{" "}
@@ -132,9 +132,9 @@ export function PlanManager({
               .
             </p>
           )}
-        </PlanNotice>
+        </Notice>
       ) : customPlanBilling ? (
-        <PlanNotice
+        <Notice
           title={
             customPlanBilling.isAwaitingActivation
               ? `Pay to activate ${customPlanBilling.planName ?? "your plan"}`
@@ -157,10 +157,10 @@ export function PlanManager({
               Pay now
             </a>
           )}
-        </PlanNotice>
+        </Notice>
       ) : (
         scheduledDowngrade?.toPlanName && (
-          <PlanNotice
+          <Notice
             title={`Downgrade to ${scheduledDowngrade.toPlanName} scheduled`}
           >
             {typeof billingSubscription?.periodEnd === "number" && (
@@ -172,7 +172,7 @@ export function PlanManager({
                 .
               </p>
             )}
-          </PlanNotice>
+          </Notice>
         )
       )}
 
