@@ -1,6 +1,7 @@
 import type { CompanyPlanWithBillingSubView } from "@/components/api/checkoutexternal";
 
 import { formatCurrency, shortenPeriod } from "@/components/utils";
+import { Row } from "./layout";
 
 interface AddOnProps {
   addOn: CompanyPlanWithBillingSubView;
@@ -20,9 +21,7 @@ export function AddOn({ addOn, currency, period }: AddOnProps) {
     : undefined;
 
   return (
-    <div className="flex justify-between items-center flex-wrap gap-4">
-      <span className="font-medium">{addOn.name}</span>
-
+    <Row label={addOn.name}>
       {typeof addOn.planPrice === "number" && resolvedPeriod && (
         <span>
           {formatCurrency(addOn.planPrice, currency)}
@@ -31,6 +30,6 @@ export function AddOn({ addOn, currency, period }: AddOnProps) {
           )}
         </span>
       )}
-    </div>
+    </Row>
   );
 }

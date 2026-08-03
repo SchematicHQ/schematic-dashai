@@ -1,4 +1,3 @@
-import type { ReactNode } from "react";
 import Link from "next/link";
 
 import type {
@@ -15,6 +14,7 @@ import {
 import { AddOn } from "./AddOn";
 import { AutoTopupCard } from "./AutoTopupCard";
 import { CreditGroupRow } from "./CreditGroupRow";
+import { Section } from "./layout";
 import { StatusNotice } from "./StatusNotice";
 import { UsageDetails } from "./UsageDetails";
 import {
@@ -59,13 +59,13 @@ export function PlanManager({
   );
   const creditGroups = groupCreditsByReason(creditGrants);
 
-  const subscriptionInterval =
-    getSubscriptionPeriod(billingSubscription) ?? billingSubscription?.interval;
   const subscriptionCurrency = billingSubscription?.currency;
+
+  // credits renew on whatever the subscription bills on; prices fall back to
+  // the plan's own configured period when the company has no subscription yet
+  const subscriptionPeriod = getSubscriptionPeriod(billingSubscription);
   const currentPlanPeriod =
-    getSubscriptionPeriod(billingSubscription) ??
-    currentPlan?.planPeriod ??
-    undefined;
+    subscriptionPeriod ?? currentPlan?.planPeriod ?? undefined;
   const planPeriodLabel = currentPlanPeriod
     ? shortenPeriod(currentPlanPeriod)
     : undefined;
@@ -156,7 +156,7 @@ export function PlanManager({
               <CreditGroupRow
                 key={group.id}
                 group={group}
-                per={subscriptionInterval}
+                per={subscriptionPeriod}
                 autoTopup={getAutoTopupNotice(
                   currentPlan?.includedCreditGrants.find(
                     ({ creditId }) => creditId === group.id,
@@ -197,16 +197,6 @@ export function PlanManager({
           </Link>
         )}
       </div>
-    </div>
-  );
-}
-
-function Section({ label, children }: { label: string; children: ReactNode }) {
-  return (
-    <div className="flex flex-col gap-2">
-      <span className="text-muted-foreground leading-none">{label}</span>
-
-      <div className="flex flex-col gap-4">{children}</div>
     </div>
   );
 }

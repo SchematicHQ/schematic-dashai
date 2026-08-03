@@ -13,6 +13,7 @@ import {
   getUsageDetails,
   shortenPeriod,
 } from "@/components/utils";
+import { Row } from "./layout";
 
 interface UsageDetailsProps {
   entitlement: FeatureUsageResponseData;
@@ -86,17 +87,17 @@ export function UsageDetails({
       : undefined;
 
   return (
-    <div className="flex justify-between items-center flex-wrap gap-2">
-      <span className="font-medium">
-        {typeof quantity === "number" ? (
+    <Row
+      label={
+        typeof quantity === "number" ? (
           <>
             {quantity} {getFeatureName(feature, quantity, true)}
           </>
         ) : (
           feature.name
-        )}
-      </span>
-
+        )
+      }
+    >
       <span>
         {description && (
           <span className="text-sm text-muted-foreground">{description}</span>
@@ -123,6 +124,6 @@ export function UsageDetails({
             </span>
           )}
       </span>
-    </div>
+    </Row>
   );
 }

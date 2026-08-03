@@ -1,5 +1,6 @@
 import type { CreditWithCompanyContext } from "@/components/types";
 import { getFeatureName } from "@/components/utils";
+import { Row } from "./layout";
 import type { AutoTopupNotice } from "./utils";
 
 interface CreditGroupRowProps {
@@ -20,17 +21,19 @@ export function CreditGroupRow({
   const { value, used } = group.total;
 
   return (
-    <div className="flex justify-between items-center flex-wrap gap-2">
-      <span className="font-medium">
-        {showGrantCount && group.grants.length > 1 && (
-          <span className="text-muted-foreground">
-            ({group.grants.length}){" "}
-          </span>
-        )}
-        {value} {getFeatureName(group, value)}
-        {per && <> per {per}</>}
-      </span>
-
+    <Row
+      label={
+        <>
+          {showGrantCount && group.grants.length > 1 && (
+            <span className="text-muted-foreground">
+              ({group.grants.length}){" "}
+            </span>
+          )}
+          {value} {getFeatureName(group, value)}
+          {per && <> per {per}</>}
+        </>
+      }
+    >
       {used > 0 && (
         <span
           className="text-sm text-muted-foreground"
@@ -43,6 +46,6 @@ export function CreditGroupRow({
           {used} used{autoTopup && " (auto top-up on)"}
         </span>
       )}
-    </div>
+    </Row>
   );
 }
