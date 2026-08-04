@@ -67,28 +67,44 @@ react/
   app/
     api/
       accessToken/             # Issue embed access tokens
+      cron/seed-usage/         # Daily cron to backfill events
       data-sources/            # CRUD for data sources, updates trait
       users/                   # CRUD for team members, updates trait
-      cron/seed-usage/         # Daily cron to backfill events
+    billing/                   # Billing related example code
     dashboard/                 # Charts
     data-sources/              # CRUD UI + data-sources entitlement
+    plan/                      # SchematicEmbed component
+    pricing/                   # Pricing table example code
     team/                      # CRUD UI + user-seat entitlement
-    plan/                      # SchematicEmbed usage component
-    pricing/                   # SchematicEmbed pricing table
-    page.tsx                   # Home (prompt input)
-    layout.tsx                 # Root layout with providers
     globals.css                # Tailwind + dark theme
+    layout.tsx                 # Root layout with providers
+    page.tsx                   # Home (prompt input)
   components/
+    api/                       # OpenAPI clients
+    invoices/                  # Example code to render an invoices list
+    payment-method/            # Example code to show and update a Stripe payment method
+    plan-manager/              # Example code to render billing information
+    pricing-table/             # Example code to render a pricing table
+    types/                     # TODO
+    ui/                        # shadcn/ui components
+    utils/                     # TODO
     app-header.tsx             # Top nav, credits badge, loading state, Clerk user button
     client-wrapper.tsx         # ClerkProvider + SchematicProvider
     credits-badge.tsx          # Remaining credits display
-    prompt-input.tsx           # Prompt UI with track() call
     generated-dashboard.tsx    # Recharts visualizations
-    ui/                        # shadcn/ui components
+    prompt-input.tsx           # Prompt UI with track() call
+    theme-provider.tsx         # NextJS theme provider
+  data/
+    data-sources.json          # Local sources for the Data Sources page
+    users.json                 # Local users for the teams page
   lib/
+    checkout.ts                # Checkout API helpers
+    constants.ts               # Shared constants
     json-store.ts              # Vercel Blob / local JSON abstraction
+    utils.ts                   # Generic shared utility functions
   middleware.ts                # Clerk auth protection
   scripts/                     # Seed scripts for demo data
+  styles/                      # Tailwind global CSS styles
   vercel.json                  # Cron schedule
 ```
 
