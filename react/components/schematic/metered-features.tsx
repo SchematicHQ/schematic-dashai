@@ -25,7 +25,7 @@ export interface MeteredFeaturesProps {
 function usageLine(feature: FeatureUsageResponseData, period: string): string {
   const unit = (count: number) =>
     pluralize(
-      feature.feature?.singularName ?? feature.feature?.name ?? "unit",
+      feature.feature?.singularName || feature.feature?.name || "unit",
       count,
     ).toLowerCase();
   const usage = feature.usage ?? 0;
@@ -83,8 +83,8 @@ function priceDetails(
     return undefined;
   }
   const unit = (
-    feature.feature?.singularName ??
-    feature.feature?.name ??
+    feature.feature?.singularName ||
+    feature.feature?.name ||
     "unit"
   ).toLowerCase();
   const label = `${formatCurrency(price.price, price.currency)} per ${unit}`;
@@ -104,8 +104,8 @@ function priceDetails(
  */
 export function MeteredFeatures({ billing }: MeteredFeaturesProps) {
   const period =
-    getSubscriptionPeriod(billing.subscription) ??
-    billing.company?.plan?.planPeriod ??
+    getSubscriptionPeriod(billing.subscription) ||
+    billing.company?.plan?.planPeriod ||
     "month";
   const metered = billing.features.filter(
     (feature) =>

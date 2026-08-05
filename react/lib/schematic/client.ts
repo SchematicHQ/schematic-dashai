@@ -72,7 +72,7 @@ export class SchematicBillingClient {
       );
     }
 
-    const basePath = (options.apiUrl ?? DEFAULT_API_URL).replace(/\/+$/, "");
+    const basePath = (options.apiUrl || DEFAULT_API_URL).replace(/\/+$/, "");
     const fetchFn = options.fetchFn ?? ((...args) => globalThis.fetch(...args));
     this.catalogId = options.catalogId;
     this.resourceOptions = { staleTime: options.staleTime };

@@ -26,7 +26,7 @@ export interface CreditUsageProps {
 
 function grantLabel(grant: CreditCompanyGrantView): string {
   const unit = pluralize(
-    grant.singularName ?? grant.creditName,
+    grant.singularName || grant.creditName,
     grant.quantity,
   ).toLowerCase();
   const amount = `${formatNumber(grant.quantity)} ${unit}`;

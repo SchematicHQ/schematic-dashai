@@ -172,10 +172,10 @@ export function groupCreditGrants(
       group = {
         creditId: grant.billingCreditId,
         name: grant.creditName,
-        singularName: grant.singularName ?? undefined,
-        pluralName: grant.pluralName ?? undefined,
+        singularName: grant.singularName || undefined,
+        pluralName: grant.pluralName || undefined,
         description: grant.creditDescription || undefined,
-        icon: grant.creditIcon ?? undefined,
+        icon: grant.creditIcon || undefined,
         total: { value: 0, used: 0, remaining: 0 },
         grants: [],
       };

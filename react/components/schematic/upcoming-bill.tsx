@@ -62,7 +62,7 @@ export function UpcomingBill({
                 <span className="text-accent">
                   {discount.percentOff
                     ? `−${discount.percentOff}%`
-                    : `−${formatCurrency(discount.amountOff ?? 0, discount.currency ?? currency)}`}
+                    : `−${formatCurrency(discount.amountOff ?? 0, discount.currency || currency)}`}
                 </span>
               </div>
             ))}
