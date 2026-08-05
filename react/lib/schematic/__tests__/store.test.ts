@@ -134,7 +134,10 @@ describe("Resource", () => {
   it("ensure() revalidates once cached data ages past staleTime", async () => {
     let time = 0;
     const fetcher = vi.fn(async () => "value");
-    const resource = new Resource(fetcher, { staleTime: 30_000, now: () => time });
+    const resource = new Resource(fetcher, {
+      staleTime: 30_000,
+      now: () => time,
+    });
 
     await resource.refetch();
     expect(fetcher).toHaveBeenCalledTimes(1);

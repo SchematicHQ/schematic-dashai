@@ -29,7 +29,8 @@ function usageLine(feature: FeatureUsageResponseData, period: string): string {
       count,
     ).toLowerCase();
   const usage = feature.usage ?? 0;
-  const limit = feature.allocation ?? feature.softLimit ?? feature.effectiveLimit;
+  const limit =
+    feature.allocation ?? feature.softLimit ?? feature.effectiveLimit;
 
   switch (feature.priceBehavior) {
     case EntitlementPriceBehavior.Tier:
@@ -67,7 +68,10 @@ function usageLine(feature: FeatureUsageResponseData, period: string): string {
   }
 }
 
-function priceDetails(feature: FeatureUsageResponseData, period: string): string | undefined {
+function priceDetails(
+  feature: FeatureUsageResponseData,
+  period: string,
+): string | undefined {
   if (
     feature.priceBehavior !== EntitlementPriceBehavior.Overage &&
     feature.priceBehavior !== EntitlementPriceBehavior.Tier
@@ -78,13 +82,19 @@ function priceDetails(feature: FeatureUsageResponseData, period: string): string
   if (!price) {
     return undefined;
   }
-  const unit = (feature.feature?.singularName ?? feature.feature?.name ?? "unit").toLowerCase();
+  const unit = (
+    feature.feature?.singularName ??
+    feature.feature?.name ??
+    "unit"
+  ).toLowerCase();
   const label = `${formatCurrency(price.price, price.currency)} per ${unit}`;
   if (feature.priceBehavior === EntitlementPriceBehavior.Overage) {
     return `Then ${label}`;
   }
   const cost = getEntitlementCost(feature, period);
-  return cost !== undefined ? `${label} · ${formatCurrency(cost, price.currency)} so far` : label;
+  return cost !== undefined
+    ? `${label} · ${formatCurrency(cost, price.currency)} so far`
+    : label;
 }
 
 /**
@@ -94,7 +104,9 @@ function priceDetails(feature: FeatureUsageResponseData, period: string): string
  */
 export function MeteredFeatures({ billing }: MeteredFeaturesProps) {
   const period =
-    getSubscriptionPeriod(billing.subscription) ?? billing.company?.plan?.planPeriod ?? "month";
+    getSubscriptionPeriod(billing.subscription) ??
+    billing.company?.plan?.planPeriod ??
+    "month";
   const metered = billing.features.filter(
     (feature) =>
       feature.feature?.featureType === FeatureType.Event ||
@@ -115,7 +127,8 @@ export function MeteredFeatures({ billing }: MeteredFeaturesProps) {
       <CardContent className="space-y-5">
         {metered.map((feature) => {
           const usage = feature.usage ?? 0;
-          const limit = feature.allocation ?? feature.softLimit ?? feature.effectiveLimit;
+          const limit =
+            feature.allocation ?? feature.softLimit ?? feature.effectiveLimit;
           const showMeter =
             feature.priceBehavior !== EntitlementPriceBehavior.PayAsYouGo &&
             feature.priceBehavior !== EntitlementPriceBehavior.CreditBurndown &&
@@ -141,7 +154,9 @@ export function MeteredFeatures({ billing }: MeteredFeaturesProps) {
                 )}
                 <div className="flex items-center justify-between text-xs text-muted-foreground">
                   <span>{details}</span>
-                  {feature.metricResetAt && <span>Resets {formatDate(feature.metricResetAt)}</span>}
+                  {feature.metricResetAt && (
+                    <span>Resets {formatDate(feature.metricResetAt)}</span>
+                  )}
                 </div>
               </div>
             </div>

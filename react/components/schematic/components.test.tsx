@@ -167,7 +167,12 @@ function makeBilling() {
       },
       credit_grants: [
         wireGrant(),
-        wireGrant({ grant_reason: "billing_credit_auto_topup", quantity: 100, quantity_used: 100, quantity_remaining: 0 }),
+        wireGrant({
+          grant_reason: "billing_credit_auto_topup",
+          quantity: 100,
+          quantity_used: 100,
+          quantity_remaining: 0,
+        }),
       ],
       active_plans: [makeWireCompanyPlan({ current: true })],
     }),
@@ -196,7 +201,10 @@ describe("billing components", () => {
 
   it("UpcomingBill renders amount, discount, and applied balance", () => {
     render(
-      <UpcomingBill upcomingInvoice={billing.upcomingInvoice} subscription={billing.subscription} />,
+      <UpcomingBill
+        upcomingInvoice={billing.upcomingInvoice}
+        subscription={billing.subscription}
+      />,
     );
     expect(screen.getByText("$200.00")).toBeDefined();
     expect(screen.getByText("LAUNCH20")).toBeDefined();
@@ -205,17 +213,27 @@ describe("billing components", () => {
   });
 
   it("UpcomingBill hides when the subscription is cancelling", () => {
-    const cancelling = { ...billing.subscription!, cancelAt: new Date("2026-09-01") };
+    const cancelling = {
+      ...billing.subscription!,
+      cancelAt: new Date("2026-09-01"),
+    };
     const { container } = render(
-      <UpcomingBill upcomingInvoice={billing.upcomingInvoice} subscription={cancelling} />,
+      <UpcomingBill
+        upcomingInvoice={billing.upcomingInvoice}
+        subscription={cancelling}
+      />,
     );
     expect(container.innerHTML).toBe("");
   });
 
   it("Invoices filters and renders rows", () => {
     const invoices = [
-      InvoiceResponseDataFromJSON(makeWireInvoice({ id: "inv_a", amount_due: 3893 })),
-      InvoiceResponseDataFromJSON(makeWireInvoice({ id: "inv_zero", amount_due: 0 })),
+      InvoiceResponseDataFromJSON(
+        makeWireInvoice({ id: "inv_a", amount_due: 3893 }),
+      ),
+      InvoiceResponseDataFromJSON(
+        makeWireInvoice({ id: "inv_zero", amount_due: 0 }),
+      ),
     ];
     render(<Invoices invoices={invoices} />);
     expect(screen.getByText("$38.93")).toBeDefined();
@@ -241,7 +259,11 @@ describe("billing components", () => {
     const hydrate = ComponentHydrateResponseDataFromJSON(
       makeWireHydrate({
         active_plans: [
-          makeWireCompanyPlan({ id: "plan_basic", name: "Basic", current: true }),
+          makeWireCompanyPlan({
+            id: "plan_basic",
+            name: "Basic",
+            current: true,
+          }),
           makeWireCompanyPlan({ id: "plan_pro", name: "Pro", current: false }),
         ],
       }),
@@ -258,13 +280,22 @@ describe("billing components", () => {
     const hydrate = ComponentHydrateResponseDataFromJSON(
       makeWireHydrate({
         active_plans: [
-          makeWireCompanyPlan({ id: "plan_basic", name: "Basic", current: true }),
+          makeWireCompanyPlan({
+            id: "plan_basic",
+            name: "Basic",
+            current: true,
+          }),
           makeWireCompanyPlan({ id: "plan_pro", name: "Pro", current: false }),
         ],
       }),
     );
     const onSelectPlan = vi.fn();
-    render(<PricingTable catalog={toCatalogFromHydrate(hydrate)} onSelectPlan={onSelectPlan} />);
+    render(
+      <PricingTable
+        catalog={toCatalogFromHydrate(hydrate)}
+        onSelectPlan={onSelectPlan}
+      />,
+    );
 
     const choose = screen.getByRole("button", { name: "Choose plan" });
     expect(choose.hasAttribute("disabled")).toBe(false);
@@ -276,7 +307,10 @@ describe("billing components", () => {
   it("PricingTable shows a monthly equivalent when showAsMonthlyPrices is set", () => {
     const hydrate = ComponentHydrateResponseDataFromJSON(
       makeWireHydrate({
-        display_settings: { ...wireDisplaySettings, show_as_monthly_prices: true },
+        display_settings: {
+          ...wireDisplaySettings,
+          show_as_monthly_prices: true,
+        },
         active_plans: [
           makeWireCompanyPlan({
             id: "plan_yearly",

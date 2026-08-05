@@ -1,39 +1,56 @@
-"use client"
+"use client";
 
-import { useState } from "react"
-import { useRouter } from "next/navigation"
-import { ArrowUp, Sparkles, Brain, TrendingUp, Zap, AlertCircle } from "lucide-react"
-import { Button } from "@/components/ui/button"
-import { Textarea } from "@/components/ui/textarea"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { Toggle } from "@/components/ui/toggle"
-import { useSchematicEvents, useSchematicEntitlement, useSchematicIsPending } from "@schematichq/schematic-react"
+import { useState } from "react";
+import { useRouter } from "next/navigation";
+import {
+  ArrowUp,
+  Sparkles,
+  Brain,
+  TrendingUp,
+  Zap,
+  AlertCircle,
+} from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Textarea } from "@/components/ui/textarea";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Toggle } from "@/components/ui/toggle";
+import {
+  useSchematicEvents,
+  useSchematicEntitlement,
+  useSchematicIsPending,
+} from "@schematichq/schematic-react";
 
 export function PromptInput() {
-  const [prompt, setPrompt] = useState("")
-  const [isGenerating, setIsGenerating] = useState(false)
-  const [predictiveAnalytics, setPredictiveAnalytics] = useState(false)
-  const [anomalyDetection, setAnomalyDetection] = useState(false)
-  const [autoInsights, setAutoInsights] = useState(true)
-  const router = useRouter()
-  const { track } = useSchematicEvents()
-  const isPending = useSchematicIsPending()
-  const { value } = useSchematicEntitlement("dashboard-prompt")
-  const outOfCredits = !isPending && value === false
+  const [prompt, setPrompt] = useState("");
+  const [isGenerating, setIsGenerating] = useState(false);
+  const [predictiveAnalytics, setPredictiveAnalytics] = useState(false);
+  const [anomalyDetection, setAnomalyDetection] = useState(false);
+  const [autoInsights, setAutoInsights] = useState(true);
+  const router = useRouter();
+  const { track } = useSchematicEvents();
+  const isPending = useSchematicIsPending();
+  const { value } = useSchematicEntitlement("dashboard-prompt");
+  const outOfCredits = !isPending && value === false;
 
   const handleSubmit = () => {
     if (prompt.trim() && !outOfCredits) {
-      setIsGenerating(true)
-      
+      setIsGenerating(true);
+
       setTimeout(() => {
-        router.push("/dashboard")
+        router.push("/dashboard");
         track({
           event: "dashboard-prompt",
           quantity: Math.floor(Math.random() * 20) + 50,
-        })
-      }, 2000)
+        });
+      }, 2000);
     }
-  }
+  };
 
   return (
     <div className="w-full max-w-3xl mx-auto">
@@ -45,8 +62,8 @@ export function PromptInput() {
           onChange={(e) => setPrompt(e.target.value)}
           onKeyDown={(e) => {
             if (e.key === "Enter" && !e.shiftKey) {
-              e.preventDefault()
-              handleSubmit()
+              e.preventDefault();
+              handleSubmit();
             }
           }}
         />
@@ -94,7 +111,11 @@ export function PromptInput() {
               Auto-Insights
             </Toggle>
           </div>
-          <Button onClick={handleSubmit} disabled={!prompt.trim() || isGenerating || outOfCredits} className="gap-2">
+          <Button
+            onClick={handleSubmit}
+            disabled={!prompt.trim() || isGenerating || outOfCredits}
+            className="gap-2"
+          >
             {isGenerating ? (
               <>
                 <Sparkles className="h-4 w-4 animate-pulse" />
@@ -114,8 +135,13 @@ export function PromptInput() {
           <div className="flex items-center gap-3">
             <AlertCircle className="h-5 w-5 text-violet-600 dark:text-violet-400 shrink-0" />
             <div>
-              <p className="text-sm font-medium text-violet-900 dark:text-violet-100">Out of credits</p>
-              <p className="text-xs text-violet-700 dark:text-violet-300">You've used all your dashboard credits. Buy more to keep generating.</p>
+              <p className="text-sm font-medium text-violet-900 dark:text-violet-100">
+                Out of credits
+              </p>
+              <p className="text-xs text-violet-700 dark:text-violet-300">
+                You've used all your dashboard credits. Buy more to keep
+                generating.
+              </p>
             </div>
           </div>
           <Button
@@ -130,7 +156,9 @@ export function PromptInput() {
       <div className="flex items-center justify-center gap-2 mt-4">
         <span className="text-xs text-muted-foreground">Try:</span>
         <button
-          onClick={() => setPrompt("Sales performance dashboard with revenue trends")}
+          onClick={() =>
+            setPrompt("Sales performance dashboard with revenue trends")
+          }
           className="text-xs text-accent hover:underline"
         >
           Sales dashboard
@@ -151,5 +179,5 @@ export function PromptInput() {
         </button>
       </div>
     </div>
-  )
+  );
 }

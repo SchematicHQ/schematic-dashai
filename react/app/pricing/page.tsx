@@ -26,7 +26,9 @@ export default function PricingPage() {
     <div className="min-h-screen bg-background">
       <div className="container mx-auto px-6 py-4">
         <h1 className="text-2xl font-bold mb-1">Pricing</h1>
-        <p className="text-muted-foreground mb-6">Plans for teams of every size.</p>
+        <p className="text-muted-foreground mb-6">
+          Plans for teams of every size.
+        </p>
 
         {catalog.isPending ? (
           <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
@@ -44,7 +46,10 @@ export default function PricingPage() {
             </Button>
           </div>
         ) : catalog.data ? (
-          <PricingTable catalog={catalog.data} onSelectPlan={handleSelectPlan} />
+          <PricingTable
+            catalog={catalog.data}
+            onSelectPlan={handleSelectPlan}
+          />
         ) : null}
       </div>
     </div>

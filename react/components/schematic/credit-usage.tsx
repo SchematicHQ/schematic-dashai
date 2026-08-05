@@ -86,16 +86,22 @@ export function CreditUsage({ billing, onBuyMore }: CreditUsageProps) {
                   <div className="flex items-baseline justify-between gap-2">
                     <p className="text-sm font-medium">{group.name}</p>
                     <p className="text-xs text-muted-foreground whitespace-nowrap">
-                      {formatNumber(group.total.used)} of {formatNumber(group.total.value)} used
+                      {formatNumber(group.total.used)} of{" "}
+                      {formatNumber(group.total.value)} used
                     </p>
                   </div>
                   {group.description && (
-                    <p className="truncate text-xs text-muted-foreground">{group.description}</p>
+                    <p className="truncate text-xs text-muted-foreground">
+                      {group.description}
+                    </p>
                   )}
                   <Progress
                     value={
                       group.total.value > 0
-                        ? Math.min(100, (group.total.used / group.total.value) * 100)
+                        ? Math.min(
+                            100,
+                            (group.total.used / group.total.value) * 100,
+                          )
                         : 0
                     }
                     aria-label={`${group.name} usage`}
@@ -108,7 +114,8 @@ export function CreditUsage({ billing, onBuyMore }: CreditUsageProps) {
                       onClick={() => toggle(group.creditId)}
                       aria-expanded={isExpanded}
                     >
-                      {group.grants.length} {pluralize("grant", group.grants.length)}
+                      {group.grants.length}{" "}
+                      {pluralize("grant", group.grants.length)}
                       <ChevronDown
                         className={`size-3.5 transition-transform ${isExpanded ? "rotate-180" : ""}`}
                         aria-hidden
@@ -128,10 +135,14 @@ export function CreditUsage({ billing, onBuyMore }: CreditUsageProps) {
                   {isExpanded && (
                     <ul className="space-y-1 border-l border-border pl-3 text-xs text-muted-foreground">
                       {group.grants.map((grant) => (
-                        <li key={grant.id} className="flex items-center justify-between gap-2">
+                        <li
+                          key={grant.id}
+                          className="flex items-center justify-between gap-2"
+                        >
                           <span>{grantLabel(grant)}</span>
                           <span className="whitespace-nowrap">
-                            {grant.grantReason === BillingCreditGrantReason.Plan &&
+                            {grant.grantReason ===
+                              BillingCreditGrantReason.Plan &&
                             grant.renewalEnabled
                               ? grant.expiresAt
                                 ? `Resets ${formatDate(grant.expiresAt)}`

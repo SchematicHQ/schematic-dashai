@@ -33,7 +33,9 @@ export function useResource<T>(resource: Resource<T>): SchematicHookResult<T> {
   return useMemo(
     () => ({
       data: state.data,
-      isPending: state.isPending || (state.data === undefined && state.error === undefined),
+      isPending:
+        state.isPending ||
+        (state.data === undefined && state.error === undefined),
       isRefetching: state.isRefetching,
       error: state.error,
       refetch: resource.refetch,

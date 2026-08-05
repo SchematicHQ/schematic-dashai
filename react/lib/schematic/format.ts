@@ -68,7 +68,9 @@ export function formatCurrency(
 
   let formatted: string;
   try {
-    formatted = new Intl.NumberFormat("en-US", intlOptions).format(magnitude / divisor);
+    formatted = new Intl.NumberFormat("en-US", intlOptions).format(
+      magnitude / divisor,
+    );
   } catch {
     // Unknown/invalid currency code: fall back rather than crashing a render.
     formatted = new Intl.NumberFormat("en-US", {
@@ -108,10 +110,11 @@ export function periodSuffix(period: string | undefined | null): string {
 }
 
 /** Periods that can be shown as a monthly-equivalent price, and their divisor. */
-const MONTHLY_EQUIVALENT: Record<string, { divisor: number; suffix: string }> = {
-  year: { divisor: 12, suffix: "/month, billed yearly" },
-  quarter: { divisor: 3, suffix: "/month, billed quarterly" },
-};
+const MONTHLY_EQUIVALENT: Record<string, { divisor: number; suffix: string }> =
+  {
+    year: { divisor: 12, suffix: "/month, billed yearly" },
+    quarter: { divisor: 3, suffix: "/month, billed quarterly" },
+  };
 
 export interface DisplayPrice {
   /** The amount to render, divided down when showing a monthly equivalent. */
@@ -132,7 +135,8 @@ export function getDisplayPrice(
   period: string | undefined | null,
   showAsMonthlyPrices = false,
 ): DisplayPrice {
-  const monthly = showAsMonthlyPrices && period ? MONTHLY_EQUIVALENT[period] : undefined;
+  const monthly =
+    showAsMonthlyPrices && period ? MONTHLY_EQUIVALENT[period] : undefined;
   if (monthly) {
     return {
       amount: amount / monthly.divisor,
@@ -149,7 +153,9 @@ const PERIOD_NAMES: Record<string, string> = {
   year: "year",
 };
 
-export function periodName(period: string | undefined | null): string | undefined {
+export function periodName(
+  period: string | undefined | null,
+): string | undefined {
   return period ? PERIOD_NAMES[period] : undefined;
 }
 

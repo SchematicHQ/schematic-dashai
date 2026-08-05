@@ -12,7 +12,9 @@ import { useResource, type SchematicHookResult } from "./use-resource";
  * client to be configured with getAccessToken (company context comes from the
  * token). Shares its fetch with company-mode useCatalog.
  */
-export function useBilling(client: SchematicBillingClient): SchematicHookResult<Billing> {
+export function useBilling(
+  client: SchematicBillingClient,
+): SchematicHookResult<Billing> {
   // client.hydrate throws with a descriptive message when the client has no
   // access-token mode; surfacing that at render time is intentional.
   const result = useResource(client.hydrate);

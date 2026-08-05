@@ -1,6 +1,9 @@
 import { describe, expect, it } from "vitest";
 
-import { InvoiceResponseDataFromJSON, CreditCompanyGrantViewFromJSON } from "../api/checkoutexternal";
+import {
+  InvoiceResponseDataFromJSON,
+  CreditCompanyGrantViewFromJSON,
+} from "../api/checkoutexternal";
 import {
   deriveAppliedBalance,
   filterInvoicesForDisplay,
@@ -44,14 +47,20 @@ describe("filterInvoicesForDisplay", () => {
       "paid",
     ]);
     expect(
-      filterInvoicesForDisplay(invoices, { hideUpcoming: false }).map((i) => i.id),
+      filterInvoicesForDisplay(invoices, { hideUpcoming: false }).map(
+        (i) => i.id,
+      ),
     ).toEqual(["open_future", "open_pastdue", "paid"]);
   });
 
   it("sorts by dueDate falling back to createdAt, newest first", () => {
     const kept = filterInvoicesForDisplay([
       invoice({ id: "older", due_date: "2026-01-01T00:00:00Z" }),
-      invoice({ id: "newest", due_date: null, created_at: "2026-03-01T00:00:00Z" }),
+      invoice({
+        id: "newest",
+        due_date: null,
+        created_at: "2026-03-01T00:00:00Z",
+      }),
       invoice({ id: "middle", due_date: "2026-02-01T00:00:00Z" }),
     ]);
     expect(kept.map((i) => i.id)).toEqual(["newest", "middle", "older"]);
@@ -60,8 +69,12 @@ describe("filterInvoicesForDisplay", () => {
 
 describe("deriveAppliedBalance", () => {
   it("returns undefined when the customer holds no credit", () => {
-    expect(deriveAppliedBalance(invoice({ starting_balance: 0 }))).toBeUndefined();
-    expect(deriveAppliedBalance(invoice({ starting_balance: 500 }))).toBeUndefined();
+    expect(
+      deriveAppliedBalance(invoice({ starting_balance: 0 })),
+    ).toBeUndefined();
+    expect(
+      deriveAppliedBalance(invoice({ starting_balance: 500 })),
+    ).toBeUndefined();
   });
 
   it("trusts a negative ending balance (credit left over)", () => {
@@ -101,13 +114,19 @@ describe("getPlanManagerNotice", () => {
       cancelAt: new Date("2026-07-01T00:00:00Z"),
     });
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const downgrade = { toPlanName: "Basic", effectiveAfter: new Date("2026-07-01T00:00:00Z") } as any;
+    const downgrade = {
+      toPlanName: "Basic",
+      effectiveAfter: new Date("2026-07-01T00:00:00Z"),
+    } as any;
 
     const notice = getPlanManagerNotice(trialing, downgrade, now);
     expect(notice).toMatchObject({ kind: "trial", daysLeft: 3 });
 
     const canceled = getPlanManagerNotice(
-      sub({ cancelAtPeriodEnd: true, cancelAt: new Date("2026-07-01T00:00:00Z") }),
+      sub({
+        cancelAtPeriodEnd: true,
+        cancelAt: new Date("2026-07-01T00:00:00Z"),
+      }),
       downgrade,
       now,
     );
@@ -157,7 +176,12 @@ describe("groupCreditGrants", () => {
   it("groups by credit id and sums totals", () => {
     const groups = groupCreditGrants([
       grant(),
-      grant({ grant_reason: "purchased", quantity: 50, quantity_remaining: 50, quantity_used: 0 }),
+      grant({
+        grant_reason: "purchased",
+        quantity: 50,
+        quantity_remaining: 50,
+        quantity_used: 0,
+      }),
       grant({ billing_credit_id: "credit_other", credit_name: "Other" }),
     ]);
 
@@ -165,7 +189,9 @@ describe("groupCreditGrants", () => {
     const ai = groups.find((g) => g.creditId === "credit_ai")!;
     expect(ai.total).toEqual({ value: 150, used: 60, remaining: 90 });
     expect(ai.grants).toHaveLength(2);
-    expect(groups.find((g) => g.creditId === "credit_other")!.name).toBe("Other");
+    expect(groups.find((g) => g.creditId === "credit_other")!.name).toBe(
+      "Other",
+    );
   });
 
   it("returns an empty list for no grants", () => {

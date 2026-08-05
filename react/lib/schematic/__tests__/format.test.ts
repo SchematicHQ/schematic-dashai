@@ -50,7 +50,9 @@ describe("formatCurrency", () => {
 
 describe("formatDate", () => {
   it("formats dates and tolerates junk", () => {
-    expect(formatDate(new Date("2026-01-15T00:00:00Z"))).toMatch(/Jan 1[45], 2026/);
+    expect(formatDate(new Date("2026-01-15T00:00:00Z"))).toMatch(
+      /Jan 1[45], 2026/,
+    );
     expect(formatDate("2026-01-15T12:00:00Z")).toMatch(/Jan 15, 2026/);
     expect(formatDate(undefined)).toBe("");
     expect(formatDate("not a date")).toBe("");
@@ -107,7 +109,9 @@ describe("getDisplayPrice", () => {
 
   it("renders a repeating monthly equivalent as money, not a sub-cent rate", () => {
     const display = getDisplayPrice(58900, "year", true);
-    expect(formatCurrency(display.amount, "usd", { significantDigits: false })).toBe("$49.08");
+    expect(
+      formatCurrency(display.amount, "usd", { significantDigits: false }),
+    ).toBe("$49.08");
   });
 });
 
@@ -122,15 +126,29 @@ describe("derivePeriod", () => {
 
 describe("getPriceValue", () => {
   it("prefers the decimal representation", () => {
-    expect(getPriceValue({ price: 1000, priceDecimal: "1000.5", currency: "usd" })).toBe(1000.5);
-    expect(getPriceValue({ price: 1000, priceDecimal: null, currency: "usd" })).toBe(1000);
+    expect(
+      getPriceValue({ price: 1000, priceDecimal: "1000.5", currency: "usd" }),
+    ).toBe(1000.5);
+    expect(
+      getPriceValue({ price: 1000, priceDecimal: null, currency: "usd" }),
+    ).toBe(1000);
   });
 });
 
 describe("calculateTieredCost", () => {
   const tiers = [
-    { upTo: 10, perUnitPrice: 100, perUnitPriceDecimal: null, flatAmount: null },
-    { upTo: null, perUnitPrice: 50, perUnitPriceDecimal: null, flatAmount: null },
+    {
+      upTo: 10,
+      perUnitPrice: 100,
+      perUnitPriceDecimal: null,
+      flatAmount: null,
+    },
+    {
+      upTo: null,
+      perUnitPrice: 50,
+      perUnitPriceDecimal: null,
+      flatAmount: null,
+    },
   ];
 
   it("graduated mode charges each tier for its span", () => {

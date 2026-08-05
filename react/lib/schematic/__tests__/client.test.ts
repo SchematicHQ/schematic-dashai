@@ -11,13 +11,17 @@ import {
 
 type FetchCall = { url: string; init: RequestInit | undefined };
 
-function makeFetch(handler: (url: string, init?: RequestInit) => Response | Promise<Response>) {
+function makeFetch(
+  handler: (url: string, init?: RequestInit) => Response | Promise<Response>,
+) {
   const calls: FetchCall[] = [];
-  const fetchFn = vi.fn(async (input: RequestInfo | URL, init?: RequestInit) => {
-    const url = String(input);
-    calls.push({ url, init });
-    return handler(url, init);
-  }) as unknown as typeof fetch;
+  const fetchFn = vi.fn(
+    async (input: RequestInfo | URL, init?: RequestInit) => {
+      const url = String(input);
+      calls.push({ url, init });
+      return handler(url, init);
+    },
+  ) as unknown as typeof fetch;
   return { fetchFn, calls };
 }
 
@@ -27,7 +31,10 @@ function makeClient(
 ) {
   const { fetchFn, calls } = makeFetch(handler);
   const client = new SchematicBillingClient({
-    publishableKey: options && "publishableKey" in options ? options.publishableKey : "api_pub",
+    publishableKey:
+      options && "publishableKey" in options
+        ? options.publishableKey
+        : "api_pub",
     getAccessToken:
       options && "getAccessToken" in options
         ? options.getAccessToken
@@ -39,11 +46,15 @@ function makeClient(
 
 describe("SchematicBillingClient", () => {
   it("throws when neither auth mode is configured", () => {
-    expect(() => new SchematicBillingClient({})).toThrow(/publishableKey|getAccessToken/);
+    expect(() => new SchematicBillingClient({})).toThrow(
+      /publishableKey|getAccessToken/,
+    );
   });
 
   it("fetches hydrate once for any number of consumers", async () => {
-    const { client, calls } = makeClient(() => jsonResponse(envelope(makeWireHydrate())));
+    const { client, calls } = makeClient(() =>
+      jsonResponse(envelope(makeWireHydrate())),
+    );
 
     const resource = client.hydrate;
     expect(client.hydrate).toBe(resource); // stable identity
@@ -60,7 +71,9 @@ describe("SchematicBillingClient", () => {
   });
 
   it("sends the access token in X-Schematic-Api-Key", async () => {
-    const { client, calls } = makeClient(() => jsonResponse(envelope(makeWireHydrate())));
+    const { client, calls } = makeClient(() =>
+      jsonResponse(envelope(makeWireHydrate())),
+    );
 
     await client.hydrate.refetch();
 
@@ -94,7 +107,9 @@ describe("SchematicBillingClient", () => {
   });
 
   it("surfaces an error when the retried request is still 401", async () => {
-    const { client } = makeClient(() => jsonResponse({ error: "unauthorized" }, 401));
+    const { client } = makeClient(() =>
+      jsonResponse({ error: "unauthorized" }, 401),
+    );
 
     await client.hydrate.refetch();
 
@@ -104,22 +119,29 @@ describe("SchematicBillingClient", () => {
   });
 
   it("fetches the public catalog with the publishable key", async () => {
-    const { client, calls } = makeClient(() => jsonResponse(envelope(makeWirePublicPlans())), {
-      publishableKey: "api_pub",
-      getAccessToken: undefined,
-    });
+    const { client, calls } = makeClient(
+      () => jsonResponse(envelope(makeWirePublicPlans())),
+      {
+        publishableKey: "api_pub",
+        getAccessToken: undefined,
+      },
+    );
 
     await client.publicPlans.refetch();
 
     expect(calls[0].url).toContain("/public/plans");
     const headers = calls[0].init?.headers as Record<string, string>;
     expect(headers["X-Schematic-Api-Key"]).toBe("api_pub");
-    expect(client.publicPlans.getSnapshot().data?.activePlans[0].id).toBe("plan_basic");
+    expect(client.publicPlans.getSnapshot().data?.activePlans[0].id).toBe(
+      "plan_basic",
+    );
   });
 
   it("returns a stable invoices resource per params combination", async () => {
     const { client, calls } = makeClient(() =>
-      jsonResponse(envelope([makeWireInvoice(), makeWireInvoice({ id: "inv_2" })])),
+      jsonResponse(
+        envelope([makeWireInvoice(), makeWireInvoice({ id: "inv_2" })]),
+      ),
     );
 
     const a = client.invoices({ limit: 2 });
@@ -154,20 +176,26 @@ describe("SchematicBillingClient", () => {
   });
 
   it("guards company-scoped access on a public-only client", () => {
-    const { client } = makeClient(() => jsonResponse(envelope(makeWirePublicPlans())), {
-      publishableKey: "api_pub",
-      getAccessToken: undefined,
-    });
+    const { client } = makeClient(
+      () => jsonResponse(envelope(makeWirePublicPlans())),
+      {
+        publishableKey: "api_pub",
+        getAccessToken: undefined,
+      },
+    );
 
     expect(() => client.hydrate).toThrow(/getAccessToken/);
     expect(() => client.invoices()).toThrow(/getAccessToken/);
   });
 
   it("guards the public catalog on a token-only client", () => {
-    const { client } = makeClient(() => jsonResponse(envelope(makeWireHydrate())), {
-      publishableKey: undefined,
-      getAccessToken: async () => "token_x",
-    });
+    const { client } = makeClient(
+      () => jsonResponse(envelope(makeWireHydrate())),
+      {
+        publishableKey: undefined,
+        getAccessToken: async () => "token_x",
+      },
+    );
 
     expect(() => client.publicPlans).toThrow(/publishableKey/);
   });
