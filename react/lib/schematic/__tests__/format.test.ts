@@ -1,6 +1,13 @@
 import { describe, expect, it } from "vitest";
 
-import { formatCurrency, formatDate, formatNumber, periodSuffix, pluralize } from "../format";
+import {
+  formatCurrency,
+  formatDate,
+  formatNumber,
+  getDisplayPrice,
+  periodSuffix,
+  pluralize,
+} from "../format";
 import { calculateTieredCost, derivePeriod, getPriceValue } from "../pricing";
 
 describe("formatCurrency", () => {
@@ -16,6 +23,28 @@ describe("formatCurrency", () => {
 
   it("respects other currencies", () => {
     expect(formatCurrency(1000, "eur")).toBe("€10.00");
+  });
+
+  it("does not divide zero-decimal currencies by 100", () => {
+    // JPY amounts arrive already in the smallest unit.
+    expect(formatCurrency(5000, "jpy")).toBe("¥5,000");
+    expect(formatCurrency(5000, "JPY")).toBe("¥5,000");
+    expect(formatCurrency(1500, "krw")).toBe("₩1,500");
+    // ...while decimal currencies still do.
+    expect(formatCurrency(5000, "usd")).toBe("$50.00");
+  });
+
+  it("preserves sub-cent amounts instead of rounding to zero", () => {
+    // A 0.4-cent-per-unit overage price must not render as "$0.00".
+    expect(formatCurrency(0.4)).toBe("$0.004");
+    expect(formatCurrency(0.5, "usd")).toBe("$0.005");
+    expect(formatCurrency(2.5)).toBe("$0.025");
+    // Whole-cent amounts keep conventional two-decimal formatting.
+    expect(formatCurrency(1999)).toBe("$19.99");
+  });
+
+  it("falls back rather than throwing on an invalid currency code", () => {
+    expect(formatCurrency(1000, "not-a-currency")).toBe("$10.00");
   });
 });
 
@@ -43,6 +72,42 @@ describe("pluralize / formatNumber", () => {
     expect(pluralize("seat", 1)).toBe("seat");
     expect(pluralize("seat", 2)).toBe("seats");
     expect(formatNumber(1234567)).toBe("1,234,567");
+  });
+});
+
+describe("getDisplayPrice", () => {
+  it("shows the full billed price when showAsMonthlyPrices is off", () => {
+    expect(getDisplayPrice(58800, "year", false)).toEqual({
+      amount: 58800,
+      suffix: "/yr",
+      isMonthlyEquivalent: false,
+    });
+  });
+
+  it("divides yearly and quarterly prices down when the setting is on", () => {
+    expect(getDisplayPrice(58800, "year", true)).toEqual({
+      amount: 4900,
+      suffix: "/month, billed yearly",
+      isMonthlyEquivalent: true,
+    });
+    expect(getDisplayPrice(15000, "quarter", true)).toEqual({
+      amount: 5000,
+      suffix: "/month, billed quarterly",
+      isMonthlyEquivalent: true,
+    });
+  });
+
+  it("leaves monthly prices alone even when the setting is on", () => {
+    expect(getDisplayPrice(4900, "month", true)).toEqual({
+      amount: 4900,
+      suffix: "/mo",
+      isMonthlyEquivalent: false,
+    });
+  });
+
+  it("renders a repeating monthly equivalent as money, not a sub-cent rate", () => {
+    const display = getDisplayPrice(58900, "year", true);
+    expect(formatCurrency(display.amount, "usd", { significantDigits: false })).toBe("$49.08");
   });
 });
 

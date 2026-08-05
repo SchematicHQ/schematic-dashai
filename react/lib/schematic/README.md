@@ -35,6 +35,20 @@ a single request:
 
 All hooks return `{ data, isPending, isRefetching, error, refetch }`.
 
+## Freshness
+
+A successful result is served for `staleTime` (default 30s, configurable on the
+client). After that, a mounting hook revalidates in the background, so changes
+made out-of-band — a plan upgrade in another tab or the Stripe portal — are
+picked up on navigation. A failed fetch is retried by the next mount rather
+than being cached as a permanent error state.
+
+`client.invalidate()` marks company-scoped data stale immediately and
+supersedes any in-flight request: a response issued before the change that
+prompted the invalidation is discarded rather than allowed to overwrite newer
+state. `refetch()` by contrast joins an in-flight request, so concurrent
+callers share one network call.
+
 ## Auth
 
 The consumer's backend mints temporary access tokens with its secret key

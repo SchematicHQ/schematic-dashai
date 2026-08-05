@@ -9,8 +9,8 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
   formatCurrency,
   formatNumber,
+  getDisplayPrice,
   getPlanPrice,
-  periodSuffix,
   pluralize,
   type Catalog,
   type CatalogPlan,
@@ -76,6 +76,11 @@ export function PricingTable({ catalog, onSelectPlan }: PricingTableProps) {
           const price = getPlanPrice(plan, period);
           const features = entitlementLabel(plan);
           const isFree = !price || price.price === 0;
+          const display = getDisplayPrice(
+            price?.price ?? 0,
+            period,
+            displaySettings.showAsMonthlyPrices,
+          );
 
           return (
             <Card key={plan.id} className={plan.current ? "border-accent" : undefined}>
@@ -98,9 +103,13 @@ export function PricingTable({ catalog, onSelectPlan }: PricingTableProps) {
                     "Free"
                   ) : (
                     <>
-                      {formatCurrency(price?.price ?? 0, price?.currency)}
+                      {formatCurrency(display.amount, price?.currency, {
+                        // A yearly price ÷ 12 can repeat; show it as money, not
+                        // as a sub-cent rate.
+                        significantDigits: !display.isMonthlyEquivalent,
+                      })}
                       <span className="text-sm font-normal text-muted-foreground">
-                        {periodSuffix(period)}
+                        {display.suffix}
                       </span>
                     </>
                   )}
@@ -135,7 +144,14 @@ export function PricingTable({ catalog, onSelectPlan }: PricingTableProps) {
                   <Button
                     onClick={onSelectPlan ? () => onSelectPlan(plan, period) : undefined}
                     disabled={!onSelectPlan || plan.valid === false}
-                    title={onSelectPlan ? undefined : "Checkout is coming soon"}
+                    title={
+                      !onSelectPlan
+                        ? "Checkout is coming soon"
+                        : plan.valid === false
+                          ? (plan.invalidReason ??
+                            "This plan is not available for your account")
+                          : undefined
+                    }
                   >
                     {plan.isTrialable && plan.companyCanTrial ? "Start trial" : "Choose plan"}
                   </Button>

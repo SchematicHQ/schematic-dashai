@@ -1,5 +1,7 @@
 "use client";
 
+import { useRouter } from "next/navigation";
+
 import { PricingTable } from "@/components/schematic/pricing-table";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -7,9 +9,18 @@ import { useCatalog } from "@/lib/schematic";
 import { schematicBilling } from "@/lib/schematic-client";
 
 export default function PricingPage() {
-  // Public mode: fetches GET /public/plans with the publishable key only, so
-  // this page works for signed-out visitors too.
-  const catalog = useCatalog(schematicBilling, { mode: "public" });
+  const router = useRouter();
+  // "auto" uses the company-scoped catalog when an access token is available,
+  // so a signed-in customer sees which plan is theirs and which they are
+  // eligible for; it falls back to the publishable-key catalog otherwise.
+  const catalog = useCatalog(schematicBilling);
+
+  // Checkout is being reworked and useCheckout does not exist yet, so plan
+  // selection hands off to the plan portal, which still runs the embed's
+  // working checkout flow. Replace with useCheckout when it lands.
+  const handleSelectPlan = () => {
+    router.push("/plan");
+  };
 
   return (
     <div className="min-h-screen bg-background">
@@ -33,7 +44,7 @@ export default function PricingPage() {
             </Button>
           </div>
         ) : catalog.data ? (
-          <PricingTable catalog={catalog.data} />
+          <PricingTable catalog={catalog.data} onSelectPlan={handleSelectPlan} />
         ) : null}
       </div>
     </div>

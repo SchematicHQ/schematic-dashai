@@ -121,7 +121,7 @@ describe("Resource", () => {
     unsubscribe();
   });
 
-  it("ensure() after resolve does not refetch", async () => {
+  it("ensure() after resolve does not refetch while data is fresh", async () => {
     const fetcher = vi.fn(async () => "value");
     const resource = new Resource(fetcher);
 
@@ -129,5 +129,97 @@ describe("Resource", () => {
     resource.ensure();
     resource.ensure();
     expect(fetcher).toHaveBeenCalledTimes(1);
+  });
+
+  it("ensure() revalidates once cached data ages past staleTime", async () => {
+    let time = 0;
+    const fetcher = vi.fn(async () => "value");
+    const resource = new Resource(fetcher, { staleTime: 30_000, now: () => time });
+
+    await resource.refetch();
+    expect(fetcher).toHaveBeenCalledTimes(1);
+
+    // A remount while still fresh reuses the cache...
+    time += 10_000;
+    resource.ensure();
+    expect(fetcher).toHaveBeenCalledTimes(1);
+
+    // ...but once stale by age, a remount revalidates. This is the
+    // navigate-away / change-plan-elsewhere / navigate-back case.
+    time += 25_000;
+    resource.ensure();
+    expect(fetcher).toHaveBeenCalledTimes(2);
+  });
+
+  it("ensure() retries after a failed fetch", async () => {
+    let fail = true;
+    const fetcher = vi.fn(async () => {
+      if (fail) {
+        throw new Error("network down");
+      }
+      return "value";
+    });
+    const resource = new Resource(fetcher);
+
+    await resource.refetch();
+    expect(resource.getSnapshot().error?.message).toBe("network down");
+
+    // Remounting a hook must retry rather than replay the dead error state.
+    fail = false;
+    resource.ensure();
+    await resource.refetch();
+
+    expect(fetcher).toHaveBeenCalledTimes(2);
+    expect(resource.getSnapshot().error).toBeUndefined();
+    expect(resource.getSnapshot().data).toBe("value");
+  });
+
+  it("invalidate() supersedes an in-flight fetch instead of joining it", async () => {
+    const gates: Array<(value: string) => void> = [];
+    const fetcher = vi.fn(
+      () =>
+        new Promise<string>((resolve) => {
+          gates.push(resolve);
+        }),
+    );
+    const resource = new Resource(fetcher);
+    const unsubscribe = resource.subscribe(() => {});
+
+    resource.ensure();
+    expect(fetcher).toHaveBeenCalledTimes(1);
+
+    // A plan change lands while the first request is still open.
+    resource.invalidate();
+    expect(fetcher).toHaveBeenCalledTimes(2);
+
+    // The pre-change response arrives last and must not win.
+    gates[1]("after-change");
+    gates[0]("before-change");
+    await new Promise((resolve) => setTimeout(resolve, 0));
+
+    expect(resource.getSnapshot().data).toBe("after-change");
+    unsubscribe();
+  });
+
+  it("invalidate() with no subscribers marks stale even mid-fetch", async () => {
+    const gates: Array<(value: string) => void> = [];
+    const fetcher = vi.fn(
+      () =>
+        new Promise<string>((resolve) => {
+          gates.push(resolve);
+        }),
+    );
+    const resource = new Resource(fetcher);
+
+    resource.ensure();
+    resource.invalidate(); // no listeners: should not fetch now, but must not forget
+    expect(fetcher).toHaveBeenCalledTimes(1);
+
+    gates[0]("stale-value");
+    await new Promise((resolve) => setTimeout(resolve, 0));
+
+    // The next mount fetches rather than serving the superseded response.
+    resource.ensure();
+    expect(fetcher).toHaveBeenCalledTimes(2);
   });
 });
