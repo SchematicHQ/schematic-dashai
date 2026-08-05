@@ -39,7 +39,8 @@ function makeClient(options?: {
 
   const client = new SchematicBillingClient({
     publishableKey: options?.publishableKey,
-    getAccessToken: options?.withToken === false ? undefined : async () => "token_x",
+    getAccessToken:
+      options?.withToken === false ? undefined : async () => "token_x",
     fetchFn,
   });
   return { client, fetchFn };
@@ -73,14 +74,22 @@ describe("useBilling", () => {
   });
 
   it("throws a descriptive error on a public-only client", () => {
-    const { client } = makeClient({ publishableKey: "api_pub", withToken: false });
-    expect(() => renderHook(() => useBilling(client))).toThrow(/getAccessToken/);
+    const { client } = makeClient({
+      publishableKey: "api_pub",
+      withToken: false,
+    });
+    expect(() => renderHook(() => useBilling(client))).toThrow(
+      /getAccessToken/,
+    );
   });
 });
 
 describe("useCatalog", () => {
   it("uses the public catalog in public mode", async () => {
-    const { client } = makeClient({ publishableKey: "api_pub", withToken: false });
+    const { client } = makeClient({
+      publishableKey: "api_pub",
+      withToken: false,
+    });
     const { result } = renderHook(() => useCatalog(client));
 
     await waitFor(() => expect(result.current.data).toBeDefined());
@@ -123,7 +132,9 @@ describe("useInvoices", () => {
 
   it("keeps a stable resource across rerenders with equivalent options", async () => {
     const { client, fetchFn } = makeClient();
-    const { result, rerender } = renderHook(() => useInvoices(client, { limit: 5 }));
+    const { result, rerender } = renderHook(() =>
+      useInvoices(client, { limit: 5 }),
+    );
 
     await waitFor(() => expect(result.current.data).toBeDefined());
     rerender();

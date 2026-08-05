@@ -18,13 +18,12 @@ import type { PublicPlansResponseData } from "./api/componentspublic";
  */
 
 type CompanyContextField =
-  | "companyCanTrial"
-  | "current"
-  | "invalidReason"
-  | "usageViolations"
-  | "valid";
+  "companyCanTrial" | "current" | "invalidReason" | "usageViolations" | "valid";
 
-export type CatalogPlan = Omit<CompanyPlanDetailResponseData, CompanyContextField> &
+export type CatalogPlan = Omit<
+  CompanyPlanDetailResponseData,
+  CompanyContextField
+> &
   Partial<Pick<CompanyPlanDetailResponseData, CompanyContextField>>;
 
 export type CatalogMode = "public" | "company";
@@ -49,7 +48,9 @@ export function toCatalogFromPublic(data: PublicPlansResponseData): Catalog {
   };
 }
 
-export function toCatalogFromHydrate(data: ComponentHydrateResponseData): Catalog {
+export function toCatalogFromHydrate(
+  data: ComponentHydrateResponseData,
+): Catalog {
   return {
     mode: "company",
     plans: data.activePlans,

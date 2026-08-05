@@ -5,8 +5,15 @@
  * self-contained — it is the candidate source for a future published package.
  */
 
-export { SchematicBillingClient, type SchematicBillingClientOptions } from "./client";
-export { TokenManager, type AccessTokenProvider, type AccessTokenResult } from "./token";
+export {
+  SchematicBillingClient,
+  type SchematicBillingClientOptions,
+} from "./client";
+export {
+  TokenManager,
+  type AccessTokenProvider,
+  type AccessTokenResult,
+} from "./token";
 export { Resource, type ResourceState } from "./store";
 
 export { useCatalog, type UseCatalogOptions } from "./hooks/use-catalog";

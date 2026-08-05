@@ -36,7 +36,9 @@ function entitlementLabel(plan: CatalogPlan): string[] {
       return [`${formatNumber(entitlement.valueNumeric)} ${unit}`];
     }
     if (entitlement.valueType === "unlimited") {
-      return [`Unlimited ${(feature.pluralName ?? feature.name).toLowerCase()}`];
+      return [
+        `Unlimited ${(feature.pluralName ?? feature.name).toLowerCase()}`,
+      ];
     }
     return [feature.name];
   });
@@ -83,14 +85,19 @@ export function PricingTable({ catalog, onSelectPlan }: PricingTableProps) {
           );
 
           return (
-            <Card key={plan.id} className={plan.current ? "border-accent" : undefined}>
+            <Card
+              key={plan.id}
+              className={plan.current ? "border-accent" : undefined}
+            >
               <CardHeader>
                 <div className="flex items-center justify-between gap-2">
                   <CardTitle>{plan.name}</CardTitle>
                   {plan.current && <Badge>Current plan</Badge>}
                 </div>
                 {plan.description && (
-                  <p className="text-sm text-muted-foreground">{plan.description}</p>
+                  <p className="text-sm text-muted-foreground">
+                    {plan.description}
+                  </p>
                 )}
               </CardHeader>
               <CardContent className="flex flex-1 flex-col gap-4">
@@ -119,7 +126,10 @@ export function PricingTable({ catalog, onSelectPlan }: PricingTableProps) {
                   <ul className="flex-1 space-y-2 text-sm">
                     {features.map((label, index) => (
                       <li key={index} className="flex items-start gap-2">
-                        <Check className="mt-0.5 size-4 shrink-0 text-accent" aria-hidden />
+                        <Check
+                          className="mt-0.5 size-4 shrink-0 text-accent"
+                          aria-hidden
+                        />
                         <span>{label}</span>
                       </li>
                     ))}
@@ -142,7 +152,11 @@ export function PricingTable({ catalog, onSelectPlan }: PricingTableProps) {
                   </Button>
                 ) : (
                   <Button
-                    onClick={onSelectPlan ? () => onSelectPlan(plan, period) : undefined}
+                    onClick={
+                      onSelectPlan
+                        ? () => onSelectPlan(plan, period)
+                        : undefined
+                    }
                     disabled={!onSelectPlan || plan.valid === false}
                     title={
                       !onSelectPlan
@@ -153,7 +167,9 @@ export function PricingTable({ catalog, onSelectPlan }: PricingTableProps) {
                           : undefined
                     }
                   >
-                    {plan.isTrialable && plan.companyCanTrial ? "Start trial" : "Choose plan"}
+                    {plan.isTrialable && plan.companyCanTrial
+                      ? "Start trial"
+                      : "Choose plan"}
                   </Button>
                 )}
               </CardContent>

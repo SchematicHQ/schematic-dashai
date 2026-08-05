@@ -6,8 +6,7 @@
  */
 
 export type AccessTokenResult =
-  | string
-  | { token: string; expiresAt?: string | Date };
+  string | { token: string; expiresAt?: string | Date };
 
 export type AccessTokenProvider = () => Promise<AccessTokenResult>;
 
@@ -65,7 +64,9 @@ export class TokenManager {
     this.inFlight = this.getAccessToken()
       .then((result) => {
         const { token, expiresAt } =
-          typeof result === "string" ? { token: result, expiresAt: undefined } : result;
+          typeof result === "string"
+            ? { token: result, expiresAt: undefined }
+            : result;
         if (!token) {
           throw new Error("getAccessToken returned an empty token");
         }

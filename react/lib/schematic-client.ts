@@ -14,7 +14,8 @@ export const schematicBilling = new SchematicBillingClient({
     if (!response.ok) {
       throw new Error(`Failed to fetch access token (${response.status})`);
     }
-    const result: { accessToken?: string; expiredAt?: string } = await response.json();
+    const result: { accessToken?: string; expiredAt?: string } =
+      await response.json();
     if (!result.accessToken) {
       throw new Error("Access token response was missing accessToken");
     }

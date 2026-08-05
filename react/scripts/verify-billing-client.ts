@@ -34,17 +34,21 @@ async function main() {
   if (hydrate.error) throw hydrate.error;
   const d = hydrate.data!;
   console.log("[hydrate]", {
-    plans: d.activePlans.map((p) => `${p.name}${p.current ? " (current)" : ""}`),
+    plans: d.activePlans.map(
+      (p) => `${p.name}${p.current ? " (current)" : ""}`,
+    ),
     company: d.company?.name,
     companyPlan: d.company?.plan?.name,
     planPrice: d.company?.plan?.planPrice,
     subscriptionStatus: d.subscription?.status,
     upcomingInvoiceDue: d.upcomingInvoice?.amountDue,
     features: (d.featureUsage?.features ?? []).map(
-      (f) => `${f.feature?.name} [${f.feature?.featureType}] usage=${f.usage} alloc=${f.allocation} pb=${f.priceBehavior}`,
+      (f) =>
+        `${f.feature?.name} [${f.feature?.featureType}] usage=${f.usage} alloc=${f.allocation} pb=${f.priceBehavior}`,
     ),
     creditGrants: d.creditGrants.map(
-      (g) => `${g.creditName} ${g.quantityUsed}/${g.quantity} (${g.grantReason})`,
+      (g) =>
+        `${g.creditName} ${g.quantityUsed}/${g.quantity} (${g.grantReason})`,
     ),
     displaySettings: d.displaySettings,
   });
@@ -54,7 +58,10 @@ async function main() {
   if (invoices.error) throw invoices.error;
   console.log(
     "[invoices]",
-    invoices.data!.map((i) => `${i.id} ${i.status} due=${i.amountDue} ${i.dueDate?.toISOString()}`),
+    invoices.data!.map(
+      (i) =>
+        `${i.id} ${i.status} due=${i.amountDue} ${i.dueDate?.toISOString()}`,
+    ),
   );
 
   if (publishableKey) {
@@ -63,7 +70,9 @@ async function main() {
     if (pub.error) throw pub.error;
     console.log(
       "[public plans]",
-      pub.data!.activePlans.map((p) => `${p.name} monthly=${p.monthlyPrice?.price}`),
+      pub.data!.activePlans.map(
+        (p) => `${p.name} monthly=${p.monthlyPrice?.price}`,
+      ),
     );
   } else {
     console.log("[public plans] skipped — no publishable key");

@@ -28,7 +28,10 @@ function usageSummary(feature: FeatureUsageResponseData): string | undefined {
   if (feature.isUnlimited || feature.allocationType === "unlimited") {
     return "No limit";
   }
-  if (typeof feature.creditRemaining === "number" && feature.creditRemaining >= 0) {
+  if (
+    typeof feature.creditRemaining === "number" &&
+    feature.creditRemaining >= 0
+  ) {
     return `${formatNumber(feature.creditRemaining)} remaining`;
   }
   if (typeof feature.allocation === "number") {
@@ -42,7 +45,10 @@ function usageSummary(feature: FeatureUsageResponseData): string | undefined {
 }
 
 /** Every feature the customer is entitled to, boolean and metered alike. */
-export function IncludedFeatures({ features, collapseAfter = 4 }: IncludedFeaturesProps) {
+export function IncludedFeatures({
+  features,
+  collapseAfter = 4,
+}: IncludedFeaturesProps) {
   const [showAll, setShowAll] = useState(false);
 
   if (features.length === 0) {
@@ -62,7 +68,10 @@ export function IncludedFeatures({ features, collapseAfter = 4 }: IncludedFeatur
         {visible.map((feature) => {
           const summary = usageSummary(feature);
           return (
-            <div key={feature.entitlementId} className="flex items-center gap-3">
+            <div
+              key={feature.entitlementId}
+              className="flex items-center gap-3"
+            >
               <FeatureIcon icon={feature.feature?.icon} />
               <div className="min-w-0 flex-1">
                 <p className="text-sm font-medium">{feature.feature?.name}</p>
@@ -78,7 +87,9 @@ export function IncludedFeatures({ features, collapseAfter = 4 }: IncludedFeatur
                 )}
               </div>
               <div className="text-right text-sm text-muted-foreground">
-                {summary ?? <Check className="size-4 text-accent" aria-label="Included" />}
+                {summary ?? (
+                  <Check className="size-4 text-accent" aria-label="Included" />
+                )}
               </div>
             </div>
           );

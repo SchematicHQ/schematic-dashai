@@ -1,4 +1,4 @@
-"use client"
+"use client";
 
 import {
   EmbedProvider,
@@ -67,9 +67,7 @@ export default function PlanPage() {
   }
 
   if (!accessToken) {
-    return (
-      <></>
-    );
+    return <></>;
   }
 
   return (
@@ -86,5 +84,5 @@ export default function PlanPage() {
         </EmbedProvider>
       </div>
     </div>
-  )
+  );
 }

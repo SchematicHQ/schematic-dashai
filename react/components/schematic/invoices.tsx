@@ -21,7 +21,11 @@ export interface InvoicesProps {
 }
 
 /** Recent invoice history, filtered to what a customer actually cares about. */
-export function Invoices({ invoices, defaultVisible = 2, maxVisible = 12 }: InvoicesProps) {
+export function Invoices({
+  invoices,
+  defaultVisible = 2,
+  maxVisible = 12,
+}: InvoicesProps) {
   const [expanded, setExpanded] = useState(false);
   const display = useMemo(() => filterInvoicesForDisplay(invoices), [invoices]);
 
@@ -48,7 +52,10 @@ export function Invoices({ invoices, defaultVisible = 2, maxVisible = 12 }: Invo
               <span className="flex items-center gap-1.5">
                 {formatCurrency(invoice.amountDue, invoice.currency)}
                 {invoice.url && (
-                  <ExternalLink className="size-3.5 text-muted-foreground" aria-hidden />
+                  <ExternalLink
+                    className="size-3.5 text-muted-foreground"
+                    aria-hidden
+                  />
                 )}
               </span>
             </div>
@@ -74,7 +81,9 @@ export function Invoices({ invoices, defaultVisible = 2, maxVisible = 12 }: Invo
             className="w-full"
             onClick={() => setExpanded((prev) => !prev)}
           >
-            {expanded ? "Show fewer" : `See all (${Math.min(display.length, maxVisible)})`}
+            {expanded
+              ? "Show fewer"
+              : `See all (${Math.min(display.length, maxVisible)})`}
           </Button>
         )}
       </CardContent>

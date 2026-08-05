@@ -68,7 +68,9 @@ export function getSubscriptionPeriod(
 
 /** Prefers the lossless decimal representation when the API provides one. */
 export function getPriceValue(price: PriceData): number {
-  return typeof price.priceDecimal === "string" ? Number(price.priceDecimal) : price.price;
+  return typeof price.priceDecimal === "string"
+    ? Number(price.priceDecimal)
+    : price.price;
 }
 
 function selectPriceForPeriod<T extends PricedPlan>(
@@ -85,16 +87,24 @@ function selectPriceForPeriod<T extends PricedPlan>(
   }
 }
 
-export function getPlanPrice(plan: PricedPlan, period = "month"): PriceData | undefined {
+export function getPlanPrice(
+  plan: PricedPlan,
+  period = "month",
+): PriceData | undefined {
   const price = selectPriceForPeriod(plan, period);
   if (price) {
     return { ...price, price: getPriceValue(price) };
   }
 }
 
-export function getAddOnPrice(addOn: PricedPlan, period = "month"): PriceData | undefined {
+export function getAddOnPrice(
+  addOn: PricedPlan,
+  period = "month",
+): PriceData | undefined {
   const price =
-    addOn.chargeType === "one_time" ? addOn.oneTimePrice : selectPriceForPeriod(addOn, period);
+    addOn.chargeType === "one_time"
+      ? addOn.oneTimePrice
+      : selectPriceForPeriod(addOn, period);
   if (price) {
     return { ...price, price: getPriceValue(price) };
   }
@@ -105,7 +115,9 @@ export function getAddOnPrice(addOn: PricedPlan, period = "month"): PriceData | 
  * schemes commonly express sub-cent rates only in `perUnitPriceDecimal`, with
  * `perUnitPrice` rounded to 0.
  */
-export function getTierUnitPrice(tier: BillingProductPriceTierResponseData): number {
+export function getTierUnitPrice(
+  tier: BillingProductPriceTierResponseData,
+): number {
   return typeof tier.perUnitPriceDecimal === "string"
     ? Number(tier.perUnitPriceDecimal)
     : (tier.perUnitPrice ?? 0);
@@ -149,7 +161,9 @@ export function getEntitlementPrice(
       // parent tiered price's stale decimal (typically "0").
       price.price = getTierUnitPrice(tier);
       price.priceDecimal =
-        typeof tier.perUnitPriceDecimal === "string" ? tier.perUnitPriceDecimal : null;
+        typeof tier.perUnitPriceDecimal === "string"
+          ? tier.perUnitPriceDecimal
+          : null;
     }
   }
 
@@ -236,9 +250,16 @@ export function getEntitlementCost(
 
   switch (entitlement.priceBehavior) {
     case EntitlementPriceBehavior.PayInAdvance: {
-      if (typeof entitlement.allocation === "number" && entitlement.allocation > 0) {
+      if (
+        typeof entitlement.allocation === "number" &&
+        entitlement.allocation > 0
+      ) {
         if (isTieredPrice(price) && price.priceTier) {
-          return calculateTieredCost(entitlement.allocation, price.priceTier, price.tiersMode);
+          return calculateTieredCost(
+            entitlement.allocation,
+            price.priceTier,
+            price.tiersMode,
+          );
         }
         return entitlement.allocation * price.price;
       }
@@ -263,14 +284,21 @@ export function getEntitlementCost(
       // perUnitPrice rounded to 0 and the real rate only in the decimal.
       const perUnitPrice = getTierUnitPrice(overageTier);
       if (perUnitPrice) {
-        const amount = Math.max(0, entitlement.usage - (entitlement.softLimit ?? 0));
+        const amount = Math.max(
+          0,
+          entitlement.usage - (entitlement.softLimit ?? 0),
+        );
         cost += amount * perUnitPrice;
       }
       return cost;
     }
     case EntitlementPriceBehavior.Tier: {
       if (typeof entitlement.usage === "number" && price.priceTier) {
-        return calculateTieredCost(entitlement.usage, price.priceTier, price.tiersMode);
+        return calculateTieredCost(
+          entitlement.usage,
+          price.priceTier,
+          price.tiersMode,
+        );
       }
       return undefined;
     }

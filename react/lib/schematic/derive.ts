@@ -75,7 +75,9 @@ export interface AppliedBalance {
  * invoices Stripe often leaves ending_balance at 0, so when it *is* negative we
  * trust it, and otherwise cap the applied credit at the invoice subtotal.
  */
-export function deriveAppliedBalance(invoice: InvoiceResponseData): AppliedBalance | undefined {
+export function deriveAppliedBalance(
+  invoice: InvoiceResponseData,
+): AppliedBalance | undefined {
   const startingBalance = invoice.startingBalance ?? 0;
   if (startingBalance >= 0) {
     return undefined;
@@ -159,7 +161,9 @@ export interface CreditGroup {
  * totals — the shape CreditUsage renders. Exhausted/zeroed-out grants are
  * included in the per-grant list but their remaining quantity is already 0.
  */
-export function groupCreditGrants(grants: CreditCompanyGrantView[]): CreditGroup[] {
+export function groupCreditGrants(
+  grants: CreditCompanyGrantView[],
+): CreditGroup[] {
   const groups = new Map<string, CreditGroup>();
 
   for (const grant of grants) {

@@ -134,7 +134,12 @@ export class Resource<T> {
         }
         this.status = "success";
         this.fetchedAt = this.now();
-        this.setState({ data, error: undefined, isPending: false, isRefetching: false });
+        this.setState({
+          data,
+          error: undefined,
+          isPending: false,
+          isRefetching: false,
+        });
       })
       .catch((cause) => {
         if (generation !== this.generation) {

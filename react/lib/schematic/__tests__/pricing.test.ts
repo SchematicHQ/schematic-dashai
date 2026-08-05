@@ -1,6 +1,9 @@
 import { describe, expect, it } from "vitest";
 
-import { EntitlementPriceBehavior, type FeatureUsageResponseData } from "../api/checkoutexternal";
+import {
+  EntitlementPriceBehavior,
+  type FeatureUsageResponseData,
+} from "../api/checkoutexternal";
 import {
   findTierForQuantity,
   getEntitlementCost,
@@ -23,7 +26,9 @@ function tier(overrides: {
   } as any;
 }
 
-function entitlement(overrides: Record<string, unknown>): FeatureUsageResponseData {
+function entitlement(
+  overrides: Record<string, unknown>,
+): FeatureUsageResponseData {
   return {
     access: true,
     allocationType: "numeric",
@@ -36,7 +41,9 @@ function entitlement(overrides: Record<string, unknown>): FeatureUsageResponseDa
 
 describe("getTierUnitPrice", () => {
   it("prefers the decimal rate over the rounded integer", () => {
-    expect(getTierUnitPrice(tier({ perUnitPrice: 0, perUnitPriceDecimal: "0.5" }))).toBe(0.5);
+    expect(
+      getTierUnitPrice(tier({ perUnitPrice: 0, perUnitPriceDecimal: "0.5" })),
+    ).toBe(0.5);
     expect(getTierUnitPrice(tier({ perUnitPrice: 100 }))).toBe(100);
     expect(getTierUnitPrice(tier({}))).toBe(0);
   });
@@ -53,7 +60,10 @@ describe("getEntitlementCost — overage", () => {
         price: 0,
         priceDecimal: "0",
         currency: "usd",
-        priceTier: [tier({ upTo: 0 }), tier({ perUnitPrice: 0, perUnitPriceDecimal: "0.5" })],
+        priceTier: [
+          tier({ upTo: 0 }),
+          tier({ perUnitPrice: 0, perUnitPriceDecimal: "0.5" }),
+        ],
       },
     });
 
@@ -69,7 +79,10 @@ describe("getEntitlementCost — overage", () => {
       monthlyUsageBasedPrice: {
         price: 0,
         currency: "usd",
-        priceTier: [tier({ upTo: 100 }), tier({ perUnitPrice: 10, flatAmount: 500 })],
+        priceTier: [
+          tier({ upTo: 100 }),
+          tier({ perUnitPrice: 10, flatAmount: 500 }),
+        ],
       },
     });
 

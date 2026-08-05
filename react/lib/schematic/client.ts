@@ -59,7 +59,10 @@ export class SchematicBillingClient {
 
   private hydrateResource?: Resource<ComponentHydrateResponseData>;
   private publicPlansResource?: Resource<PublicPlansResponseData>;
-  private readonly invoiceResources = new Map<string, Resource<InvoiceResponseData[]>>();
+  private readonly invoiceResources = new Map<
+    string,
+    Resource<InvoiceResponseData[]>
+  >();
 
   constructor(options: SchematicBillingClientOptions) {
     const { publishableKey, getAccessToken } = options;
@@ -94,7 +97,9 @@ export class SchematicBillingClient {
           }
           tokens.invalidate();
           const token = await tokens.getToken();
-          const headers = { ...(context.init.headers as Record<string, string>) };
+          const headers = {
+            ...(context.init.headers as Record<string, string>),
+          };
           headers[API_KEY_HEADER] = token;
           return fetchFn(context.url, { ...context.init, headers });
         },
@@ -157,7 +162,10 @@ export class SchematicBillingClient {
    * Invoice list resource (GET /components/invoices). One resource per
    * limit/offset combination, so hook subscriptions stay referentially stable.
    */
-  invoices(params?: { limit?: number; offset?: number }): Resource<InvoiceResponseData[]> {
+  invoices(params?: {
+    limit?: number;
+    offset?: number;
+  }): Resource<InvoiceResponseData[]> {
     const api = this.checkoutApi;
     if (!api) {
       throw new Error(

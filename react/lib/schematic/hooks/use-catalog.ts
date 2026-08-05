@@ -4,7 +4,12 @@ import { useMemo } from "react";
 
 import type { ComponentHydrateResponseData } from "../api/checkoutexternal";
 import type { PublicPlansResponseData } from "../api/componentspublic";
-import { toCatalogFromHydrate, toCatalogFromPublic, type Catalog, type CatalogMode } from "../catalog";
+import {
+  toCatalogFromHydrate,
+  toCatalogFromPublic,
+  type Catalog,
+  type CatalogMode,
+} from "../catalog";
 import type { SchematicBillingClient } from "../client";
 import type { Resource } from "../store";
 import { useResource, type SchematicHookResult } from "./use-resource";
@@ -31,8 +36,9 @@ export function useCatalog(
         : "public"
       : options.mode;
 
-  const resource: Resource<ComponentHydrateResponseData | PublicPlansResponseData> =
-    mode === "company" ? client.hydrate : client.publicPlans;
+  const resource: Resource<
+    ComponentHydrateResponseData | PublicPlansResponseData
+  > = mode === "company" ? client.hydrate : client.publicPlans;
   const result = useResource(resource);
 
   const data = useMemo(() => {

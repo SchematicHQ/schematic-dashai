@@ -1,8 +1,8 @@
-import { get, put } from "@vercel/blob"
-import { promises as fs } from "fs"
-import path from "path"
+import { get, put } from "@vercel/blob";
+import { promises as fs } from "fs";
+import path from "path";
 
-const token = process.env.BLOB_READ_WRITE_TOKEN
+const token = process.env.BLOB_READ_WRITE_TOKEN;
 
 /**
  * Reads a JSON array from storage. On Vercel (when BLOB_READ_WRITE_TOKEN is set),
@@ -11,43 +11,46 @@ const token = process.env.BLOB_READ_WRITE_TOKEN
  */
 export async function readJsonStore<T = unknown[]>(
   blobPathname: string,
-  fsPath: string
+  fsPath: string,
 ): Promise<T> {
   const defaultData = async (): Promise<T> => {
     try {
-      const fullPath = path.join(process.cwd(), fsPath)
-      const fileContents = await fs.readFile(fullPath, "utf8")
-      return JSON.parse(fileContents) as T
+      const fullPath = path.join(process.cwd(), fsPath);
+      const fileContents = await fs.readFile(fullPath, "utf8");
+      return JSON.parse(fileContents) as T;
     } catch {
-      return [] as T
+      return [] as T;
     }
-  }
+  };
 
   if (!token) {
-    return defaultData()
+    return defaultData();
   }
 
   try {
-    const result = await get(blobPathname, { access: "private", useCache: false })
+    const result = await get(blobPathname, {
+      access: "private",
+      useCache: false,
+    });
     if (!result || result.statusCode !== 200 || !result.stream) {
-      const data = await defaultData()
+      const data = await defaultData();
       await put(blobPathname, JSON.stringify(data, null, 2), {
         access: "private",
         contentType: "application/json",
         allowOverwrite: true,
-      })
-      return data
+      });
+      return data;
     }
-    const text = await new Response(result.stream).text()
-    return JSON.parse(text || "[]") as T
+    const text = await new Response(result.stream).text();
+    return JSON.parse(text || "[]") as T;
   } catch {
-    const data = await defaultData()
+    const data = await defaultData();
     await put(blobPathname, JSON.stringify(data, null, 2), {
       access: "private",
       contentType: "application/json",
       allowOverwrite: true,
-    })
-    return data
+    });
+    return data;
   }
 }
 
@@ -57,19 +60,19 @@ export async function readJsonStore<T = unknown[]>(
 export async function writeJsonStore(
   blobPathname: string,
   fsPath: string,
-  data: unknown[]
+  data: unknown[],
 ): Promise<void> {
-  const payload = JSON.stringify(data, null, 2)
+  const payload = JSON.stringify(data, null, 2);
 
   if (!token) {
-    const fullPath = path.join(process.cwd(), fsPath)
-    await fs.writeFile(fullPath, payload, "utf8")
-    return
+    const fullPath = path.join(process.cwd(), fsPath);
+    await fs.writeFile(fullPath, payload, "utf8");
+    return;
   }
 
   await put(blobPathname, payload, {
     access: "private",
     contentType: "application/json",
     allowOverwrite: true,
-  })
+  });
 }

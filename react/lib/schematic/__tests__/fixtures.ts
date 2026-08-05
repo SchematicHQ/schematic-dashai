@@ -149,6 +149,9 @@ export function jsonResponse(body: unknown, status = 200): Response {
   });
 }
 
-export function envelope(data: unknown): { data: unknown; params: Record<string, never> } {
+export function envelope(data: unknown): {
+  data: unknown;
+  params: Record<string, never>;
+} {
   return { data, params: {} };
 }

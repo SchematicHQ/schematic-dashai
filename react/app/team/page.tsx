@@ -1,57 +1,80 @@
-"use client"
+"use client";
 
-import { useState, useEffect } from "react"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Button } from "@/components/ui/button"
-import { Badge } from "@/components/ui/badge"
-import { Avatar, AvatarFallback } from "@/components/ui/avatar"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { Plus, Trash2, X, AlertCircle, ArrowUp } from "lucide-react"
-import { useSchematicEntitlement, useSchematicIsPending } from "@schematichq/schematic-react"
+import { useState, useEffect } from "react";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Plus, Trash2, X, AlertCircle, ArrowUp } from "lucide-react";
+import {
+  useSchematicEntitlement,
+  useSchematicIsPending,
+} from "@schematichq/schematic-react";
 
 interface TeamMember {
-  id: string
-  name: string
-  email: string
-  role: string
-  initials: string
+  id: string;
+  name: string;
+  email: string;
+  role: string;
+  initials: string;
 }
 
 export default function TeamPage() {
-  const [teamMembers, setTeamMembers] = useState<TeamMember[]>([])
-  const [isLoading, setIsLoading] = useState(true)
-  const [showAddForm, setShowAddForm] = useState(false)
-  const [newMember, setNewMember] = useState({ name: "", email: "", role: "Viewer" })
-  const [isSubmitting, setIsSubmitting] = useState(false)
-  
+  const [teamMembers, setTeamMembers] = useState<TeamMember[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [showAddForm, setShowAddForm] = useState(false);
+  const [newMember, setNewMember] = useState({
+    name: "",
+    email: "",
+    role: "Viewer",
+  });
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
   // Get seat count entitlement from Schematic
-  const { value, featureAllocation: allocation, featureUsage: usage } = useSchematicEntitlement("user-seat")
-  const isPending = useSchematicIsPending()
+  const {
+    value,
+    featureAllocation: allocation,
+    featureUsage: usage,
+  } = useSchematicEntitlement("user-seat");
+  const isPending = useSchematicIsPending();
 
   const fetchUsers = async () => {
     try {
-      const response = await fetch("/api/users", { cache: "no-store" })
+      const response = await fetch("/api/users", { cache: "no-store" });
       if (response.ok) {
-        const users = await response.json()
-        setTeamMembers(users)
+        const users = await response.json();
+        setTeamMembers(users);
       }
     } catch (error) {
-      console.error("Error fetching users:", error)
+      console.error("Error fetching users:", error);
     } finally {
-      setIsLoading(false)
+      setIsLoading(false);
     }
-  }
+  };
 
   useEffect(() => {
-    fetchUsers()
-  }, [])
+    fetchUsers();
+  }, []);
 
   const handleAddMember = async () => {
     if (!newMember.name || !newMember.email) {
-      return
+      return;
     }
 
-    setIsSubmitting(true)
+    setIsSubmitting(true);
     try {
       const response = await fetch("/api/users", {
         method: "POST",
@@ -59,46 +82,46 @@ export default function TeamPage() {
           "Content-Type": "application/json",
         },
         body: JSON.stringify(newMember),
-      })
+      });
 
       if (response.ok) {
-        const addedUser = await response.json()
-        setTeamMembers([...teamMembers, addedUser])
-        setNewMember({ name: "", email: "", role: "Viewer" })
-        setShowAddForm(false)
+        const addedUser = await response.json();
+        setTeamMembers([...teamMembers, addedUser]);
+        setNewMember({ name: "", email: "", role: "Viewer" });
+        setShowAddForm(false);
       } else {
-        const error = await response.json()
-        alert(error.message || "Failed to add member")
+        const error = await response.json();
+        alert(error.message || "Failed to add member");
       }
     } catch (error) {
-      console.error("Error adding member:", error)
-      alert("Failed to add member")
+      console.error("Error adding member:", error);
+      alert("Failed to add member");
     } finally {
-      setIsSubmitting(false)
+      setIsSubmitting(false);
     }
-  }
+  };
 
   const handleDeleteMember = async (id: string) => {
     if (!confirm("Are you sure you want to remove this team member?")) {
-      return
+      return;
     }
 
     try {
       const response = await fetch(`/api/users?id=${id}`, {
         method: "DELETE",
-      })
+      });
 
       if (response.ok) {
-        setTeamMembers(teamMembers.filter((member) => member.id !== id))
+        setTeamMembers(teamMembers.filter((member) => member.id !== id));
       } else {
-        const error = await response.json()
-        alert(error.message || "Failed to delete member")
+        const error = await response.json();
+        alert(error.message || "Failed to delete member");
       }
     } catch (error) {
-      console.error("Error deleting member:", error)
-      alert("Failed to delete member")
+      console.error("Error deleting member:", error);
+      alert("Failed to delete member");
     }
-  }
+  };
 
   return (
     <div className="min-h-screen flex flex-col">
@@ -106,7 +129,9 @@ export default function TeamPage() {
         <div className="max-w-4xl mx-auto space-y-8">
           <div>
             <h1 className="text-2xl font-bold mb-1">Team</h1>
-            <p className="text-muted-foreground">Manage who has access to your dashboards</p>
+            <p className="text-muted-foreground">
+              Manage who has access to your dashboards
+            </p>
           </div>
 
           {!isPending && value === false && (
@@ -114,8 +139,12 @@ export default function TeamPage() {
               <div className="flex items-center gap-3">
                 <AlertCircle className="h-5 w-5 text-violet-600 dark:text-violet-400 shrink-0" />
                 <div>
-                  <p className="text-sm font-medium text-violet-900 dark:text-violet-100">Seat limit reached</p>
-                  <p className="text-xs text-violet-700 dark:text-violet-300">Upgrade your plan to add more team members</p>
+                  <p className="text-sm font-medium text-violet-900 dark:text-violet-100">
+                    Seat limit reached
+                  </p>
+                  <p className="text-xs text-violet-700 dark:text-violet-300">
+                    Upgrade your plan to add more team members
+                  </p>
                 </div>
               </div>
               <Button
@@ -136,12 +165,16 @@ export default function TeamPage() {
                 <CardDescription>Invite and manage your team</CardDescription>
               </div>
               {!showAddForm && (
-                <Button 
-                  size="sm" 
-                  className="gap-2 disabled:cursor-not-allowed disabled:opacity-60" 
+                <Button
+                  size="sm"
+                  className="gap-2 disabled:cursor-not-allowed disabled:opacity-60"
                   onClick={() => setShowAddForm(true)}
                   disabled={value === false}
-                  title={value === false ? "Seat limit reached" : "Invite a new team member"}
+                  title={
+                    value === false
+                      ? "Seat limit reached"
+                      : "Invite a new team member"
+                  }
                 >
                   <Plus className="h-4 w-4" />
                   Invite Member
@@ -158,8 +191,8 @@ export default function TeamPage() {
                       size="icon"
                       className="h-6 w-6"
                       onClick={() => {
-                        setShowAddForm(false)
-                        setNewMember({ name: "", email: "", role: "Viewer" })
+                        setShowAddForm(false);
+                        setNewMember({ name: "", email: "", role: "Viewer" });
                       }}
                     >
                       <X className="h-4 w-4" />
@@ -170,19 +203,25 @@ export default function TeamPage() {
                       type="text"
                       placeholder="Name"
                       value={newMember.name}
-                      onChange={(e) => setNewMember({ ...newMember, name: e.target.value })}
+                      onChange={(e) =>
+                        setNewMember({ ...newMember, name: e.target.value })
+                      }
                       className="w-full px-3 py-2 text-sm rounded-md border border-border bg-background"
                     />
                     <input
                       type="email"
                       placeholder="Email"
                       value={newMember.email}
-                      onChange={(e) => setNewMember({ ...newMember, email: e.target.value })}
+                      onChange={(e) =>
+                        setNewMember({ ...newMember, email: e.target.value })
+                      }
                       className="w-full px-3 py-2 text-sm rounded-md border border-border bg-background"
                     />
                     <Select
                       value={newMember.role}
-                      onValueChange={(value) => setNewMember({ ...newMember, role: value })}
+                      onValueChange={(value) =>
+                        setNewMember({ ...newMember, role: value })
+                      }
                     >
                       <SelectTrigger className="w-full">
                         <SelectValue />
@@ -197,7 +236,9 @@ export default function TeamPage() {
                       <Button
                         size="sm"
                         onClick={handleAddMember}
-                        disabled={isSubmitting || !newMember.name || !newMember.email}
+                        disabled={
+                          isSubmitting || !newMember.name || !newMember.email
+                        }
                         className="flex-1"
                       >
                         {isSubmitting ? "Adding..." : "Add Member"}
@@ -206,8 +247,8 @@ export default function TeamPage() {
                         size="sm"
                         variant="outline"
                         onClick={() => {
-                          setShowAddForm(false)
-                          setNewMember({ name: "", email: "", role: "Viewer" })
+                          setShowAddForm(false);
+                          setNewMember({ name: "", email: "", role: "Viewer" });
                         }}
                       >
                         Cancel
@@ -219,9 +260,13 @@ export default function TeamPage() {
 
               <div className="space-y-4">
                 {isLoading ? (
-                  <p className="text-sm text-muted-foreground">Loading team members...</p>
+                  <p className="text-sm text-muted-foreground">
+                    Loading team members...
+                  </p>
                 ) : teamMembers.length === 0 ? (
-                  <p className="text-sm text-muted-foreground">No team members yet. Add one to get started.</p>
+                  <p className="text-sm text-muted-foreground">
+                    No team members yet. Add one to get started.
+                  </p>
                 ) : (
                   teamMembers.map((member) => (
                     <div
@@ -236,7 +281,9 @@ export default function TeamPage() {
                         </Avatar>
                         <div>
                           <p className="text-sm font-medium">{member.name}</p>
-                          <p className="text-xs text-muted-foreground">{member.email}</p>
+                          <p className="text-xs text-muted-foreground">
+                            {member.email}
+                          </p>
                         </div>
                       </div>
                       <div className="flex items-center gap-3">
@@ -259,7 +306,10 @@ export default function TeamPage() {
               {!isPending && (
                 <div className="mt-4 pt-4 border-t border-border">
                   <p className="text-sm text-muted-foreground">
-                    <span className="font-medium text-foreground">{usage} of {allocation}</span> seats used on your current plan
+                    <span className="font-medium text-foreground">
+                      {usage} of {allocation}
+                    </span>{" "}
+                    seats used on your current plan
                   </p>
                 </div>
               )}
@@ -268,5 +318,5 @@ export default function TeamPage() {
         </div>
       </main>
     </div>
-  )
+  );
 }
