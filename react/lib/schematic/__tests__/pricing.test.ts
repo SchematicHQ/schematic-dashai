@@ -8,6 +8,7 @@ import {
   findTierForQuantity,
   getEntitlementCost,
   getEntitlementPrice,
+  getPriceValue,
   getTierUnitPrice,
 } from "../pricing";
 
@@ -46,6 +47,30 @@ describe("getTierUnitPrice", () => {
     ).toBe(0.5);
     expect(getTierUnitPrice(tier({ perUnitPrice: 100 }))).toBe(100);
     expect(getTierUnitPrice(tier({}))).toBe(0);
+  });
+
+  it("falls back to the integer rate when the decimal is empty", () => {
+    // Number("") is 0 — an empty decimal must not zero out a real rate.
+    expect(
+      getTierUnitPrice(tier({ perUnitPrice: 100, perUnitPriceDecimal: "" })),
+    ).toBe(100);
+  });
+});
+
+describe("getPriceValue", () => {
+  it("prefers the decimal, falling back to price when it is null or empty", () => {
+    expect(
+      getPriceValue({ price: 100, priceDecimal: "0.5", currency: "usd" }),
+    ).toBe(0.5);
+    expect(
+      getPriceValue({ price: 100, priceDecimal: null, currency: "usd" }),
+    ).toBe(100);
+    expect(
+      getPriceValue({ price: 100, priceDecimal: "", currency: "usd" }),
+    ).toBe(100);
+    expect(
+      getPriceValue({ price: 100, priceDecimal: "0", currency: "usd" }),
+    ).toBe(0);
   });
 });
 

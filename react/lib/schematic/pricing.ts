@@ -66,11 +66,13 @@ export function getSubscriptionPeriod(
   );
 }
 
-/** Prefers the lossless decimal representation when the API provides one. */
+/**
+ * Prefers the lossless decimal representation when the API provides one.
+ * The decimal may come through as "" rather than null; Number("") is 0, so
+ * only a non-empty decimal is trusted over `price`.
+ */
 export function getPriceValue(price: PriceData): number {
-  return typeof price.priceDecimal === "string"
-    ? Number(price.priceDecimal)
-    : price.price;
+  return price.priceDecimal ? Number(price.priceDecimal) : price.price;
 }
 
 function selectPriceForPeriod<T extends PricedPlan>(
@@ -118,7 +120,7 @@ export function getAddOnPrice(
 export function getTierUnitPrice(
   tier: BillingProductPriceTierResponseData,
 ): number {
-  return typeof tier.perUnitPriceDecimal === "string"
+  return tier.perUnitPriceDecimal
     ? Number(tier.perUnitPriceDecimal)
     : (tier.perUnitPrice ?? 0);
 }
@@ -160,10 +162,7 @@ export function getEntitlementPrice(
       // Realign both fields with the tier so getPriceValue does not return the
       // parent tiered price's stale decimal (typically "0").
       price.price = getTierUnitPrice(tier);
-      price.priceDecimal =
-        typeof tier.perUnitPriceDecimal === "string"
-          ? tier.perUnitPriceDecimal
-          : null;
+      price.priceDecimal = tier.perUnitPriceDecimal || null;
     }
   }
 
@@ -220,10 +219,7 @@ export function calculateTieredCost(
     for (const tier of priceTiers) {
       const upTo = tier.upTo ?? Infinity;
       const flatAmount = tier.flatAmount ?? 0;
-      const perUnitPrice =
-        typeof tier.perUnitPriceDecimal === "string"
-          ? Number(tier.perUnitPriceDecimal)
-          : (tier.perUnitPrice ?? 0);
+      const perUnitPrice = getTierUnitPrice(tier);
 
       if (acc < quantity) {
         const tierAmount = Math.min(upTo, quantity) - acc;

@@ -41,7 +41,7 @@ export function PlanManager({ billing, onChangePlan }: PlanManagerProps) {
 
   const notice = getPlanManagerNotice(subscription, scheduledDowngrade);
   const period =
-    getSubscriptionPeriod(subscription) ?? plan?.planPeriod ?? "month";
+    getSubscriptionPeriod(subscription) || plan?.planPeriod || "month";
   const usageBasedEntitlements = features.filter(
     (feature) => typeof feature.priceBehavior === "string",
   );
@@ -144,8 +144,8 @@ export function PlanManager({ billing, onChangePlan }: PlanManagerProps) {
             {usageBasedEntitlements.map((entitlement) => {
               const price = getEntitlementPrice(entitlement, period);
               const unit =
-                entitlement.feature?.singularName ??
-                entitlement.feature?.name ??
+                entitlement.feature?.singularName ||
+                entitlement.feature?.name ||
                 "unit";
               return (
                 <div

@@ -23,7 +23,7 @@ export interface IncludedFeaturesProps {
 function usageSummary(feature: FeatureUsageResponseData): string | undefined {
   const name = feature.feature?.name ?? "";
   const unit = (count: number) =>
-    pluralize(feature.feature?.singularName ?? name, count).toLowerCase();
+    pluralize(feature.feature?.singularName || name, count).toLowerCase();
 
   if (feature.isUnlimited || feature.allocationType === "unlimited") {
     return "No limit";

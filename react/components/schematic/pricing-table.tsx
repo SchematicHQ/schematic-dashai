@@ -30,14 +30,14 @@ function entitlementLabel(plan: CatalogPlan): string[] {
     }
     if (typeof entitlement.valueNumeric === "number") {
       const unit = pluralize(
-        feature.singularName ?? feature.name,
+        feature.singularName || feature.name,
         entitlement.valueNumeric,
       ).toLowerCase();
       return [`${formatNumber(entitlement.valueNumeric)} ${unit}`];
     }
     if (entitlement.valueType === "unlimited") {
       return [
-        `Unlimited ${(feature.pluralName ?? feature.name).toLowerCase()}`,
+        `Unlimited ${(feature.pluralName || feature.name).toLowerCase()}`,
       ];
     }
     return [feature.name];
@@ -162,8 +162,8 @@ export function PricingTable({ catalog, onSelectPlan }: PricingTableProps) {
                       !onSelectPlan
                         ? "Checkout is coming soon"
                         : plan.valid === false
-                          ? (plan.invalidReason ??
-                            "This plan is not available for your account")
+                          ? plan.invalidReason ||
+                            "This plan is not available for your account"
                           : undefined
                     }
                   >
