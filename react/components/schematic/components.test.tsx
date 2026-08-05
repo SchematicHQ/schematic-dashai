@@ -1,5 +1,5 @@
-import { render, screen } from "@testing-library/react";
-import { describe, expect, it } from "vitest";
+import { fireEvent, render, screen } from "@testing-library/react";
+import { describe, expect, it, vi } from "vitest";
 
 import { toBilling } from "@/lib/schematic";
 import {
@@ -10,6 +10,7 @@ import {
   makeWireCompanyPlan,
   makeWireHydrate,
   makeWireInvoice,
+  wireDisplaySettings,
 } from "@/lib/schematic/__tests__/fixtures";
 
 import { toCatalogFromHydrate } from "@/lib/schematic";
@@ -251,6 +252,63 @@ describe("billing components", () => {
     const choose = screen.getByRole("button", { name: "Choose plan" });
     expect(choose.hasAttribute("disabled")).toBe(true); // checkout stubbed
     expect(screen.getAllByText("$10.00").length).toBe(2);
+  });
+
+  it("PricingTable enables plan selection when onSelectPlan is provided", () => {
+    const hydrate = ComponentHydrateResponseDataFromJSON(
+      makeWireHydrate({
+        active_plans: [
+          makeWireCompanyPlan({ id: "plan_basic", name: "Basic", current: true }),
+          makeWireCompanyPlan({ id: "plan_pro", name: "Pro", current: false }),
+        ],
+      }),
+    );
+    const onSelectPlan = vi.fn();
+    render(<PricingTable catalog={toCatalogFromHydrate(hydrate)} onSelectPlan={onSelectPlan} />);
+
+    const choose = screen.getByRole("button", { name: "Choose plan" });
+    expect(choose.hasAttribute("disabled")).toBe(false);
+    fireEvent.click(choose);
+    expect(onSelectPlan).toHaveBeenCalledTimes(1);
+    expect(onSelectPlan.mock.calls[0][0].id).toBe("plan_pro");
+  });
+
+  it("PricingTable shows a monthly equivalent when showAsMonthlyPrices is set", () => {
+    const hydrate = ComponentHydrateResponseDataFromJSON(
+      makeWireHydrate({
+        display_settings: { ...wireDisplaySettings, show_as_monthly_prices: true },
+        active_plans: [
+          makeWireCompanyPlan({
+            id: "plan_yearly",
+            name: "Yearly",
+            yearly_price: {
+              id: "price_y",
+              currency: "usd",
+              interval: "year",
+              price: 58800,
+              price_decimal: null,
+              price_external_id: "px_y",
+              product_external_id: "prod_y",
+              scheme: "per_unit",
+              billing_scheme: "per_unit",
+              created_at: "2026-01-01T00:00:00Z",
+              updated_at: "2026-01-01T00:00:00Z",
+              is_active: true,
+              meter_id: null,
+              price_tier: [],
+              package_size: 1,
+              usage_type: "licensed",
+              tiers_mode: null,
+            },
+          }),
+        ],
+      }),
+    );
+    render(<PricingTable catalog={toCatalogFromHydrate(hydrate)} />);
+
+    fireEvent.click(screen.getByRole("button", { name: "Yearly" }));
+    expect(screen.getByText("$49.00")).toBeDefined();
+    expect(screen.getByText("/month, billed yearly")).toBeDefined();
   });
 
   it("CreditUsage hides when display settings disable credits", () => {

@@ -101,9 +101,21 @@ export function getAddOnPrice(addOn: PricedPlan, period = "month"): PriceData | 
 }
 
 /**
+ * A price tier's per-unit price, preferring the lossless decimal. Tiered
+ * schemes commonly express sub-cent rates only in `perUnitPriceDecimal`, with
+ * `perUnitPrice` rounded to 0.
+ */
+export function getTierUnitPrice(tier: BillingProductPriceTierResponseData): number {
+  return typeof tier.perUnitPriceDecimal === "string"
+    ? Number(tier.perUnitPriceDecimal)
+    : (tier.perUnitPrice ?? 0);
+}
+
+/**
  * The usage-based price attached to a feature-usage entitlement for the given
- * period. For overage pricing, the last price tier carries the per-unit
- * overage cost.
+ * period. For tiered schemes the parent price carries a stale price/decimal
+ * (typically 0), so the relevant tier's per-unit price is substituted:
+ * the last tier for overage, the tier the current usage lands in for Tier.
  */
 export function getEntitlementPrice(
   entitlement: FeatureUsageResponseData,
@@ -122,23 +134,42 @@ export function getEntitlementPrice(
   }
 
   const price: PriceData = { ...source };
-  if (
-    entitlement.priceBehavior === EntitlementPriceBehavior.Overage &&
-    price.priceTier?.length
-  ) {
-    const overageTier = price.priceTier[price.priceTier.length - 1];
-    if (typeof overageTier.perUnitPrice === "number") {
-      price.price = overageTier.perUnitPrice;
+  const tiers = price.priceTier;
+
+  if (tiers?.length) {
+    let tier: BillingProductPriceTierResponseData | undefined;
+    if (entitlement.priceBehavior === EntitlementPriceBehavior.Overage) {
+      tier = tiers[tiers.length - 1];
+    } else if (entitlement.priceBehavior === EntitlementPriceBehavior.Tier) {
+      tier = findTierForQuantity(tiers, entitlement.usage ?? 0);
     }
-    // Realign priceDecimal with the overage tier so getPriceValue does not
-    // return the parent tiered price's stale decimal (typically "0").
-    price.priceDecimal =
-      typeof overageTier.perUnitPriceDecimal === "string"
-        ? overageTier.perUnitPriceDecimal
-        : null;
+
+    if (tier) {
+      // Realign both fields with the tier so getPriceValue does not return the
+      // parent tiered price's stale decimal (typically "0").
+      price.price = getTierUnitPrice(tier);
+      price.priceDecimal =
+        typeof tier.perUnitPriceDecimal === "string" ? tier.perUnitPriceDecimal : null;
+    }
   }
 
   return { ...price, price: getPriceValue(price) };
+}
+
+/** The tier a given quantity falls into, by ascending `upTo` bound. */
+export function findTierForQuantity(
+  tiers: BillingProductPriceTierResponseData[],
+  quantity: number,
+): BillingProductPriceTierResponseData | undefined {
+  let start = 0;
+  for (const tier of tiers) {
+    const end = tier.upTo ?? Infinity;
+    if (quantity >= start && quantity <= end) {
+      return tier;
+    }
+    start = end + 1;
+  }
+  return tiers[tiers.length - 1];
 }
 
 export function isTieredPrice(price?: PriceData): boolean {
@@ -166,10 +197,7 @@ export function calculateTieredCost(
 
     if (quantity > 0) {
       const flatAmount = currentTier?.flatAmount ?? 0;
-      const perUnitPrice =
-        typeof currentTier?.perUnitPriceDecimal === "string"
-          ? Number(currentTier.perUnitPriceDecimal)
-          : (currentTier?.perUnitPrice ?? 0);
+      const perUnitPrice = currentTier ? getTierUnitPrice(currentTier) : 0;
       cost += quantity * perUnitPrice + flatAmount;
     }
   } else {
@@ -231,9 +259,12 @@ export function getEntitlementCost(
         return undefined;
       }
       let cost = overageTier.flatAmount ?? 0;
-      if (overageTier.perUnitPrice) {
+      // Prefer the decimal rate: sub-cent overage prices come through with
+      // perUnitPrice rounded to 0 and the real rate only in the decimal.
+      const perUnitPrice = getTierUnitPrice(overageTier);
+      if (perUnitPrice) {
         const amount = Math.max(0, entitlement.usage - (entitlement.softLimit ?? 0));
-        cost += amount * overageTier.perUnitPrice;
+        cost += amount * perUnitPrice;
       }
       return cost;
     }

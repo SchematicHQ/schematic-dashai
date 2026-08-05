@@ -44,8 +44,9 @@ function usageLine(feature: FeatureUsageResponseData, period: string): string {
       return `${formatNumber(usage)} of ${formatNumber(feature.allocation ?? 0)} ${unit(feature.allocation ?? 0)} used`;
     case EntitlementPriceBehavior.PayAsYouGo: {
       const cost = getEntitlementCost(feature, period);
+      const currency = getEntitlementPrice(feature, period)?.currency;
       return cost !== undefined
-        ? `${formatNumber(usage)} ${unit(usage)} used (${formatCurrency(cost)})`
+        ? `${formatNumber(usage)} ${unit(usage)} used (${formatCurrency(cost, currency)})`
         : `${formatNumber(usage)} ${unit(usage)} used`;
     }
     case EntitlementPriceBehavior.CreditBurndown: {

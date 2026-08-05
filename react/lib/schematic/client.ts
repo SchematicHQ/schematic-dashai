@@ -10,7 +10,7 @@ import {
   Configuration as PublicConfiguration,
   type PublicPlansResponseData,
 } from "./api/componentspublic";
-import { Resource } from "./store";
+import { Resource, type ResourceOptions } from "./store";
 import { TokenManager, type AccessTokenProvider } from "./token";
 
 const DEFAULT_API_URL = "https://api.schematichq.com";
@@ -31,6 +31,11 @@ export interface SchematicBillingClientOptions {
   catalogId?: string;
   /** Refresh the access token this long before expiry. Default 60s. */
   refreshMarginMs?: number;
+  /**
+   * How long a fetched result is served before a mounting hook revalidates it.
+   * Default 30s; 0 revalidates on every mount.
+   */
+  staleTime?: number;
   /** Injectable fetch implementation (tests, SSR). Default globalThis.fetch. */
   fetchFn?: typeof fetch;
 }
@@ -50,6 +55,7 @@ export class SchematicBillingClient {
   private readonly checkoutApi?: CheckoutexternalApi;
   private readonly publicApi?: ComponentspublicApi;
   private readonly catalogId?: string;
+  private readonly resourceOptions: ResourceOptions;
 
   private hydrateResource?: Resource<ComponentHydrateResponseData>;
   private publicPlansResource?: Resource<PublicPlansResponseData>;
@@ -66,6 +72,7 @@ export class SchematicBillingClient {
     const basePath = (options.apiUrl ?? DEFAULT_API_URL).replace(/\/+$/, "");
     const fetchFn = options.fetchFn ?? ((...args) => globalThis.fetch(...args));
     this.catalogId = options.catalogId;
+    this.resourceOptions = { staleTime: options.staleTime };
     this.hasAccessTokenMode = Boolean(getAccessToken);
     this.hasPublishableMode = Boolean(publishableKey);
 
@@ -127,7 +134,7 @@ export class SchematicBillingClient {
         this.catalogId ? { catalogId: this.catalogId } : {},
       );
       return response.data;
-    });
+    }, this.resourceOptions);
     return this.hydrateResource;
   }
 
@@ -142,7 +149,7 @@ export class SchematicBillingClient {
     this.publicPlansResource ??= new Resource(async () => {
       const response = await api.getPublicPlans();
       return response.data;
-    });
+    }, this.resourceOptions);
     return this.publicPlansResource;
   }
 
@@ -166,7 +173,7 @@ export class SchematicBillingClient {
           offset: params?.offset,
         });
         return response.data;
-      });
+      }, this.resourceOptions);
       this.invoiceResources.set(key, resource);
     }
     return resource;
