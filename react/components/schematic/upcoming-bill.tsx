@@ -2,12 +2,12 @@
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
-  deriveAppliedBalance,
-  formatCurrency,
-  formatDate,
   type CompanySubscriptionResponseData,
+  helpers,
   type InvoiceResponseData,
-} from "@/lib/schematic";
+} from "@schematichq/schematic-react";
+
+const { deriveAppliedBalance, formatCurrency, formatDate } = helpers;
 
 export interface UpcomingBillProps {
   upcomingInvoice?: InvoiceResponseData;

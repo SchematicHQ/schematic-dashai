@@ -6,13 +6,13 @@ import { Check } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
-  formatDate,
-  formatNumber,
-  pluralize,
   type FeatureUsageResponseData,
-} from "@/lib/schematic";
+  helpers,
+} from "@schematichq/schematic-react";
 
 import { FeatureIcon } from "./feature-icon";
+
+const { formatDate, formatNumber, pluralize } = helpers;
 
 export interface IncludedFeaturesProps {
   features: FeatureUsageResponseData[];

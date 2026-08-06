@@ -3,8 +3,16 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import {
+  type CustomerSubscription,
   EntitlementPriceBehavior,
   FeatureType,
+  type FeatureUsageResponseData,
+  helpers,
+} from "@schematichq/schematic-react";
+
+import { FeatureIcon } from "./feature-icon";
+
+const {
   formatCurrency,
   formatDate,
   formatNumber,
@@ -12,14 +20,10 @@ import {
   getEntitlementPrice,
   getSubscriptionPeriod,
   pluralize,
-  type Billing,
-  type FeatureUsageResponseData,
-} from "@/lib/schematic";
-
-import { FeatureIcon } from "./feature-icon";
+} = helpers;
 
 export interface MeteredFeaturesProps {
-  billing: Billing;
+  billing: CustomerSubscription;
 }
 
 function usageLine(feature: FeatureUsageResponseData, period: string): string {

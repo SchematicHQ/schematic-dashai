@@ -7,14 +7,18 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
+  type Catalog,
+  type CatalogPlan,
+  helpers,
+} from "@schematichq/schematic-react";
+
+const {
   formatCurrency,
   formatNumber,
   getDisplayPrice,
   getPlanPrice,
   pluralize,
-  type Catalog,
-  type CatalogPlan,
-} from "@/lib/schematic";
+} = helpers;
 
 export interface PricingTableProps {
   catalog: Catalog;

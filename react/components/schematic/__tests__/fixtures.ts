@@ -102,20 +102,6 @@ export function makeWireHydrate(overrides?: Record<string, unknown>) {
   };
 }
 
-export function makeWirePublicPlans(overrides?: Record<string, unknown>) {
-  return {
-    active_plans: [makeWirePlan({ id: "plan_basic" })],
-    active_add_ons: [],
-    add_on_compatibilities: [],
-    capabilities: { badge_visibility: true },
-    display_settings: wireDisplaySettings,
-    show_as_monthly_prices: false,
-    show_credits: true,
-    show_period_toggle: true,
-    show_zero_price_as_free: false,
-    ...overrides,
-  };
-}
 
 export function makeWireInvoice(overrides?: Record<string, unknown>) {
   return {
@@ -142,16 +128,4 @@ export function makeWireInvoice(overrides?: Record<string, unknown>) {
   };
 }
 
-export function jsonResponse(body: unknown, status = 200): Response {
-  return new Response(JSON.stringify(body), {
-    status,
-    headers: { "Content-Type": "application/json" },
-  });
-}
 
-export function envelope(data: unknown): {
-  data: unknown;
-  params: Record<string, never>;
-} {
-  return { data, params: {} };
-}

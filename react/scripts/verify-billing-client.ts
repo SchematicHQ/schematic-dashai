@@ -1,12 +1,13 @@
 /**
- * Manual end-to-end check of lib/schematic against the live Schematic API.
- * Mints a temporary access token exactly like app/api/accessToken/route.ts,
- * then drives SchematicBillingClient's resources. Run: npx tsx scripts/verify-billing-client.ts
+ * Manual end-to-end check of @schematichq/schematic-react's customer client
+ * against the live Schematic API. Mints a temporary access token exactly like
+ * app/api/accessToken/route.ts, then drives SchematicCustomerClient's
+ * resources. Run: npx tsx scripts/verify-billing-client.ts
  */
 import { SchematicClient } from "@schematichq/schematic-typescript-node";
 import { config } from "dotenv";
 
-import { SchematicBillingClient } from "../lib/schematic";
+import { SchematicCustomerClient } from "@schematichq/schematic-react";
 
 config({ path: ".env.local" });
 
@@ -18,7 +19,7 @@ async function main() {
   }
 
   const node = new SchematicClient({ apiKey: secretKey });
-  const client = new SchematicBillingClient({
+  const client = new SchematicCustomerClient({
     publishableKey,
     getAccessToken: async () => {
       const resp = await node.accesstokens.issueTemporaryAccessToken({

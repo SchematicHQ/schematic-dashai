@@ -8,18 +8,17 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import {
   BillingCreditGrantReason,
-  formatDate,
-  formatNumber,
-  groupCreditGrants,
-  pluralize,
-  type Billing,
   type CreditCompanyGrantView,
-} from "@/lib/schematic";
+  type CustomerSubscription,
+  helpers,
+} from "@schematichq/schematic-react";
 
 import { FeatureIcon } from "./feature-icon";
 
+const { formatDate, formatNumber, groupCreditGrants, pluralize } = helpers;
+
 export interface CreditUsageProps {
-  billing: Billing;
+  billing: CustomerSubscription;
   /** Wire this up when checkout ships; omitted → no buy-more button. */
   onBuyMore?: (creditId: string) => void;
 }

@@ -1,19 +1,17 @@
 import { fireEvent, render, screen } from "@testing-library/react";
 import { describe, expect, it, vi } from "vitest";
 
-import { toBilling } from "@/lib/schematic";
 import {
-  ComponentHydrateResponseDataFromJSON,
-  InvoiceResponseDataFromJSON,
-} from "@/lib/schematic/api/checkoutexternal";
+  checkoutexternal,
+  toCatalogFromHydrate,
+  toSubscription,
+} from "@schematichq/schematic-react";
 import {
   makeWireCompanyPlan,
   makeWireHydrate,
   makeWireInvoice,
   wireDisplaySettings,
-} from "@/lib/schematic/__tests__/fixtures";
-
-import { toCatalogFromHydrate } from "@/lib/schematic";
+} from "./__tests__/fixtures";
 
 import { CreditUsage } from "./credit-usage";
 import { IncludedFeatures } from "./included-features";
@@ -22,6 +20,9 @@ import { MeteredFeatures } from "./metered-features";
 import { PlanManager } from "./plan-manager";
 import { PricingTable } from "./pricing-table";
 import { UpcomingBill } from "./upcoming-bill";
+
+const { ComponentHydrateResponseDataFromJSON, InvoiceResponseDataFromJSON } =
+  checkoutexternal;
 
 const wireFeature = (overrides?: Record<string, unknown>) => ({
   access: true,
@@ -177,7 +178,7 @@ function makeBilling() {
       active_plans: [makeWireCompanyPlan({ current: true })],
     }),
   );
-  return toBilling(hydrate);
+  return toSubscription(hydrate);
 }
 
 describe("billing components", () => {
