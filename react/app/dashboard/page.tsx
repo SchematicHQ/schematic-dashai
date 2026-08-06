@@ -1,4 +1,4 @@
-import { GeneratedDashboard } from "@/components/generated-dashboard";
+import { GeneratedDashboard } from "@/components/generated-dashboard"
 
 export default function DashboardPage() {
   return (
@@ -9,5 +9,5 @@ export default function DashboardPage() {
         </div>
       </main>
     </div>
-  );
+  )
 }

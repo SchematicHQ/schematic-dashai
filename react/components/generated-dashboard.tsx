@@ -1,13 +1,7 @@
-"use client";
+"use client"
 
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import { ChartContainer } from "@/components/ui/chart";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import { ChartContainer } from "@/components/ui/chart"
 import {
   LineChart,
   Line,
@@ -22,15 +16,8 @@ import {
   YAxis,
   CartesianGrid,
   Tooltip,
-} from "recharts";
-import {
-  TrendingUp,
-  TrendingDown,
-  Users,
-  DollarSign,
-  ShoppingCart,
-  Activity,
-} from "lucide-react";
+} from "recharts"
+import { TrendingUp, TrendingDown, Users, DollarSign, ShoppingCart, Activity } from "lucide-react"
 
 const revenueData = [
   { month: "Jan", revenue: 4200, target: 4000 },
@@ -41,7 +28,7 @@ const revenueData = [
   { month: "Jun", revenue: 5800, target: 5000 },
   { month: "Jul", revenue: 7100, target: 5200 },
   { month: "Aug", revenue: 6800, target: 5400 },
-];
+]
 
 const userActivityData = [
   { day: "Mon", active: 2400, new: 400 },
@@ -51,70 +38,57 @@ const userActivityData = [
   { day: "Fri", active: 4800, new: 380 },
   { day: "Sat", active: 3800, new: 430 },
   { day: "Sun", active: 4300, new: 340 },
-];
+]
 
 const trafficSourceData = [
   { name: "Organic", value: 42, fill: "#6366f1" },
   { name: "Direct", value: 28, fill: "#22c55e" },
   { name: "Referral", value: 18, fill: "#f59e0b" },
   { name: "Social", value: 12, fill: "#ec4899" },
-];
+]
 
 const conversionData = [
   { week: "W1", visitors: 1200, signups: 120, purchases: 45 },
   { week: "W2", visitors: 1400, signups: 150, purchases: 52 },
   { week: "W3", visitors: 1100, signups: 98, purchases: 38 },
   { week: "W4", visitors: 1600, signups: 180, purchases: 68 },
-];
+]
 
 function CustomTooltip({
   active,
   payload,
   label,
-}: {
-  active?: boolean;
-  payload?: Array<{ name: string; value: number; color?: string }>;
-  label?: string;
-}) {
-  if (!active || !payload?.length) return null;
+}: { active?: boolean; payload?: Array<{ name: string; value: number; color?: string }>; label?: string }) {
+  if (!active || !payload?.length) return null
   return (
     <div className="rounded-lg border border-border/50 bg-background px-3 py-2 text-xs shadow-xl">
       {label && <div className="font-medium mb-1">{label}</div>}
       {payload.map((entry, index) => (
         <div key={index} className="flex items-center gap-2">
-          <div
-            className="h-2 w-2 rounded-full"
-            style={{ backgroundColor: entry.color }}
-          />
+          <div className="h-2 w-2 rounded-full" style={{ backgroundColor: entry.color }} />
           <span className="text-muted-foreground">{entry.name}:</span>
           <span className="font-medium">{entry.value?.toLocaleString()}</span>
         </div>
       ))}
     </div>
-  );
+  )
 }
 
 function PieTooltip({
   active,
   payload,
-}: {
-  active?: boolean;
-  payload?: Array<{ name: string; value: number; payload: { fill: string } }>;
-}) {
-  if (!active || !payload?.length) return null;
-  const data = payload[0];
+}: { active?: boolean; payload?: Array<{ name: string; value: number; payload: { fill: string } }> }) {
+  if (!active || !payload?.length) return null
+  const data = payload[0]
   return (
     <div className="rounded-lg border border-border/50 bg-background px-3 py-2 text-xs shadow-xl">
       <div className="flex items-center gap-2">
-        <div
-          className="h-2 w-2 rounded-full"
-          style={{ backgroundColor: data.payload.fill }}
-        />
+        <div className="h-2 w-2 rounded-full" style={{ backgroundColor: data.payload.fill }} />
         <span className="text-muted-foreground">{data.name}:</span>
         <span className="font-medium">{data.value}%</span>
       </div>
     </div>
-  );
+  )
 }
 
 export function GeneratedDashboard() {
@@ -123,9 +97,7 @@ export function GeneratedDashboard() {
       <div className="flex items-center justify-between">
         <div>
           <h2 className="text-xl font-semibold">Generated Dashboard</h2>
-          <p className="text-sm text-muted-foreground">
-            Business performance overview
-          </p>
+          <p className="text-sm text-muted-foreground">Business performance overview</p>
         </div>
         <div className="flex items-center gap-2 text-xs text-muted-foreground">
           <div className="h-2 w-2 rounded-full bg-green-500 animate-pulse" />
@@ -222,19 +194,8 @@ export function GeneratedDashboard() {
             >
               <AreaChart data={revenueData} accessibilityLayer>
                 <CartesianGrid strokeDasharray="3 3" stroke="#333" />
-                <XAxis
-                  dataKey="month"
-                  stroke="#666"
-                  fontSize={12}
-                  tickLine={false}
-                  axisLine={false}
-                />
-                <YAxis
-                  stroke="#666"
-                  fontSize={12}
-                  tickLine={false}
-                  axisLine={false}
-                />
+                <XAxis dataKey="month" stroke="#666" fontSize={12} tickLine={false} axisLine={false} />
+                <YAxis stroke="#666" fontSize={12} tickLine={false} axisLine={false} />
                 <Tooltip content={<CustomTooltip />} />
                 <Area
                   type="monotone"
@@ -272,32 +233,11 @@ export function GeneratedDashboard() {
             >
               <BarChart data={userActivityData} accessibilityLayer>
                 <CartesianGrid strokeDasharray="3 3" stroke="#333" />
-                <XAxis
-                  dataKey="day"
-                  stroke="#666"
-                  fontSize={12}
-                  tickLine={false}
-                  axisLine={false}
-                />
-                <YAxis
-                  stroke="#666"
-                  fontSize={12}
-                  tickLine={false}
-                  axisLine={false}
-                />
+                <XAxis dataKey="day" stroke="#666" fontSize={12} tickLine={false} axisLine={false} />
+                <YAxis stroke="#666" fontSize={12} tickLine={false} axisLine={false} />
                 <Tooltip content={<CustomTooltip />} />
-                <Bar
-                  dataKey="active"
-                  fill="var(--color-active)"
-                  radius={[4, 4, 0, 0]}
-                  name="Active Users"
-                />
-                <Bar
-                  dataKey="new"
-                  fill="var(--color-new)"
-                  radius={[4, 4, 0, 0]}
-                  name="New Users"
-                />
+                <Bar dataKey="active" fill="var(--color-active)" radius={[4, 4, 0, 0]} name="Active Users" />
+                <Bar dataKey="new" fill="var(--color-new)" radius={[4, 4, 0, 0]} name="New Users" />
               </BarChart>
             </ChartContainer>
           </CardContent>
@@ -341,16 +281,9 @@ export function GeneratedDashboard() {
             <div className="grid grid-cols-2 gap-2 mt-4">
               {trafficSourceData.map((item) => (
                 <div key={item.name} className="flex items-center gap-2">
-                  <div
-                    className="h-2 w-2 rounded-full"
-                    style={{ backgroundColor: item.fill }}
-                  />
-                  <span className="text-xs text-muted-foreground">
-                    {item.name}
-                  </span>
-                  <span className="text-xs font-medium ml-auto">
-                    {item.value}%
-                  </span>
+                  <div className="h-2 w-2 rounded-full" style={{ backgroundColor: item.fill }} />
+                  <span className="text-xs text-muted-foreground">{item.name}</span>
+                  <span className="text-xs font-medium ml-auto">{item.value}%</span>
                 </div>
               ))}
             </div>
@@ -360,9 +293,7 @@ export function GeneratedDashboard() {
         <Card className="col-span-2">
           <CardHeader className="pb-2">
             <CardTitle className="text-base">Conversion Funnel</CardTitle>
-            <CardDescription>
-              Weekly visitor to purchase journey
-            </CardDescription>
+            <CardDescription>Weekly visitor to purchase journey</CardDescription>
           </CardHeader>
           <CardContent>
             <ChartContainer
@@ -375,19 +306,8 @@ export function GeneratedDashboard() {
             >
               <LineChart data={conversionData} accessibilityLayer>
                 <CartesianGrid strokeDasharray="3 3" stroke="#333" />
-                <XAxis
-                  dataKey="week"
-                  stroke="#666"
-                  fontSize={12}
-                  tickLine={false}
-                  axisLine={false}
-                />
-                <YAxis
-                  stroke="#666"
-                  fontSize={12}
-                  tickLine={false}
-                  axisLine={false}
-                />
+                <XAxis dataKey="week" stroke="#666" fontSize={12} tickLine={false} axisLine={false} />
+                <YAxis stroke="#666" fontSize={12} tickLine={false} axisLine={false} />
                 <Tooltip content={<CustomTooltip />} />
                 <Line
                   type="monotone"
@@ -419,5 +339,5 @@ export function GeneratedDashboard() {
         </Card>
       </div>
     </div>
-  );
+  )
 }

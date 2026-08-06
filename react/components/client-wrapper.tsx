@@ -1,18 +1,15 @@
-"use client";
+"use client"
 
-import { ClerkProvider, useUser } from "@clerk/nextjs";
-import {
-  SchematicProvider,
-  useSchematicEvents,
-} from "@schematichq/schematic-react";
-import { useEffect } from "react";
+import { ClerkProvider, useUser } from '@clerk/nextjs'
+import { SchematicProvider, useSchematicEvents } from '@schematichq/schematic-react'
+import { useEffect } from 'react'
 
 const SchematicWrapper = ({ children }: { children: React.ReactNode }) => {
-  const { isSignedIn, user, isLoaded } = useUser();
-  const { identify } = useSchematicEvents();
+  const { isSignedIn, user, isLoaded } = useUser()
+  const { identify } = useSchematicEvents()
 
-  const clerkId = user?.id;
-  const email = user?.primaryEmailAddress?.emailAddress;
+  const clerkId = user?.id
+  const email = user?.primaryEmailAddress?.emailAddress
 
   useEffect(() => {
     if (isLoaded && isSignedIn && clerkId) {
@@ -24,24 +21,22 @@ const SchematicWrapper = ({ children }: { children: React.ReactNode }) => {
         name: email,
         company: {
           keys: {
-            id: "demo",
+            'id': 'demo',
           },
         },
-      });
+      })
     }
-  }, [isLoaded, isSignedIn, clerkId, email, identify]);
+  }, [isLoaded, isSignedIn, clerkId, email, identify])
 
-  return <>{children}</>;
-};
+  return <>{children}</>
+}
 
 export const ClientWrapper = ({ children }: { children: React.ReactNode }) => {
   return (
     <ClerkProvider>
-      <SchematicProvider
-        publishableKey={process.env.NEXT_PUBLIC_SCHEMATIC_PUBLISHABLE_KEY || ""}
-      >
+      <SchematicProvider publishableKey={process.env.NEXT_PUBLIC_SCHEMATIC_PUBLISHABLE_KEY || ''}>
         <SchematicWrapper>{children}</SchematicWrapper>
       </SchematicProvider>
     </ClerkProvider>
-  );
-};
+  )
+}
