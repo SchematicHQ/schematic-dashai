@@ -1,18 +1,14 @@
-"use client";
+"use client"
 
-import Link from "next/link";
-import {
-  useSchematicEntitlement,
-  useSchematicIsPending,
-} from "@schematichq/schematic-react";
+import Link from "next/link"
+import { useSchematicEntitlement, useSchematicIsPending } from "@schematichq/schematic-react"
 
 export function CreditsBadge() {
-  const isPending = useSchematicIsPending();
-  const { value, creditRemaining } =
-    useSchematicEntitlement("dashboard-prompt");
+  const isPending = useSchematicIsPending()
+  const { value, creditRemaining } = useSchematicEntitlement("dashboard-prompt")
 
   if (isPending || creditRemaining == null) {
-    return null;
+    return null
   }
 
   if (!value) {
@@ -24,7 +20,7 @@ export function CreditsBadge() {
         <span className="mr-1 h-2 w-2 rounded-full bg-amber-500" />
         <span>Buy more credits</span>
       </Link>
-    );
+    )
   }
 
   return (
@@ -32,5 +28,5 @@ export function CreditsBadge() {
       <span className="mr-1 h-2 w-2 rounded-full bg-emerald-500" />
       <span>{creditRemaining.toLocaleString()} credits remaining</span>
     </div>
-  );
+  )
 }

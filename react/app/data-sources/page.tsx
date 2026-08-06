@@ -1,33 +1,17 @@
-"use client";
+"use client"
 
-import { useState, useEffect } from "react";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import {
-  Database,
-  Plus,
-  Check,
-  Trash2,
-  AlertCircle,
-  ArrowUp,
-} from "lucide-react";
-import {
-  useSchematicEntitlement,
-  useSchematicIsPending,
-} from "@schematichq/schematic-react";
+import { useState, useEffect } from "react"
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import { Button } from "@/components/ui/button"
+import { Database, Plus, Check, Trash2, AlertCircle, ArrowUp } from "lucide-react"
+import { useSchematicEntitlement, useSchematicIsPending } from "@schematichq/schematic-react"
 
 interface DataSource {
-  id: string;
-  name: string;
-  type: string;
-  status: string;
-  icon: string;
+  id: string
+  name: string
+  type: string
+  status: string
+  icon: string
 }
 
 const availableSources = [
@@ -39,40 +23,39 @@ const availableSources = [
   { name: "Stripe", type: "Payments", icon: "💳" },
   { name: "Google Analytics", type: "Analytics", icon: "📈" },
   { name: "Mixpanel", type: "Analytics", icon: "📉" },
-];
+]
 
 export default function DataSourcesPage() {
-  const [connectedSources, setConnectedSources] = useState<DataSource[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
-  const [connectingName, setConnectingName] = useState<string | null>(null);
+  const [connectedSources, setConnectedSources] = useState<DataSource[]>([])
+  const [isLoading, setIsLoading] = useState(true)
+  const [connectingName, setConnectingName] = useState<string | null>(null)
 
-  const { featureAllocation: allocation } =
-    useSchematicEntitlement("data-sources");
-  const isPending = useSchematicIsPending();
+  const { featureAllocation: allocation } = useSchematicEntitlement("data-sources")
+  const isPending = useSchematicIsPending()
   // Only block when we have a numeric limit and we're at or over it (don't block if entitlement not configured)
-  const atLimit = allocation != null && connectedSources.length >= allocation;
+  const atLimit = allocation != null && connectedSources.length >= allocation
 
   const fetchDataSources = async () => {
     try {
-      const response = await fetch("/api/data-sources", { cache: "no-store" });
+      const response = await fetch("/api/data-sources", { cache: "no-store" })
       if (response.ok) {
-        const data = await response.json();
-        setConnectedSources(data);
+        const data = await response.json()
+        setConnectedSources(data)
       }
     } catch (error) {
-      console.error("Error fetching data sources:", error);
+      console.error("Error fetching data sources:", error)
     } finally {
-      setIsLoading(false);
+      setIsLoading(false)
     }
-  };
+  }
 
   useEffect(() => {
-    fetchDataSources();
-  }, []);
+    fetchDataSources()
+  }, [])
 
   const handleConnect = async (source: (typeof availableSources)[0]) => {
-    if (atLimit) return;
-    setConnectingName(source.name);
+    if (atLimit) return
+    setConnectingName(source.name)
     try {
       const response = await fetch("/api/data-sources", {
         method: "POST",
@@ -82,46 +65,42 @@ export default function DataSourcesPage() {
           type: source.type,
           icon: source.icon,
         }),
-      });
+      })
       if (response.ok) {
-        const added = await response.json();
-        setConnectedSources((prev) => [...prev, added]);
+        const added = await response.json()
+        setConnectedSources((prev) => [...prev, added])
       } else {
-        const err = await response.json();
-        alert(err.message || "Failed to connect");
+        const err = await response.json()
+        alert(err.message || "Failed to connect")
       }
     } catch (error) {
-      console.error("Error connecting data source:", error);
-      alert("Failed to connect data source");
+      console.error("Error connecting data source:", error)
+      alert("Failed to connect data source")
     } finally {
-      setConnectingName(null);
+      setConnectingName(null)
     }
-  };
+  }
 
   const handleDisconnect = async (id: string) => {
-    if (!confirm("Remove this data source?")) return;
+    if (!confirm("Remove this data source?")) return
     try {
-      const response = await fetch(`/api/data-sources?id=${id}`, {
-        method: "DELETE",
-      });
+      const response = await fetch(`/api/data-sources?id=${id}`, { method: "DELETE" })
       if (response.ok) {
-        setConnectedSources((prev) => prev.filter((s) => s.id !== id));
+        setConnectedSources((prev) => prev.filter((s) => s.id !== id))
       } else {
-        const err = await response.json();
-        alert(err.message || "Failed to remove");
+        const err = await response.json()
+        alert(err.message || "Failed to remove")
       }
     } catch (error) {
-      console.error("Error removing data source:", error);
-      alert("Failed to remove data source");
+      console.error("Error removing data source:", error)
+      alert("Failed to remove data source")
     }
-  };
+  }
 
-  const connectedNames = new Set(connectedSources.map((s) => s.name));
-  const limitLabel = allocation != null ? String(allocation) : "—";
+  const connectedNames = new Set(connectedSources.map((s) => s.name))
+  const limitLabel = allocation != null ? String(allocation) : "—"
   // Only show sources in the bottom list that aren't connected above
-  const sourcesAvailableToAdd = availableSources.filter(
-    (s) => !connectedNames.has(s.name),
-  );
+  const sourcesAvailableToAdd = availableSources.filter((s) => !connectedNames.has(s.name))
 
   return (
     <div className="min-h-screen flex flex-col">
@@ -129,9 +108,7 @@ export default function DataSourcesPage() {
         <div className="max-w-4xl mx-auto space-y-8">
           <div>
             <h1 className="text-2xl font-bold mb-1">Data Sources</h1>
-            <p className="text-muted-foreground">
-              Connect and manage your data sources
-            </p>
+            <p className="text-muted-foreground">Connect and manage your data sources</p>
           </div>
 
           {!isPending && atLimit && (
@@ -139,12 +116,8 @@ export default function DataSourcesPage() {
               <div className="flex items-center gap-3">
                 <AlertCircle className="h-5 w-5 text-violet-600 dark:text-violet-400 shrink-0" />
                 <div>
-                  <p className="text-sm font-medium text-violet-900 dark:text-violet-100">
-                    Data source limit reached
-                  </p>
-                  <p className="text-xs text-violet-700 dark:text-violet-300">
-                    Upgrade your plan to connect more data sources
-                  </p>
+                  <p className="text-sm font-medium text-violet-900 dark:text-violet-100">Data source limit reached</p>
+                  <p className="text-xs text-violet-700 dark:text-violet-300">Upgrade your plan to connect more data sources</p>
                 </div>
               </div>
               <Button
@@ -164,9 +137,7 @@ export default function DataSourcesPage() {
                 <Database className="h-5 w-5 text-accent" />
                 <CardTitle className="text-lg">Connected Sources</CardTitle>
               </div>
-              <CardDescription>
-                Data sources currently integrated with your dashboards
-              </CardDescription>
+              <CardDescription>Data sources currently integrated with your dashboards</CardDescription>
             </CardHeader>
             <CardContent>
               {isLoading ? (
@@ -183,17 +154,13 @@ export default function DataSourcesPage() {
                           <span className="text-xl">{source.icon}</span>
                           <div>
                             <p className="text-sm font-medium">{source.name}</p>
-                            <p className="text-xs text-muted-foreground">
-                              {source.type}
-                            </p>
+                            <p className="text-xs text-muted-foreground">{source.type}</p>
                           </div>
                         </div>
                         <div className="flex items-center gap-3">
                           <div className="flex items-center gap-1">
                             <Check className="h-4 w-4 text-green-500" />
-                            <span className="text-xs text-green-500">
-                              Connected
-                            </span>
+                            <span className="text-xs text-green-500">Connected</span>
                           </div>
                           <Button
                             variant="ghost"
@@ -211,10 +178,8 @@ export default function DataSourcesPage() {
                   {!isPending && (
                     <div className="mt-4 pt-4 border-t border-border">
                       <p className="text-sm text-muted-foreground">
-                        <span className="font-medium text-foreground">
-                          {connectedSources.length} of {limitLabel}
-                        </span>{" "}
-                        data sources used on your current plan
+                        <span className="font-medium text-foreground">{connectedSources.length} of {limitLabel}</span> data
+                        sources used on your current plan
                       </p>
                     </div>
                   )}
@@ -226,15 +191,13 @@ export default function DataSourcesPage() {
           <Card>
             <CardHeader>
               <CardTitle className="text-lg">Add Data Source</CardTitle>
-              <CardDescription>
-                Connect additional data sources to power your dashboards
-              </CardDescription>
+              <CardDescription>Connect additional data sources to power your dashboards</CardDescription>
             </CardHeader>
             <CardContent>
               <div className="grid grid-cols-2 gap-3">
                 {sourcesAvailableToAdd.map((source) => {
-                  const isConnecting = connectingName === source.name;
-                  const canAdd = !atLimit && !isConnecting;
+                  const isConnecting = connectingName === source.name
+                  const canAdd = !atLimit && !isConnecting
                   return (
                     <div
                       key={source.name}
@@ -244,9 +207,7 @@ export default function DataSourcesPage() {
                         <span className="text-xl">{source.icon}</span>
                         <div>
                           <p className="text-sm font-medium">{source.name}</p>
-                          <p className="text-xs text-muted-foreground">
-                            {source.type}
-                          </p>
+                          <p className="text-xs text-muted-foreground">{source.type}</p>
                         </div>
                       </div>
                       <Button
@@ -260,7 +221,7 @@ export default function DataSourcesPage() {
                         {isConnecting ? "Connecting…" : "Connect"}
                       </Button>
                     </div>
-                  );
+                  )
                 })}
               </div>
             </CardContent>
@@ -268,5 +229,5 @@ export default function DataSourcesPage() {
         </div>
       </main>
     </div>
-  );
+  )
 }
