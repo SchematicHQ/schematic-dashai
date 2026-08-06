@@ -5,15 +5,16 @@ import { useRouter } from "next/navigation";
 import { PricingTable } from "@/components/schematic/pricing-table";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
-import { useCatalog } from "@/lib/schematic";
-import { schematicBilling } from "@/lib/schematic-client";
+import { useCatalog } from "@schematichq/schematic-react";
+
+import { schematicCustomer } from "@/lib/schematic-client";
 
 export default function PricingPage() {
   const router = useRouter();
   // "auto" uses the company-scoped catalog when an access token is available,
   // so a signed-in customer sees which plan is theirs and which they are
   // eligible for; it falls back to the publishable-key catalog otherwise.
-  const catalog = useCatalog(schematicBilling);
+  const catalog = useCatalog({ client: schematicCustomer });
 
   // Checkout is being reworked and useCheckout does not exist yet, so plan
   // selection hands off to the plan portal, which still runs the embed's

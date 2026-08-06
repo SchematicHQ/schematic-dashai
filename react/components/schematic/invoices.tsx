@@ -6,11 +6,11 @@ import { ExternalLink } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
-  filterInvoicesForDisplay,
-  formatCurrency,
-  formatDate,
+  helpers,
   type InvoiceResponseData,
-} from "@/lib/schematic";
+} from "@schematichq/schematic-react";
+
+const { filterInvoicesForDisplay, formatCurrency, formatDate } = helpers;
 
 export interface InvoicesProps {
   invoices: InvoiceResponseData[];

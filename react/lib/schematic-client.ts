@@ -1,13 +1,13 @@
-import { SchematicBillingClient } from "@/lib/schematic";
+import { SchematicCustomerClient } from "@schematichq/schematic-react";
 
 /**
- * App-wide Schematic billing client. Construction is side-effect free, so a
+ * App-wide Schematic customer client. Construction is side-effect free, so a
  * module singleton is safe: nothing is fetched until a hook mounts.
  *
  * The access token is minted by our backend (app/api/accessToken/route.ts)
  * using the secret key; the browser only ever sees the short-lived token.
  */
-export const schematicBilling = new SchematicBillingClient({
+export const schematicCustomer = new SchematicCustomerClient({
   publishableKey: process.env.NEXT_PUBLIC_SCHEMATIC_PUBLISHABLE_KEY,
   getAccessToken: async () => {
     const response = await fetch("/api/accessToken");

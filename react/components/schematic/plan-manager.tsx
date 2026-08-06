@@ -5,17 +5,21 @@ import { AlertTriangle, ArrowDownRight, Clock } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import {
+  type CustomerSubscription,
+  helpers,
+} from "@schematichq/schematic-react";
+
+const {
+  formatCurrency,
+  formatDate,
   getEntitlementPrice,
   getPlanManagerNotice,
   getSubscriptionPeriod,
-  formatCurrency,
-  formatDate,
   periodSuffix,
-  type Billing,
-} from "@/lib/schematic";
+} = helpers;
 
 export interface PlanManagerProps {
-  billing: Billing;
+  billing: CustomerSubscription;
   /** Wire this up when checkout ships; omitted → disabled "coming soon" button. */
   onChangePlan?: () => void;
 }

@@ -9,8 +9,9 @@ import { Invoices } from "@/components/schematic/invoices";
 import { MeteredFeatures } from "@/components/schematic/metered-features";
 import { PlanManager } from "@/components/schematic/plan-manager";
 import { UpcomingBill } from "@/components/schematic/upcoming-bill";
-import { useBilling, useInvoices } from "@/lib/schematic";
-import { schematicBilling } from "@/lib/schematic-client";
+import { useInvoices, useSubscription } from "@schematichq/schematic-react";
+
+import { schematicCustomer } from "@/lib/schematic-client";
 
 function LoadingState() {
   return (
@@ -42,8 +43,8 @@ function ErrorState({
 }
 
 export default function BillingPage() {
-  const billing = useBilling(schematicBilling);
-  const invoices = useInvoices(schematicBilling, { limit: 12 });
+  const billing = useSubscription({ client: schematicCustomer });
+  const invoices = useInvoices({ client: schematicCustomer, limit: 12 });
 
   return (
     <div className="min-h-screen bg-background">
