@@ -9,7 +9,11 @@ import { Invoices } from "@/components/schematic/invoices";
 import { MeteredFeatures } from "@/components/schematic/metered-features";
 import { PlanManager } from "@/components/schematic/plan-manager";
 import { UpcomingBill } from "@/components/schematic/upcoming-bill";
-import { useInvoices, useSubscription } from "@schematichq/schematic-react";
+import {
+  FeatureType,
+  useInvoices,
+  useSubscription,
+} from "@schematichq/schematic-react";
 
 import { schematicCustomer } from "@/lib/schematic-client";
 
@@ -44,7 +48,19 @@ function ErrorState({
 
 export default function BillingPage() {
   const billing = useSubscription({ client: schematicCustomer });
-  const invoices = useInvoices({ client: schematicCustomer, limit: 12 });
+  // Invoices lists filters client-side (zero-amount, voided, the upcoming
+  // preview), so the fetch has to be generous enough that a page of noise does
+  // not hide every real invoice. 100 is the API default; the max is 250.
+  const invoices = useInvoices({ client: schematicCustomer, limit: 100 });
+
+  // MeteredFeatures owns event/trait entitlements; leaving them in
+  // IncludedFeatures too renders each one twice, with two different usage
+  // strings for pay-as-you-go and overage features.
+  const includedFeatures = (billing.data?.features ?? []).filter(
+    (feature) =>
+      feature.feature?.featureType !== FeatureType.Event &&
+      feature.feature?.featureType !== FeatureType.Trait,
+  );
 
   return (
     <div className="min-h-screen bg-background">
@@ -64,7 +80,7 @@ export default function BillingPage() {
         ) : billing.data ? (
           <div className="space-y-4">
             <PlanManager billing={billing.data} />
-            <IncludedFeatures features={billing.data.features} />
+            <IncludedFeatures features={includedFeatures} />
             <UpcomingBill
               upcomingInvoice={billing.data.upcomingInvoice}
               subscription={billing.data.subscription}
