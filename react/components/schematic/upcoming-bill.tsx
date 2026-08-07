@@ -81,7 +81,9 @@ export function UpcomingBill({
               <span className="text-muted-foreground">
                 Remaining balance after next invoice
               </span>
-              <span>{formatCurrency(-balance.remaining, currency)}</span>
+              {/* `remaining` is leftover credit the customer still holds, so it
+                  stays positive; only `applied` is a deduction from this bill. */}
+              <span>{formatCurrency(balance.remaining, currency)}</span>
             </div>
           </div>
         )}

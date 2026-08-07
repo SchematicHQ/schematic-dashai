@@ -25,6 +25,32 @@ export interface PlanManagerProps {
 }
 
 /**
+ * The headline price, or undefined when there is nothing truthful to show —
+ * an absent price is unknown, and rendering it as $0.00 or "Free" would
+ * misreport what a customer is paying.
+ */
+function planPriceLabel(
+  planPrice: number | null | undefined,
+  period: string,
+  currency: string | undefined,
+  hasUsageBasedEntitlements: boolean,
+  showZeroPriceAsFree: boolean,
+): string | undefined {
+  if (typeof planPrice !== "number") {
+    return hasUsageBasedEntitlements ? "Usage-based" : undefined;
+  }
+  if (planPrice === 0) {
+    if (hasUsageBasedEntitlements) {
+      return "Usage-based";
+    }
+    if (showZeroPriceAsFree) {
+      return "Free";
+    }
+  }
+  return `${formatCurrency(planPrice, currency)}${periodSuffix(period)}`;
+}
+
+/**
  * Current plan summary: notice banner (trial / cancellation / scheduled
  * downgrade), plan name + price, active add-ons, usage-based entitlement
  * prices, and the change-plan action.
@@ -50,14 +76,17 @@ export function PlanManager({ billing, onChangePlan }: PlanManagerProps) {
     (feature) => typeof feature.priceBehavior === "string",
   );
 
-  const planPrice = plan?.planPrice ?? 0;
-  const isFreePlan = planPrice === 0;
-  const priceLabel =
-    isFreePlan && usageBasedEntitlements.length > 0
-      ? "Usage-based"
-      : isFreePlan && displaySettings.showZeroPriceAsFree
-        ? "Free"
-        : `${formatCurrency(planPrice, subscription?.currency)}${periodSuffix(period)}`;
+  // The API returns a null planPrice for a plan whose billing product is not
+  // synced yet. That is an unknown price, not a zero one — collapsing it to 0
+  // would advertise a paid plan as "Free".
+  const planPrice = plan?.planPrice;
+  const priceLabel = planPriceLabel(
+    planPrice,
+    period,
+    subscription?.currency,
+    usageBasedEntitlements.length > 0,
+    displaySettings.showZeroPriceAsFree,
+  );
 
   return (
     <Card>
@@ -113,9 +142,11 @@ export function PlanManager({ billing, onChangePlan }: PlanManagerProps) {
                 </p>
               )}
             </div>
-            <p className="text-xl font-semibold whitespace-nowrap">
-              {priceLabel}
-            </p>
+            {priceLabel && (
+              <p className="text-xl font-semibold whitespace-nowrap">
+                {priceLabel}
+              </p>
+            )}
           </div>
         )}
 
@@ -169,14 +200,22 @@ export function PlanManager({ billing, onChangePlan }: PlanManagerProps) {
           </div>
         )}
 
-        <Button
-          className="w-full"
-          onClick={onChangePlan}
-          disabled={!onChangePlan}
-          title={onChangePlan ? undefined : "Checkout is coming soon"}
-        >
-          Change plan
-        </Button>
+        <div className="space-y-2">
+          <Button
+            className="w-full"
+            onClick={onChangePlan}
+            disabled={!onChangePlan}
+          >
+            Change plan
+          </Button>
+          {/* A title on a disabled button is unreachable: the Button variants
+              set disabled:pointer-events-none, so hover never fires. */}
+          {!onChangePlan && (
+            <p className="text-center text-xs text-muted-foreground">
+              Checkout is coming soon.
+            </p>
+          )}
+        </div>
       </CardContent>
     </Card>
   );

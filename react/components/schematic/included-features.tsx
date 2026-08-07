@@ -6,6 +6,7 @@ import { Check } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
+  FeatureType,
   type FeatureUsageResponseData,
   helpers,
 } from "@schematichq/schematic-react";
@@ -25,6 +26,15 @@ function usageSummary(feature: FeatureUsageResponseData): string | undefined {
   const unit = (count: number) =>
     pluralize(feature.feature?.singularName || name, count).toLowerCase();
 
+  // On-off entitlements have no quantity to report; returning undefined lets
+  // the caller render the "Included" checkmark. The API sends usage: 0 for
+  // them, which would otherwise fall through to the "0 used" branch below.
+  if (
+    feature.feature?.featureType === FeatureType.Boolean ||
+    feature.allocationType === "boolean"
+  ) {
+    return undefined;
+  }
   if (feature.isUnlimited || feature.allocationType === "unlimited") {
     return "No limit";
   }

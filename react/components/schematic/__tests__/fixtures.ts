@@ -3,6 +3,29 @@
  * so every test exercises the generated FromJSON mappers.
  */
 
+export function makeWirePrice(overrides?: Record<string, unknown>) {
+  return {
+    id: "price_1",
+    currency: "usd",
+    interval: "month",
+    price: 1000,
+    price_decimal: null,
+    price_external_id: "px_1",
+    product_external_id: "prod_1",
+    scheme: "per_unit",
+    billing_scheme: "per_unit",
+    created_at: "2026-01-01T00:00:00Z",
+    updated_at: "2026-01-01T00:00:00Z",
+    is_active: true,
+    meter_id: null,
+    price_tier: [],
+    package_size: 1,
+    usage_type: "licensed",
+    tiers_mode: null,
+    ...overrides,
+  };
+}
+
 export function makeWirePlan(overrides?: Record<string, unknown>) {
   return {
     id: "plan_basic",
@@ -30,25 +53,7 @@ export function makeWirePlan(overrides?: Record<string, unknown>) {
     included_credit_grants: [],
     icon: "flag",
     versions: [],
-    monthly_price: {
-      id: "price_1",
-      currency: "usd",
-      interval: "month",
-      price: 1000,
-      price_decimal: null,
-      price_external_id: "px_1",
-      product_external_id: "prod_1",
-      scheme: "per_unit",
-      created_at: "2026-01-01T00:00:00Z",
-      updated_at: "2026-01-01T00:00:00Z",
-      is_active: true,
-      meter_id: null,
-      price_tier: [],
-      billing_scheme: "per_unit",
-      package_size: 1,
-      usage_type: "licensed",
-      tiers_mode: null,
-    },
+    monthly_price: makeWirePrice(),
     ...overrides,
   };
 }

@@ -29,7 +29,7 @@ export function Invoices({
   const [expanded, setExpanded] = useState(false);
   const display = useMemo(() => filterInvoicesForDisplay(invoices), [invoices]);
 
-  if (display.length === 0) {
+  if (invoices.length === 0) {
     return null;
   }
 
@@ -43,6 +43,14 @@ export function Invoices({
         </CardTitle>
       </CardHeader>
       <CardContent className="space-y-2">
+        {/* The customer has invoices, but every one of them was filtered out
+            (zero-amount, voided, or the upcoming preview). Say so rather than
+            dropping the whole card, which reads as "you have no invoices". */}
+        {display.length === 0 && (
+          <p className="text-sm text-muted-foreground">
+            No invoices to show yet.
+          </p>
+        )}
         {visible.map((invoice) => {
           const row = (
             <div className="flex items-center justify-between py-1 text-sm">

@@ -10,6 +10,7 @@ import {
   makeWireCompanyPlan,
   makeWireHydrate,
   makeWireInvoice,
+  makeWirePrice,
   wireDisplaySettings,
 } from "./__tests__/fixtures";
 
@@ -316,25 +317,11 @@ describe("billing components", () => {
           makeWireCompanyPlan({
             id: "plan_yearly",
             name: "Yearly",
-            yearly_price: {
+            yearly_price: makeWirePrice({
               id: "price_y",
-              currency: "usd",
               interval: "year",
               price: 58800,
-              price_decimal: null,
-              price_external_id: "px_y",
-              product_external_id: "prod_y",
-              scheme: "per_unit",
-              billing_scheme: "per_unit",
-              created_at: "2026-01-01T00:00:00Z",
-              updated_at: "2026-01-01T00:00:00Z",
-              is_active: true,
-              meter_id: null,
-              price_tier: [],
-              package_size: 1,
-              usage_type: "licensed",
-              tiers_mode: null,
-            },
+            }),
           }),
         ],
       }),
@@ -344,6 +331,209 @@ describe("billing components", () => {
     fireEvent.click(screen.getByRole("button", { name: "Yearly" }));
     expect(screen.getByText("$49.00")).toBeDefined();
     expect(screen.getByText("/month, billed yearly")).toBeDefined();
+  });
+
+  it("PricingTable does not price a plan it has no price for", () => {
+    const hydrate = ComponentHydrateResponseDataFromJSON(
+      makeWireHydrate({
+        display_settings: {
+          ...wireDisplaySettings,
+          show_zero_price_as_free: true,
+        },
+        active_plans: [
+          makeWireCompanyPlan({ id: "plan_month", name: "MonthOnly" }),
+          makeWireCompanyPlan({
+            id: "plan_year",
+            name: "HasYearly",
+            yearly_price: makeWirePrice({
+              id: "price_y",
+              interval: "year",
+              price: 58800,
+            }),
+          }),
+        ],
+      }),
+    );
+    render(
+      <PricingTable
+        catalog={toCatalogFromHydrate(hydrate)}
+        onSelectPlan={vi.fn()}
+      />,
+    );
+
+    fireEvent.click(screen.getByRole("button", { name: "Yearly" }));
+
+    // MonthOnly has no yearly price: it is unsold for this period, not free.
+    expect(screen.queryByText("Free")).toBeNull();
+    expect(screen.getByText("Not available yearly")).toBeDefined();
+    expect(
+      screen.getByText("MonthOnly is only available monthly."),
+    ).toBeDefined();
+    expect(screen.getAllByRole("button", { name: "Choose plan" })).toHaveLength(
+      2,
+    );
+    const [monthOnly] = screen.getAllByRole("button", { name: "Choose plan" });
+    expect(monthOnly.hasAttribute("disabled")).toBe(true);
+  });
+
+  it("PricingTable renders purchasable add-ons", () => {
+    const hydrate = ComponentHydrateResponseDataFromJSON(
+      makeWireHydrate({
+        active_add_ons: [
+          makeWireCompanyPlan({
+            id: "addon_support",
+            name: "Priority Support",
+            description: "24h response",
+          }),
+        ],
+      }),
+    );
+    const onSelectAddOn = vi.fn();
+    render(
+      <PricingTable
+        catalog={toCatalogFromHydrate(hydrate)}
+        onSelectAddOn={onSelectAddOn}
+      />,
+    );
+
+    expect(screen.getByText("Add-ons")).toBeDefined();
+    expect(screen.getByText("Priority Support")).toBeDefined();
+    fireEvent.click(screen.getByRole("button", { name: "Add" }));
+    expect(onSelectAddOn.mock.calls[0][0].id).toBe("addon_support");
+  });
+
+  it("PricingTable explains an ineligible plan in visible text", () => {
+    const hydrate = ComponentHydrateResponseDataFromJSON(
+      makeWireHydrate({
+        active_plans: [
+          makeWireCompanyPlan({
+            id: "plan_starter",
+            name: "Starter",
+            valid: false,
+            usage_violations: [wireFeature()],
+          }),
+        ],
+      }),
+    );
+    render(
+      <PricingTable
+        catalog={toCatalogFromHydrate(hydrate)}
+        onSelectPlan={vi.fn()}
+      />,
+    );
+
+    // A title on a disabled button is unreachable, so the reason must be text.
+    expect(
+      screen.getByText(
+        "Cannot change to this plan while over the limit on Dashboard Prompt.",
+      ),
+    ).toBeDefined();
+    const button = screen.getByRole("button", { name: "Over plan limit" });
+    expect(button.hasAttribute("disabled")).toBe(true);
+  });
+
+  it("PlanManager omits the price when the API returns none", () => {
+    const hydrate = ComponentHydrateResponseDataFromJSON(
+      makeWireHydrate({
+        display_settings: {
+          ...wireDisplaySettings,
+          show_zero_price_as_free: true,
+        },
+        company: {
+          id: "comp_demo",
+          name: "Demo Co",
+          environment_id: "env_1",
+          created_at: "2026-01-01T00:00:00Z",
+          updated_at: "2026-01-01T00:00:00Z",
+          add_ons: [],
+          billing_subscriptions: [],
+          custom_plan_billings: [],
+          entitlements: [],
+          entity_traits: [],
+          keys: [],
+          metrics: [],
+          payment_methods: [],
+          plans: [],
+          rules: [],
+          user_count: 1,
+          plan: {
+            id: "plan_pro",
+            name: "Pro",
+            plan_period: "month",
+            plan_price: null,
+            included_credit_grants: [],
+          },
+        },
+      }),
+    );
+    render(<PlanManager billing={toSubscription(hydrate)} />);
+
+    expect(screen.getByText("Pro")).toBeDefined();
+    // An unknown price is not a zero price.
+    expect(screen.queryByText("Free")).toBeNull();
+    expect(screen.queryByText("$0.00/mo")).toBeNull();
+  });
+
+  it("PlanManager explains the disabled change-plan button in visible text", () => {
+    render(<PlanManager billing={billing} />);
+    expect(screen.getByText("Checkout is coming soon.")).toBeDefined();
+  });
+
+  it("UpcomingBill shows leftover credit as a positive balance", () => {
+    const hydrate = ComponentHydrateResponseDataFromJSON(
+      makeWireHydrate({
+        subscription: {
+          cancel_at_period_end: false,
+          currency: "usd",
+          customer_external_id: "cus_1",
+          discounts: [],
+          interval: "month",
+          is_initial: false,
+          products: [],
+          provider_type: "stripe",
+          status: "active",
+          subscription_external_id: "sub_1",
+          total_price: 50000,
+        },
+        upcoming_invoice: makeWireInvoice({
+          amount_due: 50000,
+          starting_balance: -3000,
+          ending_balance: -2000,
+          subtotal: 50000,
+        }),
+      }),
+    );
+    const withCredit = toSubscription(hydrate);
+    render(
+      <UpcomingBill
+        upcomingInvoice={withCredit.upcomingInvoice}
+        subscription={withCredit.subscription}
+      />,
+    );
+
+    expect(screen.getByText("($10.00)")).toBeDefined(); // applied, a deduction
+    expect(screen.getByText("$20.00")).toBeDefined(); // remaining credit held
+  });
+
+  it("IncludedFeatures marks a boolean entitlement as included", () => {
+    const booleans = billing.features.filter(
+      (feature) => feature.feature?.featureType === "boolean",
+    );
+    render(<IncludedFeatures features={booleans} />);
+
+    expect(screen.getByText("Video Generation")).toBeDefined();
+    expect(screen.getByLabelText("Included")).toBeDefined();
+    expect(screen.queryByText(/used/)).toBeNull();
+  });
+
+  it("Invoices keeps the card when every invoice is filtered out", () => {
+    const invoices = [
+      InvoiceResponseDataFromJSON(
+        makeWireInvoice({ id: "inv_zero", amount_due: 0 }),
+      ),
+    ];
+    render(<Invoices invoices={invoices} />);
+    expect(screen.getByText("No invoices to show yet.")).toBeDefined();
   });
 
   it("CreditUsage hides when display settings disable credits", () => {

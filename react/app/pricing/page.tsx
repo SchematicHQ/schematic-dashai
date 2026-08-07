@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { PricingTable } from "@/components/schematic/pricing-table";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
-import { useCatalog } from "@schematichq/schematic-react";
+import { type CatalogPlan, useCatalog } from "@schematichq/schematic-react";
 
 import { schematicCustomer } from "@/lib/schematic-client";
 
@@ -19,8 +19,20 @@ export default function PricingPage() {
   // Checkout is being reworked and useCheckout does not exist yet, so plan
   // selection hands off to the plan portal, which still runs the embed's
   // working checkout flow. Replace with useCheckout when it lands.
-  const handleSelectPlan = () => {
-    router.push("/plan");
+  //
+  // The embed cannot be driven from the URL today, but the selection is
+  // carried in the query string so the choice is not silently discarded on the
+  // way over and is ready to consume once checkout lands.
+  const handoff = (params: Record<string, string>) => {
+    router.push(`/plan?${new URLSearchParams(params).toString()}`);
+  };
+
+  const handleSelectPlan = (plan: CatalogPlan, period: string) => {
+    handoff({ plan: plan.id, period });
+  };
+
+  const handleSelectAddOn = (addOn: CatalogPlan, period: string) => {
+    handoff({ addOn: addOn.id, period });
   };
 
   return (
@@ -50,6 +62,7 @@ export default function PricingPage() {
           <PricingTable
             catalog={catalog.data}
             onSelectPlan={handleSelectPlan}
+            onSelectAddOn={handleSelectAddOn}
           />
         ) : null}
       </div>

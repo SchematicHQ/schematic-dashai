@@ -15,6 +15,7 @@ import {
 const {
   formatCurrency,
   formatNumber,
+  getAddOnPrice,
   getDisplayPrice,
   getPlanPrice,
   pluralize,
@@ -24,6 +25,28 @@ export interface PricingTableProps {
   catalog: Catalog;
   /** Wire this up when checkout ships; omitted → disabled "coming soon" buttons. */
   onSelectPlan?: (plan: CatalogPlan, period: string) => void;
+  /** Wire this up when checkout ships; omitted → disabled "coming soon" buttons. */
+  onSelectAddOn?: (addOn: CatalogPlan, period: string) => void;
+}
+
+/**
+ * Why a plan cannot be selected, as text the customer can actually read. The
+ * embed rendered this next to the CTA; a `title` on a disabled button is
+ * invisible because `disabled:pointer-events-none` suppresses hover.
+ */
+function ineligibilityReason(plan: CatalogPlan): string | undefined {
+  if (plan.valid !== false) {
+    return undefined;
+  }
+  if (plan.invalidReason === "downgrade_not_permitted") {
+    return "Downgrading to this plan is not available self-service — contact support to change plans.";
+  }
+  const violations = (plan.usageViolations ?? []).flatMap(
+    (violation) => violation.feature?.name ?? [],
+  );
+  return violations.length > 0
+    ? `Cannot change to this plan while over the limit on ${violations.join(", ")}.`
+    : "This plan is not available for your account.";
 }
 
 function entitlementLabel(plan: CatalogPlan): string[] {
@@ -49,9 +72,13 @@ function entitlementLabel(plan: CatalogPlan): string[] {
 }
 
 /** Catalog of purchasable plans; works in both public and company modes. */
-export function PricingTable({ catalog, onSelectPlan }: PricingTableProps) {
+export function PricingTable({
+  catalog,
+  onSelectPlan,
+  onSelectAddOn,
+}: PricingTableProps) {
   const [period, setPeriod] = useState<"month" | "year">("month");
-  const { plans, displaySettings } = catalog;
+  const { plans, addOns, displaySettings } = catalog;
 
   if (plans.length === 0) {
     return null;
@@ -81,12 +108,22 @@ export function PricingTable({ catalog, onSelectPlan }: PricingTableProps) {
         {plans.map((plan) => {
           const price = getPlanPrice(plan, period);
           const features = entitlementLabel(plan);
-          const isFree = !price || price.price === 0;
+          // No price for the selected period means the plan is not sold that
+          // way — not that it costs nothing. Only a real zero price, or a plan
+          // the API marks free, is free.
+          const isFree = price ? price.price === 0 : plan.isFree === true;
+          const unsoldThisPeriod = !plan.custom && !price && !isFree;
+          // Only reached once unsoldThisPeriod is ruled out, so the 0 fallback
+          // is a real zero price rather than a missing one.
           const display = getDisplayPrice(
             price?.price ?? 0,
             period,
             displaySettings.showAsMonthlyPrices,
           );
+          const note = unsoldThisPeriod
+            ? `${plan.name} is only available ${period === "month" ? "yearly" : "monthly"}.`
+            : (ineligibilityReason(plan) ??
+              (onSelectPlan ? undefined : "Checkout is coming soon."));
 
           return (
             <Card
@@ -109,6 +146,10 @@ export function PricingTable({ catalog, onSelectPlan }: PricingTableProps) {
                   {plan.custom ? (
                     <span className="text-2xl">
                       {plan.customPlanConfig?.priceText || "Custom"}
+                    </span>
+                  ) : unsoldThisPeriod ? (
+                    <span className="text-2xl text-muted-foreground">
+                      Not available {period === "month" ? "monthly" : "yearly"}
                     </span>
                   ) : isFree && displaySettings.showZeroPriceAsFree ? (
                     "Free"
@@ -155,32 +196,102 @@ export function PricingTable({ catalog, onSelectPlan }: PricingTableProps) {
                     Your plan
                   </Button>
                 ) : (
-                  <Button
-                    onClick={
-                      onSelectPlan
-                        ? () => onSelectPlan(plan, period)
-                        : undefined
-                    }
-                    disabled={!onSelectPlan || plan.valid === false}
-                    title={
-                      !onSelectPlan
-                        ? "Checkout is coming soon"
-                        : plan.valid === false
-                          ? plan.invalidReason ||
-                            "This plan is not available for your account"
+                  <div className="space-y-2">
+                    <Button
+                      className="w-full"
+                      onClick={
+                        onSelectPlan
+                          ? () => onSelectPlan(plan, period)
                           : undefined
-                    }
-                  >
-                    {plan.isTrialable && plan.companyCanTrial
-                      ? "Start trial"
-                      : "Choose plan"}
-                  </Button>
+                      }
+                      disabled={
+                        !onSelectPlan || plan.valid === false || unsoldThisPeriod
+                      }
+                    >
+                      {plan.valid === false
+                        ? "Over plan limit"
+                        : plan.isTrialable && plan.companyCanTrial
+                          ? "Start trial"
+                          : "Choose plan"}
+                    </Button>
+                    {note && (
+                      <p className="text-xs text-muted-foreground">{note}</p>
+                    )}
+                  </div>
                 )}
               </CardContent>
             </Card>
           );
         })}
       </div>
+
+      {addOns.length > 0 && (
+        <div className="space-y-4">
+          <h2 className="text-lg font-semibold">Add-ons</h2>
+          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+            {addOns.map((addOn) => {
+              // One-time add-ons are priced off oneTimePrice, so an add-on with
+              // no price for the selected period is genuinely unavailable.
+              const price = getAddOnPrice(addOn, period);
+              return (
+                <Card key={addOn.id}>
+                  <CardHeader>
+                    <div className="flex items-center justify-between gap-2">
+                      <CardTitle>{addOn.name}</CardTitle>
+                      {addOn.current && <Badge>Active</Badge>}
+                    </div>
+                    {addOn.description && (
+                      <p className="text-sm text-muted-foreground">
+                        {addOn.description}
+                      </p>
+                    )}
+                  </CardHeader>
+                  <CardContent className="flex flex-1 flex-col gap-4">
+                    <p className="text-xl font-semibold">
+                      {price ? (
+                        <>
+                          {formatCurrency(price.price, price.currency)}
+                          <span className="text-sm font-normal text-muted-foreground">
+                            {addOn.chargeType === "one_time"
+                              ? " one-time"
+                              : period === "month"
+                                ? "/mo"
+                                : "/yr"}
+                          </span>
+                        </>
+                      ) : (
+                        <span className="text-base font-normal text-muted-foreground">
+                          Not available{" "}
+                          {period === "month" ? "monthly" : "yearly"}
+                        </span>
+                      )}
+                    </p>
+                    <div className="mt-auto space-y-2">
+                      <Button
+                        className="w-full"
+                        variant="outline"
+                        onClick={
+                          onSelectAddOn
+                            ? () => onSelectAddOn(addOn, period)
+                            : undefined
+                        }
+                        disabled={!onSelectAddOn || !price || addOn.current}
+                      >
+                        {addOn.current ? "Added" : "Add"}
+                      </Button>
+                      {!onSelectAddOn && !addOn.current && (
+                        <p className="text-xs text-muted-foreground">
+                          Checkout is coming soon.
+                        </p>
+                      )}
+                    </div>
+                  </CardContent>
+                </Card>
+              );
+            })}
+          </div>
+        </div>
+      )}
     </div>
   );
 }
