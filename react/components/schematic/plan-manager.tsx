@@ -8,6 +8,7 @@ import {
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
+import { SectionLabel } from "@/components/ui/section-card";
 
 const {
   formatCurrency,
@@ -134,9 +135,7 @@ export function PlanManager({ billing, onChangePlan }: PlanManagerProps) {
         {plan && (
           <div className="flex items-start justify-between gap-4">
             <div>
-              <p className="text-xs uppercase tracking-wide text-muted-foreground">
-                Current plan
-              </p>
+              <SectionLabel>Current plan</SectionLabel>
 
               <h2 className="text-2xl font-bold">{plan.name}</h2>
 
@@ -157,9 +156,7 @@ export function PlanManager({ billing, onChangePlan }: PlanManagerProps) {
 
         {addOns.length > 0 && (
           <div className="space-y-2">
-            <p className="text-xs uppercase tracking-wide text-muted-foreground">
-              Add-ons
-            </p>
+            <SectionLabel>Add-ons</SectionLabel>
 
             {addOns.map((addOn) => (
               <div
@@ -179,9 +176,7 @@ export function PlanManager({ billing, onChangePlan }: PlanManagerProps) {
 
         {usageBasedEntitlements.length > 0 && (
           <div className="space-y-2">
-            <p className="text-xs uppercase tracking-wide text-muted-foreground">
-              Usage-based
-            </p>
+            <SectionLabel>Usage-based</SectionLabel>
 
             {usageBasedEntitlements.map((entitlement) => {
               const price = getEntitlementPrice(entitlement, period);

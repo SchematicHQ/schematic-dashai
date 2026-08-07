@@ -1,40 +1,12 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-
-import { PricingTable } from "@/components/schematic/pricing-table";
-import { Button } from "@/components/ui/button";
-import { Skeleton } from "@/components/ui/skeleton";
-import { type CatalogPlan, useCatalog } from "@schematichq/schematic-react";
+import { useCatalog, type CatalogPlan } from "@schematichq/schematic-react";
 
 import { schematicCustomer } from "@/lib/schematic-client";
-
-function LoadingState() {
-  return (
-    <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-      {Array.from({ length: 4 }, (_, i) => (
-        <Skeleton key={i} className="h-80 w-full" />
-      ))}
-    </div>
-  );
-}
-
-function ErrorState({
-  message,
-  onRetry,
-}: {
-  message: string;
-  onRetry: () => void;
-}) {
-  return (
-    <div className="space-y-3 text-center">
-      <p className="text-sm text-muted-foreground">{message}</p>
-      <Button variant="outline" onClick={onRetry}>
-        Retry
-      </Button>
-    </div>
-  );
-}
+import { PricingTable } from "@/components/schematic/pricing-table";
+import { ErrorState } from "@/components/ui/error-state";
+import { SkeletonList } from "@/components/ui/skeleton";
 
 function PricingPlans() {
   const router = useRouter();
@@ -56,7 +28,12 @@ function PricingPlans() {
   };
 
   if (catalog.isPending) {
-    return <LoadingState />;
+    return (
+      <SkeletonList
+        className="grid gap-4 md:grid-cols-2 lg:grid-cols-4"
+        itemClassName="h-80 w-full"
+      />
+    );
   }
 
   if (catalog.error) {

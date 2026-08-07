@@ -9,8 +9,8 @@ import {
 } from "@schematichq/schematic-react";
 
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { FeatureIcon } from "@/components/ui/feature-icon";
+import { SectionCard } from "@/components/ui/section-card";
 
 const { formatDate, formatNumber, pluralize } = helpers;
 
@@ -70,59 +70,48 @@ export function IncludedFeatures({
   const visible = showAll ? features : features.slice(0, collapseAfter);
 
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle className="text-xs uppercase tracking-wide text-muted-foreground">
-          Included features
-        </CardTitle>
-      </CardHeader>
+    <SectionCard title="Included features">
+      {visible.map((feature) => {
+        const summary = usageSummary(feature);
+        return (
+          <div key={feature.entitlementId} className="flex items-center gap-3">
+            <FeatureIcon icon={feature.feature?.icon} />
 
-      <CardContent className="space-y-4">
-        {visible.map((feature) => {
-          const summary = usageSummary(feature);
-          return (
-            <div
-              key={feature.entitlementId}
-              className="flex items-center gap-3"
-            >
-              <FeatureIcon icon={feature.feature?.icon} />
+            <div className="min-w-0 flex-1">
+              <p className="text-sm font-medium">{feature.feature?.name}</p>
 
-              <div className="min-w-0 flex-1">
-                <p className="text-sm font-medium">{feature.feature?.name}</p>
+              {feature.feature?.description && (
+                <p className="truncate text-xs text-muted-foreground">
+                  {feature.feature.description}
+                </p>
+              )}
 
-                {feature.feature?.description && (
-                  <p className="truncate text-xs text-muted-foreground">
-                    {feature.feature.description}
-                  </p>
-                )}
-
-                {feature.entitlementExpirationDate && (
-                  <p className="text-xs text-muted-foreground">
-                    Expires {formatDate(feature.entitlementExpirationDate)}
-                  </p>
-                )}
-              </div>
-
-              <div className="text-right text-sm text-muted-foreground">
-                {summary ?? (
-                  <Check className="size-4 text-accent" aria-label="Included" />
-                )}
-              </div>
+              {feature.entitlementExpirationDate && (
+                <p className="text-xs text-muted-foreground">
+                  Expires {formatDate(feature.entitlementExpirationDate)}
+                </p>
+              )}
             </div>
-          );
-        })}
 
-        {features.length > collapseAfter && (
-          <Button
-            variant="ghost"
-            size="sm"
-            className="w-full"
-            onClick={() => setShowAll((prev) => !prev)}
-          >
-            {showAll ? "Hide all" : `See all (${features.length})`}
-          </Button>
-        )}
-      </CardContent>
-    </Card>
+            <div className="text-right text-sm text-muted-foreground">
+              {summary ?? (
+                <Check className="size-4 text-accent" aria-label="Included" />
+              )}
+            </div>
+          </div>
+        );
+      })}
+
+      {features.length > collapseAfter && (
+        <Button
+          variant="ghost"
+          size="sm"
+          className="w-full"
+          onClick={() => setShowAll((prev) => !prev)}
+        >
+          {showAll ? "Hide all" : `See all (${features.length})`}
+        </Button>
+      )}
+    </SectionCard>
   );
 }

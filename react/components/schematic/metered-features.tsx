@@ -8,9 +8,8 @@ import {
   type FeatureUsageResponseData,
 } from "@schematichq/schematic-react";
 
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { FeatureIcon } from "@/components/ui/feature-icon";
-import { Progress } from "@/components/ui/progress";
+import { SectionCard } from "@/components/ui/section-card";
+import { UsageMeter } from "@/components/ui/usage-meter";
 
 const {
   formatCurrency,
@@ -129,55 +128,40 @@ export function MeteredFeatures({ billing }: MeteredFeaturesProps) {
   }
 
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle className="text-xs uppercase tracking-wide text-muted-foreground">
-          Metered features
-        </CardTitle>
-      </CardHeader>
+    <SectionCard title="Metered features" className="space-y-5">
+      {metered.map((feature) => {
+        const usage = feature.usage ?? 0;
+        const limit =
+          feature.allocation ?? feature.softLimit ?? feature.effectiveLimit;
+        // Usage-priced entitlements have no ceiling to meter against, so they
+        // pass no limit and the bar stays hidden.
+        const meterLimit =
+          feature.priceBehavior !== EntitlementPriceBehavior.PayAsYouGo &&
+          feature.priceBehavior !== EntitlementPriceBehavior.CreditBurndown &&
+          typeof limit === "number" &&
+          limit > 0
+            ? limit
+            : undefined;
+        const details = priceDetails(feature, period);
 
-      <CardContent className="space-y-5">
-        {metered.map((feature) => {
-          const usage = feature.usage ?? 0;
-          const limit =
-            feature.allocation ?? feature.softLimit ?? feature.effectiveLimit;
-          const showMeter =
-            feature.priceBehavior !== EntitlementPriceBehavior.PayAsYouGo &&
-            feature.priceBehavior !== EntitlementPriceBehavior.CreditBurndown &&
-            typeof limit === "number" &&
-            limit > 0;
-          const details = priceDetails(feature, period);
-
-          return (
-            <div key={feature.entitlementId} className="flex items-start gap-3">
-              <FeatureIcon icon={feature.feature?.icon} />
-
-              <div className="min-w-0 flex-1 space-y-1.5">
-                <div className="flex items-baseline justify-between gap-2">
-                  <p className="text-sm font-medium">{feature.feature?.name}</p>
-                  <p className="text-xs text-muted-foreground whitespace-nowrap">
-                    {usageLine(feature, period)}
-                  </p>
-                </div>
-
-                {showMeter && (
-                  <Progress
-                    value={Math.min(100, (usage / (limit as number)) * 100)}
-                    aria-label={`${feature.feature?.name} usage`}
-                  />
-                )}
-
-                <div className="flex items-center justify-between text-xs text-muted-foreground">
-                  <span>{details}</span>
-                  {feature.metricResetAt && (
-                    <span>Resets {formatDate(feature.metricResetAt)}</span>
-                  )}
-                </div>
-              </div>
+        return (
+          <UsageMeter
+            key={feature.entitlementId}
+            icon={feature.feature?.icon}
+            name={feature.feature?.name ?? ""}
+            summary={usageLine(feature, period)}
+            used={usage}
+            limit={meterLimit}
+          >
+            <div className="flex items-center justify-between text-xs text-muted-foreground">
+              <span>{details}</span>
+              {feature.metricResetAt && (
+                <span>Resets {formatDate(feature.metricResetAt)}</span>
+              )}
             </div>
-          );
-        })}
-      </CardContent>
-    </Card>
+          </UsageMeter>
+        );
+      })}
+    </SectionCard>
   );
 }

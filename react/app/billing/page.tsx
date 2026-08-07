@@ -1,51 +1,21 @@
 "use client";
 
-import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
-import { Skeleton } from "@/components/ui/skeleton";
+import {
+  useInvoices,
+  useSubscription,
+  type InvoiceResponseData,
+  type SchematicHookResult,
+} from "@schematichq/schematic-react";
+
+import { schematicCustomer } from "@/lib/schematic-client";
+import { ErrorState } from "@/components/ui/error-state";
+import { SkeletonList } from "@/components/ui/skeleton";
 import { CreditUsage } from "@/components/schematic/credit-usage";
 import { IncludedFeatures } from "@/components/schematic/included-features";
 import { Invoices } from "@/components/schematic/invoices";
 import { MeteredFeatures } from "@/components/schematic/metered-features";
 import { PlanManager } from "@/components/schematic/plan-manager";
 import { UpcomingBill } from "@/components/schematic/upcoming-bill";
-import {
-  type InvoiceResponseData,
-  type SchematicHookResult,
-  useInvoices,
-  useSubscription,
-} from "@schematichq/schematic-react";
-
-import { schematicCustomer } from "@/lib/schematic-client";
-
-function LoadingState() {
-  return (
-    <div className="space-y-4">
-      {Array.from({ length: 4 }, (_, i) => (
-        <Skeleton key={i} className="h-40 w-full" />
-      ))}
-    </div>
-  );
-}
-
-function ErrorState({
-  message,
-  onRetry,
-}: {
-  message: string;
-  onRetry: () => void;
-}) {
-  return (
-    <Card>
-      <CardContent className="space-y-3 text-center">
-        <p className="text-sm text-muted-foreground">{message}</p>
-        <Button variant="outline" onClick={onRetry}>
-          Retry
-        </Button>
-      </CardContent>
-    </Card>
-  );
-}
 
 function InvoicesSection({
   invoices,
@@ -55,6 +25,7 @@ function InvoicesSection({
   if (invoices.error) {
     return (
       <ErrorState
+        card
         message={`Failed to load invoices: ${invoices.error.message}`}
         onRetry={() => void invoices.refetch()}
       />
@@ -69,12 +40,13 @@ function BillingSections() {
   const invoices = useInvoices({ client: schematicCustomer });
 
   if (billing.isPending) {
-    return <LoadingState />;
+    return <SkeletonList className="space-y-4" itemClassName="h-40 w-full" />;
   }
 
   if (billing.error) {
     return (
       <ErrorState
+        card
         message={`Failed to load billing data: ${billing.error.message}`}
         onRetry={() => void billing.refetch()}
       />
