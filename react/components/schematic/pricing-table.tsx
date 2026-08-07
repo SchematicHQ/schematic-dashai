@@ -2,15 +2,15 @@
 
 import { useState } from "react";
 import { Check } from "lucide-react";
+import {
+  helpers,
+  type Catalog,
+  type CatalogPlan,
+} from "@schematichq/schematic-react";
 
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import {
-  type Catalog,
-  type CatalogPlan,
-  helpers,
-} from "@schematichq/schematic-react";
 
 const {
   formatCurrency,
@@ -23,24 +23,22 @@ const {
 
 export interface PricingTableProps {
   catalog: Catalog;
-  /** Wire this up when checkout ships; omitted → disabled "coming soon" buttons. */
   onSelectPlan?: (plan: CatalogPlan, period: string) => void;
-  /** Wire this up when checkout ships; omitted → disabled "coming soon" buttons. */
   onSelectAddOn?: (addOn: CatalogPlan, period: string) => void;
 }
 
 /**
- * Why a plan cannot be selected, as text the customer can actually read. The
- * embed rendered this next to the CTA; a `title` on a disabled button is
- * invisible because `disabled:pointer-events-none` suppresses hover.
+ * Why a plan cannot be selected, as text the customer can actually read.
  */
 function ineligibilityReason(plan: CatalogPlan): string | undefined {
   if (plan.valid !== false) {
     return undefined;
   }
+
   if (plan.invalidReason === "downgrade_not_permitted") {
     return "Downgrading to this plan is not available self-service — contact support to change plans.";
   }
+
   const violations = (plan.usageViolations ?? []).flatMap(
     (violation) => violation.feature?.name ?? [],
   );
@@ -55,6 +53,7 @@ function entitlementLabel(plan: CatalogPlan): string[] {
     if (!feature) {
       return [];
     }
+
     if (typeof entitlement.valueNumeric === "number") {
       const unit = pluralize(
         feature.singularName || feature.name,
@@ -62,11 +61,13 @@ function entitlementLabel(plan: CatalogPlan): string[] {
       ).toLowerCase();
       return [`${formatNumber(entitlement.valueNumeric)} ${unit}`];
     }
+
     if (entitlement.valueType === "unlimited") {
       return [
         `Unlimited ${(feature.pluralName || feature.name).toLowerCase()}`,
       ];
     }
+
     return [feature.name];
   });
 }
@@ -135,12 +136,14 @@ export function PricingTable({
                   <CardTitle>{plan.name}</CardTitle>
                   {plan.current && <Badge>Current plan</Badge>}
                 </div>
+
                 {plan.description && (
                   <p className="text-sm text-muted-foreground">
                     {plan.description}
                   </p>
                 )}
               </CardHeader>
+
               <CardContent className="flex flex-1 flex-col gap-4">
                 <p className="text-3xl font-bold">
                   {plan.custom ? (
@@ -205,7 +208,9 @@ export function PricingTable({
                           : undefined
                       }
                       disabled={
-                        !onSelectPlan || plan.valid === false || unsoldThisPeriod
+                        !onSelectPlan ||
+                        plan.valid === false ||
+                        unsoldThisPeriod
                       }
                     >
                       {plan.valid === false
@@ -214,6 +219,7 @@ export function PricingTable({
                           ? "Start trial"
                           : "Choose plan"}
                     </Button>
+
                     {note && (
                       <p className="text-xs text-muted-foreground">{note}</p>
                     )}
@@ -228,6 +234,7 @@ export function PricingTable({
       {addOns.length > 0 && (
         <div className="space-y-4">
           <h2 className="text-lg font-semibold">Add-ons</h2>
+
           <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
             {addOns.map((addOn) => {
               // One-time add-ons are priced off oneTimePrice, so an add-on with
@@ -240,12 +247,14 @@ export function PricingTable({
                       <CardTitle>{addOn.name}</CardTitle>
                       {addOn.current && <Badge>Active</Badge>}
                     </div>
+
                     {addOn.description && (
                       <p className="text-sm text-muted-foreground">
                         {addOn.description}
                       </p>
                     )}
                   </CardHeader>
+
                   <CardContent className="flex flex-1 flex-col gap-4">
                     <p className="text-xl font-semibold">
                       {price ? (
@@ -266,6 +275,7 @@ export function PricingTable({
                         </span>
                       )}
                     </p>
+
                     <div className="mt-auto space-y-2">
                       <Button
                         className="w-full"
@@ -279,6 +289,7 @@ export function PricingTable({
                       >
                         {addOn.current ? "Added" : "Add"}
                       </Button>
+
                       {!onSelectAddOn && !addOn.current && (
                         <p className="text-xs text-muted-foreground">
                           Checkout is coming soon.

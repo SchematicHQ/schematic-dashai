@@ -2,24 +2,22 @@
 
 import { useState } from "react";
 import { ChevronDown } from "lucide-react";
-
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Progress } from "@/components/ui/progress";
 import {
+  helpers,
   BillingCreditGrantReason,
   type CreditCompanyGrantView,
   type CustomerSubscription,
-  helpers,
 } from "@schematichq/schematic-react";
 
-import { FeatureIcon } from "./feature-icon";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { FeatureIcon } from "@/components/ui/feature-icon";
+import { Progress } from "@/components/ui/progress";
 
 const { formatDate, formatNumber, groupCreditGrants, pluralize } = helpers;
 
 export interface CreditUsageProps {
   billing: CustomerSubscription;
-  /** Wire this up when checkout ships; omitted → no buy-more button. */
   onBuyMore?: (creditId: string) => void;
 }
 
@@ -41,11 +39,6 @@ function grantLabel(grant: CreditCompanyGrantView): string {
   }
 }
 
-/**
- * Credit balances grouped per credit type, with the individual grants behind
- * an expander. The split counterpart of MeteredFeatures: grants live here,
- * credit-burndown *entitlements* stay there.
- */
 export function CreditUsage({ billing, onBuyMore }: CreditUsageProps) {
   const [expandedIds, setExpandedIds] = useState<Set<string>>(new Set());
   const showCredits = billing.displaySettings.showCredits;
@@ -74,6 +67,7 @@ export function CreditUsage({ billing, onBuyMore }: CreditUsageProps) {
           Credits
         </CardTitle>
       </CardHeader>
+
       <CardContent className="space-y-5">
         {groups.map((group) => {
           const isExpanded = expandedIds.has(group.creditId);
@@ -81,6 +75,7 @@ export function CreditUsage({ billing, onBuyMore }: CreditUsageProps) {
             <div key={group.creditId} className="space-y-2">
               <div className="flex items-start gap-3">
                 <FeatureIcon icon={group.icon} />
+
                 <div className="min-w-0 flex-1 space-y-1.5">
                   <div className="flex items-baseline justify-between gap-2">
                     <p className="text-sm font-medium">{group.name}</p>
@@ -89,11 +84,13 @@ export function CreditUsage({ billing, onBuyMore }: CreditUsageProps) {
                       {formatNumber(group.total.value)} used
                     </p>
                   </div>
+
                   {group.description && (
                     <p className="truncate text-xs text-muted-foreground">
                       {group.description}
                     </p>
                   )}
+
                   <Progress
                     value={
                       group.total.value > 0
@@ -105,6 +102,7 @@ export function CreditUsage({ billing, onBuyMore }: CreditUsageProps) {
                     }
                     aria-label={`${group.name} usage`}
                   />
+
                   <div className="flex items-center justify-between">
                     <Button
                       variant="ghost"
@@ -120,6 +118,7 @@ export function CreditUsage({ billing, onBuyMore }: CreditUsageProps) {
                         aria-hidden
                       />
                     </Button>
+
                     {onBuyMore && (
                       <Button
                         variant="outline"
@@ -131,6 +130,7 @@ export function CreditUsage({ billing, onBuyMore }: CreditUsageProps) {
                       </Button>
                     )}
                   </div>
+
                   {isExpanded && (
                     <ul className="space-y-1 border-l border-border pl-3 text-xs text-muted-foreground">
                       {group.grants.map((grant) => (

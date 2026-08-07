@@ -18,8 +18,6 @@ export async function GET(_request: NextRequest) {
     });
 
     const accessToken = resp.data?.token;
-    // expiredAt lets the client refresh proactively instead of guessing at
-    // the token's 15-minute TTL.
     const expiredAt = resp.data?.expiredAt;
     return NextResponse.json({ accessToken, expiredAt });
   } catch (error) {

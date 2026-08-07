@@ -2,22 +2,20 @@
 
 import { useState } from "react";
 import { Check } from "lucide-react";
+import {
+  helpers,
+  FeatureType,
+  type FeatureUsageResponseData,
+} from "@schematichq/schematic-react";
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import {
-  FeatureType,
-  type FeatureUsageResponseData,
-  helpers,
-} from "@schematichq/schematic-react";
-
-import { FeatureIcon } from "./feature-icon";
+import { FeatureIcon } from "@/components/ui/feature-icon";
 
 const { formatDate, formatNumber, pluralize } = helpers;
 
 export interface IncludedFeaturesProps {
   features: FeatureUsageResponseData[];
-  /** How many rows to show before the "See all" toggle. */
   collapseAfter?: number;
 }
 
@@ -27,34 +25,38 @@ function usageSummary(feature: FeatureUsageResponseData): string | undefined {
     pluralize(feature.feature?.singularName || name, count).toLowerCase();
 
   // On-off entitlements have no quantity to report; returning undefined lets
-  // the caller render the "Included" checkmark. The API sends usage: 0 for
-  // them, which would otherwise fall through to the "0 used" branch below.
+  // the caller render something. The API sends a usage of 0 for them,
+  // which would otherwise fall through to the "0 used" branch below.
   if (
     feature.feature?.featureType === FeatureType.Boolean ||
     feature.allocationType === "boolean"
   ) {
     return undefined;
   }
+
   if (feature.isUnlimited || feature.allocationType === "unlimited") {
     return "No limit";
   }
+
   if (
     typeof feature.creditRemaining === "number" &&
     feature.creditRemaining >= 0
   ) {
     return `${formatNumber(feature.creditRemaining)} remaining`;
   }
+
   if (typeof feature.allocation === "number") {
     const used = typeof feature.usage === "number" ? feature.usage : 0;
     return `${formatNumber(used)} of ${formatNumber(feature.allocation)} ${unit(feature.allocation)} used`;
   }
+
   if (typeof feature.usage === "number") {
     return `${formatNumber(feature.usage)} ${unit(feature.usage)} used`;
   }
+
   return undefined;
 }
 
-/** Every feature the customer is entitled to, boolean and metered alike. */
 export function IncludedFeatures({
   features,
   collapseAfter = 4,
@@ -74,6 +76,7 @@ export function IncludedFeatures({
           Included features
         </CardTitle>
       </CardHeader>
+
       <CardContent className="space-y-4">
         {visible.map((feature) => {
           const summary = usageSummary(feature);
@@ -83,19 +86,23 @@ export function IncludedFeatures({
               className="flex items-center gap-3"
             >
               <FeatureIcon icon={feature.feature?.icon} />
+
               <div className="min-w-0 flex-1">
                 <p className="text-sm font-medium">{feature.feature?.name}</p>
+
                 {feature.feature?.description && (
                   <p className="truncate text-xs text-muted-foreground">
                     {feature.feature.description}
                   </p>
                 )}
+
                 {feature.entitlementExpirationDate && (
                   <p className="text-xs text-muted-foreground">
                     Expires {formatDate(feature.entitlementExpirationDate)}
                   </p>
                 )}
               </div>
+
               <div className="text-right text-sm text-muted-foreground">
                 {summary ?? (
                   <Check className="size-4 text-accent" aria-label="Included" />
@@ -104,6 +111,7 @@ export function IncludedFeatures({
             </div>
           );
         })}
+
         {features.length > collapseAfter && (
           <Button
             variant="ghost"

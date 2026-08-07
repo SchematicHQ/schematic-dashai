@@ -1,11 +1,12 @@
 "use client";
 
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
-  type CompanySubscriptionResponseData,
   helpers,
+  type CompanySubscriptionResponseData,
   type InvoiceResponseData,
 } from "@schematichq/schematic-react";
+
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
 const { deriveAppliedBalance, formatCurrency, formatDate } = helpers;
 
@@ -42,6 +43,7 @@ export function UpcomingBill({
           {formatDate(upcomingInvoice.dueDate ?? upcomingInvoice.createdAt)}
         </CardTitle>
       </CardHeader>
+
       <CardContent className="space-y-3">
         <p className="text-3xl font-bold">
           {formatCurrency(upcomingInvoice.amountDue, currency)}
@@ -77,12 +79,11 @@ export function UpcomingBill({
               </span>
               <span>{formatCurrency(-balance.applied, currency)}</span>
             </div>
+
             <div className="flex items-center justify-between">
               <span className="text-muted-foreground">
                 Remaining balance after next invoice
               </span>
-              {/* `remaining` is leftover credit the customer still holds, so it
-                  stays positive; only `applied` is a deduction from this bill. */}
               <span>{formatCurrency(balance.remaining, currency)}</span>
             </div>
           </div>

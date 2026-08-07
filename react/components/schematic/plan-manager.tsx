@@ -1,13 +1,13 @@
 "use client";
 
 import { AlertTriangle, ArrowDownRight, Clock } from "lucide-react";
+import {
+  helpers,
+  type CustomerSubscription,
+} from "@schematichq/schematic-react";
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import {
-  type CustomerSubscription,
-  helpers,
-} from "@schematichq/schematic-react";
 
 const {
   formatCurrency,
@@ -20,14 +20,11 @@ const {
 
 export interface PlanManagerProps {
   billing: CustomerSubscription;
-  /** Wire this up when checkout ships; omitted → disabled "coming soon" button. */
   onChangePlan?: () => void;
 }
 
 /**
- * The headline price, or undefined when there is nothing truthful to show —
- * an absent price is unknown, and rendering it as $0.00 or "Free" would
- * misreport what a customer is paying.
+ * The headline price, or undefined when there is nothing truthful to show
  */
 function planPriceLabel(
   planPrice: number | null | undefined,
@@ -39,14 +36,17 @@ function planPriceLabel(
   if (typeof planPrice !== "number") {
     return hasUsageBasedEntitlements ? "Usage-based" : undefined;
   }
+
   if (planPrice === 0) {
     if (hasUsageBasedEntitlements) {
       return "Usage-based";
     }
+
     if (showZeroPriceAsFree) {
       return "Free";
     }
   }
+
   return `${formatCurrency(planPrice, currency)}${periodSuffix(period)}`;
 }
 
@@ -63,6 +63,7 @@ export function PlanManager({ billing, onChangePlan }: PlanManagerProps) {
     displaySettings,
     features,
   } = billing;
+
   const plan = company?.plan;
   const addOns = company?.addOns ?? [];
   if (!plan && addOns.length === 0) {
@@ -77,8 +78,7 @@ export function PlanManager({ billing, onChangePlan }: PlanManagerProps) {
   );
 
   // The API returns a null planPrice for a plan whose billing product is not
-  // synced yet. That is an unknown price, not a zero one — collapsing it to 0
-  // would advertise a paid plan as "Free".
+  // synced yet; that is an unknown price, not a zero one.
   const planPrice = plan?.planPrice;
   const priceLabel = planPriceLabel(
     planPrice,
@@ -103,6 +103,7 @@ export function PlanManager({ billing, onChangePlan }: PlanManagerProps) {
                 </span>
               </>
             )}
+
             {notice.kind === "canceled" && (
               <>
                 <AlertTriangle
@@ -114,6 +115,7 @@ export function PlanManager({ billing, onChangePlan }: PlanManagerProps) {
                 </span>
               </>
             )}
+
             {notice.kind === "downgrade" && (
               <>
                 <ArrowDownRight
@@ -135,13 +137,16 @@ export function PlanManager({ billing, onChangePlan }: PlanManagerProps) {
               <p className="text-xs uppercase tracking-wide text-muted-foreground">
                 Current plan
               </p>
+
               <h2 className="text-2xl font-bold">{plan.name}</h2>
+
               {plan.description && (
                 <p className="text-sm text-muted-foreground">
                   {plan.description}
                 </p>
               )}
             </div>
+
             {priceLabel && (
               <p className="text-xl font-semibold whitespace-nowrap">
                 {priceLabel}
@@ -155,6 +160,7 @@ export function PlanManager({ billing, onChangePlan }: PlanManagerProps) {
             <p className="text-xs uppercase tracking-wide text-muted-foreground">
               Add-ons
             </p>
+
             {addOns.map((addOn) => (
               <div
                 key={addOn.id}
@@ -176,6 +182,7 @@ export function PlanManager({ billing, onChangePlan }: PlanManagerProps) {
             <p className="text-xs uppercase tracking-wide text-muted-foreground">
               Usage-based
             </p>
+
             {usageBasedEntitlements.map((entitlement) => {
               const price = getEntitlementPrice(entitlement, period);
               const unit =
@@ -208,8 +215,7 @@ export function PlanManager({ billing, onChangePlan }: PlanManagerProps) {
           >
             Change plan
           </Button>
-          {/* A title on a disabled button is unreachable: the Button variants
-              set disabled:pointer-events-none, so hover never fires. */}
+
           {!onChangePlan && (
             <p className="text-center text-xs text-muted-foreground">
               Checkout is coming soon.

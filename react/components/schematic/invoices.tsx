@@ -2,21 +2,19 @@
 
 import { useMemo, useState } from "react";
 import { ExternalLink } from "lucide-react";
-
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
   helpers,
   type InvoiceResponseData,
 } from "@schematichq/schematic-react";
 
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+
 const { filterInvoicesForDisplay, formatCurrency, formatDate } = helpers;
 
 export interface InvoicesProps {
   invoices: InvoiceResponseData[];
-  /** Rows visible before expanding. */
   defaultVisible?: number;
-  /** Rows visible after expanding. */
   maxVisible?: number;
 }
 
@@ -42,15 +40,14 @@ export function Invoices({
           Invoices
         </CardTitle>
       </CardHeader>
+
       <CardContent className="space-y-2">
-        {/* The customer has invoices, but every one of them was filtered out
-            (zero-amount, voided, or the upcoming preview). Say so rather than
-            dropping the whole card, which reads as "you have no invoices". */}
         {display.length === 0 && (
           <p className="text-sm text-muted-foreground">
             No invoices to show yet.
           </p>
         )}
+
         {visible.map((invoice) => {
           const row = (
             <div className="flex items-center justify-between py-1 text-sm">
@@ -68,6 +65,7 @@ export function Invoices({
               </span>
             </div>
           );
+
           return invoice.url ? (
             <a
               key={invoice.id}
@@ -82,6 +80,7 @@ export function Invoices({
             <div key={invoice.id}>{row}</div>
           );
         })}
+
         {display.length > defaultVisible && (
           <Button
             variant="ghost"

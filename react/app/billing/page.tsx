@@ -10,7 +10,8 @@ import { MeteredFeatures } from "@/components/schematic/metered-features";
 import { PlanManager } from "@/components/schematic/plan-manager";
 import { UpcomingBill } from "@/components/schematic/upcoming-bill";
 import {
-  FeatureType,
+  type InvoiceResponseData,
+  type SchematicHookResult,
   useInvoices,
   useSubscription,
 } from "@schematichq/schematic-react";
@@ -46,22 +47,62 @@ function ErrorState({
   );
 }
 
-export default function BillingPage() {
+function InvoicesSection({
+  invoices,
+}: {
+  invoices: SchematicHookResult<InvoiceResponseData[]>;
+}) {
+  if (invoices.error) {
+    return (
+      <ErrorState
+        message={`Failed to load invoices: ${invoices.error.message}`}
+        onRetry={() => void invoices.refetch()}
+      />
+    );
+  }
+
+  return <Invoices invoices={invoices.data ?? []} />;
+}
+
+function BillingSections() {
   const billing = useSubscription({ client: schematicCustomer });
-  // Invoices lists filters client-side (zero-amount, voided, the upcoming
-  // preview), so the fetch has to be generous enough that a page of noise does
-  // not hide every real invoice. 100 is the API default; the max is 250.
-  const invoices = useInvoices({ client: schematicCustomer, limit: 100 });
+  const invoices = useInvoices({ client: schematicCustomer });
 
-  // MeteredFeatures owns event/trait entitlements; leaving them in
-  // IncludedFeatures too renders each one twice, with two different usage
-  // strings for pay-as-you-go and overage features.
-  const includedFeatures = (billing.data?.features ?? []).filter(
-    (feature) =>
-      feature.feature?.featureType !== FeatureType.Event &&
-      feature.feature?.featureType !== FeatureType.Trait,
+  if (billing.isPending) {
+    return <LoadingState />;
+  }
+
+  if (billing.error) {
+    return (
+      <ErrorState
+        message={`Failed to load billing data: ${billing.error.message}`}
+        onRetry={() => void billing.refetch()}
+      />
+    );
+  }
+
+  if (!billing.data) {
+    return null;
+  }
+
+  const billingData = billing.data;
+
+  return (
+    <div className="space-y-4">
+      <PlanManager billing={billingData} />
+      <IncludedFeatures features={billingData.features} />
+      <UpcomingBill
+        upcomingInvoice={billingData.upcomingInvoice}
+        subscription={billingData.subscription}
+      />
+      <InvoicesSection invoices={invoices} />
+      <MeteredFeatures billing={billingData} />
+      <CreditUsage billing={billingData} />
+    </div>
   );
+}
 
+export default function BillingPage() {
   return (
     <div className="min-h-screen bg-background">
       <div className="container mx-auto max-w-2xl px-6 py-4">
@@ -70,33 +111,7 @@ export default function BillingPage() {
           Your plan, usage, and invoices.
         </p>
 
-        {billing.isPending ? (
-          <LoadingState />
-        ) : billing.error ? (
-          <ErrorState
-            message={`Failed to load billing data: ${billing.error.message}`}
-            onRetry={() => void billing.refetch()}
-          />
-        ) : billing.data ? (
-          <div className="space-y-4">
-            <PlanManager billing={billing.data} />
-            <IncludedFeatures features={includedFeatures} />
-            <UpcomingBill
-              upcomingInvoice={billing.data.upcomingInvoice}
-              subscription={billing.data.subscription}
-            />
-            {invoices.error ? (
-              <ErrorState
-                message={`Failed to load invoices: ${invoices.error.message}`}
-                onRetry={() => void invoices.refetch()}
-              />
-            ) : (
-              <Invoices invoices={invoices.data ?? []} />
-            )}
-            <MeteredFeatures billing={billing.data} />
-            <CreditUsage billing={billing.data} />
-          </div>
-        ) : null}
+        <BillingSections />
       </div>
     </div>
   );
