@@ -1,23 +1,18 @@
 "use client";
 
 import { AlertTriangle, ArrowDownRight, Clock } from "lucide-react";
+import { type CustomerSubscription } from "@schematichq/schematic-react";
+
 import {
-  helpers,
-  type CustomerSubscription,
-} from "@schematichq/schematic-react";
-
-import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
-import { SectionLabel } from "@/components/ui/section-card";
-
-const {
   formatCurrency,
   formatDate,
   getEntitlementPrice,
   getPlanManagerNotice,
   getSubscriptionPeriod,
   periodSuffix,
-} = helpers;
+} from "@/lib/schematic/utils";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
 export interface PlanManagerProps {
   billing: CustomerSubscription;
@@ -135,7 +130,9 @@ export function PlanManager({ billing, onChangePlan }: PlanManagerProps) {
         {plan && (
           <div className="flex items-start justify-between gap-4">
             <div>
-              <SectionLabel>Current plan</SectionLabel>
+              <p className="text-xs uppercase tracking-wide text-muted-foreground">
+                Current plan
+              </p>
 
               <h2 className="text-2xl font-bold">{plan.name}</h2>
 
@@ -156,7 +153,9 @@ export function PlanManager({ billing, onChangePlan }: PlanManagerProps) {
 
         {addOns.length > 0 && (
           <div className="space-y-2">
-            <SectionLabel>Add-ons</SectionLabel>
+            <p className="text-xs uppercase tracking-wide text-muted-foreground">
+              Add-ons
+            </p>
 
             {addOns.map((addOn) => (
               <div
@@ -176,7 +175,9 @@ export function PlanManager({ billing, onChangePlan }: PlanManagerProps) {
 
         {usageBasedEntitlements.length > 0 && (
           <div className="space-y-2">
-            <SectionLabel>Usage-based</SectionLabel>
+            <p className="text-xs uppercase tracking-wide text-muted-foreground">
+              Usage-based
+            </p>
 
             {usageBasedEntitlements.map((entitlement) => {
               const price = getEntitlementPrice(entitlement, period);

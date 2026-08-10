@@ -1,17 +1,16 @@
 "use client";
 
 import {
-  helpers,
   EntitlementPriceBehavior,
   FeatureType,
   type CustomerSubscription,
   type FeatureUsageResponseData,
 } from "@schematichq/schematic-react";
 
-import { SectionCard } from "@/components/ui/section-card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { UsageMeter } from "@/components/ui/usage-meter";
 
-const {
+import {
   formatCurrency,
   formatDate,
   formatNumber,
@@ -19,7 +18,7 @@ const {
   getEntitlementPrice,
   getSubscriptionPeriod,
   pluralize,
-} = helpers;
+} from "@/lib/schematic/utils";
 
 export interface MeteredFeaturesProps {
   billing: CustomerSubscription;
@@ -128,40 +127,48 @@ export function MeteredFeatures({ billing }: MeteredFeaturesProps) {
   }
 
   return (
-    <SectionCard title="Metered features" className="space-y-5">
-      {metered.map((feature) => {
-        const usage = feature.usage ?? 0;
-        const limit =
-          feature.allocation ?? feature.softLimit ?? feature.effectiveLimit;
-        // Usage-priced entitlements have no ceiling to meter against, so they
-        // pass no limit and the bar stays hidden.
-        const meterLimit =
-          feature.priceBehavior !== EntitlementPriceBehavior.PayAsYouGo &&
-          feature.priceBehavior !== EntitlementPriceBehavior.CreditBurndown &&
-          typeof limit === "number" &&
-          limit > 0
-            ? limit
-            : undefined;
-        const details = priceDetails(feature, period);
+    <Card>
+      <CardHeader>
+        <CardTitle className="text-xs uppercase tracking-wide text-muted-foreground">
+          Metered features
+        </CardTitle>
+      </CardHeader>
 
-        return (
-          <UsageMeter
-            key={feature.entitlementId}
-            icon={feature.feature?.icon}
-            name={feature.feature?.name ?? ""}
-            summary={usageLine(feature, period)}
-            used={usage}
-            limit={meterLimit}
-          >
-            <div className="flex items-center justify-between text-xs text-muted-foreground">
-              <span>{details}</span>
-              {feature.metricResetAt && (
-                <span>Resets {formatDate(feature.metricResetAt)}</span>
-              )}
-            </div>
-          </UsageMeter>
-        );
-      })}
-    </SectionCard>
+      <CardContent className="space-y-5">
+        {metered.map((feature) => {
+          const usage = feature.usage ?? 0;
+          const limit =
+            feature.allocation ?? feature.softLimit ?? feature.effectiveLimit;
+          // Usage-priced entitlements have no ceiling to meter against, so they
+          // pass no limit and the bar stays hidden.
+          const meterLimit =
+            feature.priceBehavior !== EntitlementPriceBehavior.PayAsYouGo &&
+            feature.priceBehavior !== EntitlementPriceBehavior.CreditBurndown &&
+            typeof limit === "number" &&
+            limit > 0
+              ? limit
+              : undefined;
+          const details = priceDetails(feature, period);
+
+          return (
+            <UsageMeter
+              key={feature.entitlementId}
+              icon={feature.feature?.icon}
+              name={feature.feature?.name ?? ""}
+              summary={usageLine(feature, period)}
+              used={usage}
+              limit={meterLimit}
+            >
+              <div className="flex items-center justify-between text-xs text-muted-foreground">
+                <span>{details}</span>
+                {feature.metricResetAt && (
+                  <span>Resets {formatDate(feature.metricResetAt)}</span>
+                )}
+              </div>
+            </UsageMeter>
+          );
+        })}
+      </CardContent>
+    </Card>
   );
 }

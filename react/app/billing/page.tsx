@@ -7,7 +7,7 @@ import {
   type SchematicHookResult,
 } from "@schematichq/schematic-react";
 
-import { schematicCustomer } from "@/lib/schematic-client";
+import { schematicCustomer } from "@/lib/schematic/customer-client";
 import { ErrorState } from "@/components/ui/error-state";
 import { SkeletonList } from "@/components/ui/skeleton";
 import { CreditUsage } from "@/components/schematic/credit-usage";

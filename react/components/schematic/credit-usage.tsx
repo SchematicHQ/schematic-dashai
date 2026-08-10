@@ -3,17 +3,20 @@
 import { useState } from "react";
 import { ChevronDown } from "lucide-react";
 import {
-  helpers,
   BillingCreditGrantReason,
   type CreditCompanyGrantView,
   type CustomerSubscription,
 } from "@schematichq/schematic-react";
 
+import {
+  formatDate,
+  formatNumber,
+  groupCreditGrants,
+  pluralize,
+} from "@/lib/schematic/utils";
 import { Button } from "@/components/ui/button";
-import { SectionCard } from "@/components/ui/section-card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { UsageMeter } from "@/components/ui/usage-meter";
-
-const { formatDate, formatNumber, groupCreditGrants, pluralize } = helpers;
 
 export interface CreditUsageProps {
   billing: CustomerSubscription;
@@ -60,71 +63,80 @@ export function CreditUsage({ billing, onBuyMore }: CreditUsageProps) {
   };
 
   return (
-    <SectionCard title="Credits" className="space-y-5">
-      {groups.map((group) => {
-        const isExpanded = expandedIds.has(group.creditId);
-        return (
-          <UsageMeter
-            key={group.creditId}
-            icon={group.icon}
-            name={group.name}
-            description={group.description}
-            summary={`${formatNumber(group.total.used)} of ${formatNumber(group.total.value)} used`}
-            used={group.total.used}
-            limit={group.total.value}
-          >
-            <div className="flex items-center justify-between">
-              <Button
-                variant="ghost"
-                size="sm"
-                className="h-7 px-2 text-xs text-muted-foreground"
-                onClick={() => toggle(group.creditId)}
-                aria-expanded={isExpanded}
-              >
-                {group.grants.length} {pluralize("grant", group.grants.length)}
-                <ChevronDown
-                  className={`size-3.5 transition-transform ${isExpanded ? "rotate-180" : ""}`}
-                  aria-hidden
-                />
-              </Button>
+    <Card>
+      <CardHeader>
+        <CardTitle className="text-xs uppercase tracking-wide text-muted-foreground">
+          Credits
+        </CardTitle>
+      </CardHeader>
 
-              {onBuyMore && (
+      <CardContent className="space-y-5">
+        {groups.map((group) => {
+          const isExpanded = expandedIds.has(group.creditId);
+          return (
+            <UsageMeter
+              key={group.creditId}
+              icon={group.icon}
+              name={group.name}
+              description={group.description}
+              summary={`${formatNumber(group.total.used)} of ${formatNumber(group.total.value)} used`}
+              used={group.total.used}
+              limit={group.total.value}
+            >
+              <div className="flex items-center justify-between">
                 <Button
-                  variant="outline"
+                  variant="ghost"
                   size="sm"
-                  className="h-7 text-xs"
-                  onClick={() => onBuyMore(group.creditId)}
+                  className="h-7 px-2 text-xs text-muted-foreground"
+                  onClick={() => toggle(group.creditId)}
+                  aria-expanded={isExpanded}
                 >
-                  Buy more
+                  {group.grants.length}{" "}
+                  {pluralize("grant", group.grants.length)}
+                  <ChevronDown
+                    className={`size-3.5 transition-transform ${isExpanded ? "rotate-180" : ""}`}
+                    aria-hidden
+                  />
                 </Button>
-              )}
-            </div>
 
-            {isExpanded && (
-              <ul className="space-y-1 border-l border-border pl-3 text-xs text-muted-foreground">
-                {group.grants.map((grant) => (
-                  <li
-                    key={grant.id}
-                    className="flex items-center justify-between gap-2"
+                {onBuyMore && (
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="h-7 text-xs"
+                    onClick={() => onBuyMore(group.creditId)}
                   >
-                    <span>{grantLabel(grant)}</span>
-                    <span className="whitespace-nowrap">
-                      {grant.grantReason === BillingCreditGrantReason.Plan &&
-                      grant.renewalEnabled
-                        ? grant.expiresAt
-                          ? `Resets ${formatDate(grant.expiresAt)}`
-                          : null
-                        : grant.expiresAt
-                          ? `Expires ${formatDate(grant.expiresAt)}`
-                          : null}
-                    </span>
-                  </li>
-                ))}
-              </ul>
-            )}
-          </UsageMeter>
-        );
-      })}
-    </SectionCard>
+                    Buy more
+                  </Button>
+                )}
+              </div>
+
+              {isExpanded && (
+                <ul className="space-y-1 border-l border-border pl-3 text-xs text-muted-foreground">
+                  {group.grants.map((grant) => (
+                    <li
+                      key={grant.id}
+                      className="flex items-center justify-between gap-2"
+                    >
+                      <span>{grantLabel(grant)}</span>
+                      <span className="whitespace-nowrap">
+                        {grant.grantReason === BillingCreditGrantReason.Plan &&
+                        grant.renewalEnabled
+                          ? grant.expiresAt
+                            ? `Resets ${formatDate(grant.expiresAt)}`
+                            : null
+                          : grant.expiresAt
+                            ? `Expires ${formatDate(grant.expiresAt)}`
+                            : null}
+                      </span>
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </UsageMeter>
+          );
+        })}
+      </CardContent>
+    </Card>
   );
 }

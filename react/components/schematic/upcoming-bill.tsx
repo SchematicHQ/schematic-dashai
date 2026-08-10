@@ -1,14 +1,16 @@
 "use client";
 
 import {
-  helpers,
   type CompanySubscriptionResponseData,
   type InvoiceResponseData,
 } from "@schematichq/schematic-react";
 
-import { SectionCard } from "@/components/ui/section-card";
-
-const { deriveAppliedBalance, formatCurrency, formatDate } = helpers;
+import {
+  deriveAppliedBalance,
+  formatCurrency,
+  formatDate,
+} from "@/lib/schematic/utils";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
 export interface UpcomingBillProps {
   upcomingInvoice?: InvoiceResponseData;
@@ -36,63 +38,64 @@ export function UpcomingBill({
   const currency = upcomingInvoice.currency;
 
   return (
-    <SectionCard
-      title={
-        <>
+    <Card>
+      <CardHeader>
+        <CardTitle>
           Next bill due{" "}
           {formatDate(upcomingInvoice.dueDate ?? upcomingInvoice.createdAt)}
-        </>
-      }
-      className="space-y-3"
-    >
-      <p className="text-3xl font-bold">
-        {formatCurrency(upcomingInvoice.amountDue, currency)}
-      </p>
+        </CardTitle>
+      </CardHeader>
 
-      {discounts.length > 0 && (
-        <div className="space-y-1">
-          {discounts.map((discount) => (
-            <div
-              key={discount.discountExternalId}
-              className="flex items-center justify-between text-sm"
-            >
+      <CardContent className="space-y-3">
+        <p className="text-3xl font-bold">
+          {formatCurrency(upcomingInvoice.amountDue, currency)}
+        </p>
+
+        {discounts.length > 0 && (
+          <div className="space-y-1">
+            {discounts.map((discount) => (
+              <div
+                key={discount.discountExternalId}
+                className="flex items-center justify-between text-sm"
+              >
+                <span className="text-muted-foreground">
+                  {discount.couponName ||
+                    discount.customerFacingCode ||
+                    "Discount"}
+                </span>
+                <span className="text-accent">
+                  {discount.percentOff
+                    ? `−${discount.percentOff}%`
+                    : `−${formatCurrency(discount.amountOff ?? 0, discount.currency || currency)}`}
+                </span>
+              </div>
+            ))}
+          </div>
+        )}
+
+        {balance && balance.applied > 0 && (
+          <div className="space-y-1 text-sm">
+            <div className="flex items-center justify-between">
               <span className="text-muted-foreground">
-                {discount.couponName ||
-                  discount.customerFacingCode ||
-                  "Discount"}
+                Applied balance towards next invoice
               </span>
-              <span className="text-accent">
-                {discount.percentOff
-                  ? `−${discount.percentOff}%`
-                  : `−${formatCurrency(discount.amountOff ?? 0, discount.currency || currency)}`}
-              </span>
+              <span>{formatCurrency(-balance.applied, currency)}</span>
             </div>
-          ))}
-        </div>
-      )}
 
-      {balance && balance.applied > 0 && (
-        <div className="space-y-1 text-sm">
-          <div className="flex items-center justify-between">
-            <span className="text-muted-foreground">
-              Applied balance towards next invoice
-            </span>
-            <span>{formatCurrency(-balance.applied, currency)}</span>
+            <div className="flex items-center justify-between">
+              <span className="text-muted-foreground">
+                Remaining balance after next invoice
+              </span>
+              <span>{formatCurrency(balance.remaining, currency)}</span>
+            </div>
           </div>
+        )}
 
-          <div className="flex items-center justify-between">
-            <span className="text-muted-foreground">
-              Remaining balance after next invoice
-            </span>
-            <span>{formatCurrency(balance.remaining, currency)}</span>
-          </div>
-        </div>
-      )}
-
-      <p className="text-xs text-muted-foreground">
-        This is an estimate; usage-based charges are finalized at the end of the
-        billing period.
-      </p>
-    </SectionCard>
+        <p className="text-xs text-muted-foreground">
+          This is an estimate; usage-based charges are finalized at the end of
+          the billing period.
+        </p>
+      </CardContent>
+    </Card>
   );
 }

@@ -3,7 +3,7 @@
 import { useRouter } from "next/navigation";
 import { useCatalog, type CatalogPlan } from "@schematichq/schematic-react";
 
-import { schematicCustomer } from "@/lib/schematic-client";
+import { schematicCustomer } from "@/lib/schematic/customer-client";
 import { PricingTable } from "@/components/schematic/pricing-table";
 import { ErrorState } from "@/components/ui/error-state";
 import { SkeletonList } from "@/components/ui/skeleton";

@@ -2,24 +2,19 @@
 
 import { useState } from "react";
 import { Check } from "lucide-react";
+import { type Catalog, type CatalogPlan } from "@schematichq/schematic-react";
+
 import {
-  helpers,
-  type Catalog,
-  type CatalogPlan,
-} from "@schematichq/schematic-react";
-
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-
-const {
   formatCurrency,
   formatNumber,
   getAddOnPrice,
   getDisplayPrice,
   getPlanPrice,
   pluralize,
-} = helpers;
+} from "@/lib/schematic/utils";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
 export interface PricingTableProps {
   catalog: Catalog;
