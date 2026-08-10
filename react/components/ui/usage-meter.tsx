@@ -6,22 +6,13 @@ import { Progress } from "@/components/ui/progress";
 export interface UsageMeterProps {
   icon?: string | null;
   name: string;
-  /** Right-aligned summary of the usage. */
   summary: React.ReactNode;
   description?: string | null;
   used?: number;
-  /**
-   * Total the usage is measured against. The bar renders only when this is a
-   * number, so callers suppress it by leaving it undefined.
-   */
   limit?: number;
-  /** Extra rows beneath the bar: price details, reset dates, expandable grants. */
   children?: React.ReactNode;
 }
 
-/**
- * One feature's usage: icon, name, summary, and an optional progress bar.
- */
 export function UsageMeter({
   icon,
   name,

@@ -6,11 +6,9 @@ import { Card, CardContent } from "@/components/ui/card";
 export interface ErrorStateProps {
   message: string;
   onRetry: () => void;
-  /** Wrap the message in a Card, for pages that render errors inline with other cards. */
   card?: boolean;
 }
 
-/** A failed fetch, with the retry that goes with it. */
 export function ErrorState({
   message,
   onRetry,
