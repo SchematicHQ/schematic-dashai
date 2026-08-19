@@ -10,6 +10,8 @@ const DAYS_IN_PERIOD = 30
 const EXTREME_DAYS_TO_HIT_QUOTA = 5
 const COMPANIES_PATH = "scripts/companies.json"
 const DECIMALS = 4
+// The event capture service rejects batches larger than this with a 400.
+const MAX_BATCH_SIZE = 100
 
 function round4(n: number): number {
   return Math.round(n * 10 ** DECIMALS) / 10 ** DECIMALS
@@ -123,19 +125,45 @@ export async function GET(request: NextRequest) {
 
   const schematicClient = new SchematicClient({ apiKey })
 
-  for (const company of companies) {
-    const quantity = getDailyQuantity(company.tier, company.usageLevel)
-    if (quantity > 0) {
-      schematicClient.track({
+  const events = companies
+    .map((company) => ({
+      company,
+      quantity: getDailyQuantity(company.tier, company.usageLevel),
+    }))
+    .filter(({ quantity }) => quantity > 0)
+    .map(({ company, quantity }) => ({
+      eventType: "track" as const,
+      body: {
         event: FEATURES.prompts,
         company: { id: company.id },
         user: { id: company.id },
         quantity,
-      })
+      },
+    }))
+
+  // Send explicit batches instead of client.track(): the SDK's event buffer
+  // holds up to 1000 events and flushes them as a single request, which the
+  // capture service rejects with "batch too large" once we pass 100 companies.
+  let sent = 0
+  const failedBatches: number[] = []
+  for (let i = 0; i < events.length; i += MAX_BATCH_SIZE) {
+    const batch = events.slice(i, i + MAX_BATCH_SIZE)
+    try {
+      await schematicClient.events.createEventBatch({ events: batch })
+      sent += batch.length
+    } catch (e) {
+      console.error(`Failed to send event batch starting at index ${i}:`, e)
+      failedBatches.push(i)
     }
   }
 
   await schematicClient.close()
 
-  return NextResponse.json({ ok: true, companies: companies.length })
+  return NextResponse.json({
+    ok: failedBatches.length === 0,
+    companies: companies.length,
+    events: events.length,
+    sent,
+    failedBatches,
+  })
 }
