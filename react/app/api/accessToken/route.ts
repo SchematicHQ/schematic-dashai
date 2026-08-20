@@ -13,12 +13,13 @@ export async function GET(_request: NextRequest) {
 
     const resp = await schematicClient.accesstokens.issueTemporaryAccessToken({
       lookup: {
-        'id': 'demo',
+        id: "demo",
       },
     });
 
     const accessToken = resp.data?.token;
-    return NextResponse.json({ accessToken });
+    const expiredAt = resp.data?.expiredAt;
+    return NextResponse.json({ accessToken, expiredAt });
   } catch (error) {
     console.error("Error issuing access token", error);
     return NextResponse.json(

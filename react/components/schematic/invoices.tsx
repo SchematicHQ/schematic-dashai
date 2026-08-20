@@ -1,0 +1,99 @@
+"use client";
+
+import { useMemo, useState } from "react";
+import { ExternalLink } from "lucide-react";
+import { type InvoiceResponseData } from "@schematichq/schematic-react";
+
+import {
+  formatCurrency,
+  formatDate,
+  filterInvoicesForDisplay,
+} from "@/lib/schematic/utils";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+
+export interface InvoicesProps {
+  invoices: InvoiceResponseData[];
+  defaultVisible?: number;
+  maxVisible?: number;
+}
+
+/** Recent invoice history, filtered to what a customer actually cares about. */
+export function Invoices({
+  invoices,
+  defaultVisible = 2,
+  maxVisible = 12,
+}: InvoicesProps) {
+  const [expanded, setExpanded] = useState(false);
+  const display = useMemo(() => filterInvoicesForDisplay(invoices), [invoices]);
+
+  if (invoices.length === 0) {
+    return null;
+  }
+
+  const visible = display.slice(0, expanded ? maxVisible : defaultVisible);
+
+  return (
+    <Card>
+      <CardHeader>
+        <CardTitle className="text-xs uppercase tracking-wide text-muted-foreground">
+          Invoices
+        </CardTitle>
+      </CardHeader>
+
+      <CardContent className="space-y-2">
+        {display.length === 0 && (
+          <p className="text-sm text-muted-foreground">
+            No invoices to show yet.
+          </p>
+        )}
+
+        {visible.map((invoice) => {
+          const row = (
+            <div className="flex items-center justify-between py-1 text-sm">
+              <span className="text-muted-foreground">
+                {formatDate(invoice.dueDate ?? invoice.createdAt)}
+              </span>
+              <span className="flex items-center gap-1.5">
+                {formatCurrency(invoice.amountDue, invoice.currency)}
+                {invoice.url && (
+                  <ExternalLink
+                    className="size-3.5 text-muted-foreground"
+                    aria-hidden
+                  />
+                )}
+              </span>
+            </div>
+          );
+
+          return invoice.url ? (
+            <a
+              key={invoice.id}
+              href={invoice.url}
+              target="_blank"
+              rel="noreferrer"
+              className="block rounded-sm hover:bg-secondary/50"
+            >
+              {row}
+            </a>
+          ) : (
+            <div key={invoice.id}>{row}</div>
+          );
+        })}
+
+        {display.length > defaultVisible && (
+          <Button
+            variant="ghost"
+            size="sm"
+            className="w-full"
+            onClick={() => setExpanded((prev) => !prev)}
+          >
+            {expanded
+              ? "Show fewer"
+              : `See all (${Math.min(display.length, maxVisible)})`}
+          </Button>
+        )}
+      </CardContent>
+    </Card>
+  );
+}

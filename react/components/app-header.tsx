@@ -1,14 +1,14 @@
-"use client"
+"use client";
 
-import Link from "next/link"
-import { Database, CreditCard, Users, Sparkles } from "lucide-react"
-import { Button } from "@/components/ui/button"
-import { UserButton, SignedIn, SignedOut, SignInButton } from "@clerk/nextjs"
-import { useSchematicIsPending } from "@schematichq/schematic-react"
-import { CreditsBadge } from "@/components/credits-badge"
+import Link from "next/link";
+import { Database, CreditCard, Receipt, Users, Sparkles } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { UserButton, SignedIn, SignedOut, SignInButton } from "@clerk/nextjs";
+import { useSchematicIsPending } from "@schematichq/schematic-react";
+import { CreditsBadge } from "@/components/credits-badge";
 
 export function AppHeader() {
-  const isPending = useSchematicIsPending()
+  const isPending = useSchematicIsPending();
   return (
     <header className="border-b border-border">
       <div className="flex items-center justify-between px-6 py-4">
@@ -20,7 +20,10 @@ export function AppHeader() {
             <span className="text-lg font-semibold">DashAI</span>
           </Link>
           <nav className="flex items-center gap-6">
-            <Link href="/" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
+            <Link
+              href="/"
+              className="text-sm text-muted-foreground hover:text-foreground transition-colors"
+            >
               Builder
             </Link>
             <Link
@@ -41,7 +44,9 @@ export function AppHeader() {
         </div>
         <div className="flex items-center gap-4">
           {isPending && (
-            <span className="text-xs text-muted-foreground animate-pulse">Loading...</span>
+            <span className="text-xs text-muted-foreground animate-pulse">
+              Loading...
+            </span>
           )}
           <CreditsBadge />
           <Link href="/pricing">
@@ -50,9 +55,23 @@ export function AppHeader() {
             </Button>
           </Link>
           <Link href="/plan">
-            <Button variant="outline" size="sm" className="gap-2 bg-transparent">
+            <Button
+              variant="outline"
+              size="sm"
+              className="gap-2 bg-transparent"
+            >
               <CreditCard className="h-4 w-4" />
               Plan
+            </Button>
+          </Link>
+          <Link href="/billing">
+            <Button
+              variant="outline"
+              size="sm"
+              className="gap-2 bg-transparent"
+            >
+              <Receipt className="h-4 w-4" />
+              Billing
             </Button>
           </Link>
           <SignedOut>
@@ -64,5 +83,5 @@ export function AppHeader() {
         </div>
       </div>
     </header>
-  )
+  );
 }

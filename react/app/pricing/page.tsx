@@ -1,90 +1,74 @@
-"use client"
+"use client";
 
-import {
-  EmbedProvider,
-  SchematicEmbed,
-} from "@schematichq/schematic-components";
-import { useSchematicIsPending } from "@schematichq/schematic-react";
-import React, { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
+import { useCatalog, type CatalogPlan } from "@schematichq/schematic-react";
 
-export default function PlanPage() {
-  const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-  const [accessToken, setAccessToken] = useState<string | null>(null);
-  const isPending = useSchematicIsPending();
+import { schematicCustomer } from "@/lib/schematic/customer-client";
+import { PricingTable } from "@/components/schematic/pricing-table";
+import { ErrorState } from "@/components/ui/error-state";
+import { SkeletonList } from "@/components/ui/skeleton";
 
-  const fetchAccessToken = async () => {
-    setIsLoading(true);
-    try {
-      const response = await fetch("/api/accessToken");
-      const result = await response.json();
-      if ("accessToken" in result) {
-        setAccessToken(result.accessToken);
-      }
-      setError(null);
-    } catch (error) {
-      console.error(error);
-      setError("Error fetching data");
-      setAccessToken(null);
-    } finally {
-      setIsLoading(false);
-    }
+function PricingPlans() {
+  const router = useRouter();
+  const catalog = useCatalog({ client: schematicCustomer });
+
+  // Checkout is being reworked and useCheckout does not exist yet, so plan
+  // selection hands off to the plan portal, which still runs the embed's
+  // working checkout flow. Replace with useCheckout when it lands.
+  const handoff = (params: Record<string, string>) => {
+    router.push(`/plan?${new URLSearchParams(params).toString()}`);
   };
 
-  useEffect(() => {
-    fetchAccessToken();
-  }, []);
+  const handleSelectPlan = (plan: CatalogPlan, period: string) => {
+    handoff({ plan: plan.id, period });
+  };
 
-  const componentId = process.env.NEXT_PUBLIC_SCHEMATIC_PRICING_TABLE_ID;
-  if (!componentId) {
-    console.error(
-      "Missing Schematic component ID (NEXT_PUBLIC_SCHEMATIC_COMPONENT_ID)",
-    );
+  const handleSelectAddOn = (addOn: CatalogPlan, period: string) => {
+    handoff({ addOn: addOn.id, period });
+  };
 
-    return <div>Not found</div>;
-  }
-
-  if (isLoading) {
+  if (catalog.isPending) {
     return (
-      <div className="min-h-screen bg-background">
-        <div className="container mx-auto px-6 py-4">
-          <h1 className="text-2xl font-bold mb-4">Usage & Plan</h1>
-          Loading...
-        </div>
-      </div>
+      <SkeletonList
+        className="grid gap-4 md:grid-cols-2 lg:grid-cols-4"
+        itemClassName="h-80 w-full"
+      />
     );
   }
 
-  if (error) {
+  if (catalog.error) {
     return (
-      <div className="min-h-screen bg-background">
-        <div className="container mx-auto px-6 py-4">
-          <h1 className="text-2xl font-bold mb-4">Usage & Plan</h1>
-          <p>{error ?? "Unknown error"}</p>
-        </div>
-      </div>
+      <ErrorState
+        message={`Failed to load pricing: ${catalog.error.message}`}
+        onRetry={() => void catalog.refetch()}
+      />
     );
   }
 
-  if (!accessToken) {
-    return (
-      <></>
-    );
+  if (!catalog.data) {
+    return null;
   }
 
   return (
+    <PricingTable
+      catalog={catalog.data}
+      onSelectPlan={handleSelectPlan}
+      onSelectAddOn={handleSelectAddOn}
+    />
+  );
+}
+
+export default function PricingPage() {
+  return (
     <div className="min-h-screen bg-background">
       <div className="container mx-auto px-6 py-4">
-        <EmbedProvider debug>
-          <h1 className="text-2xl font-bold mb-4">Usage & Plan</h1>
-          {isPending && (
-            <p className="text-muted-foreground animate-pulse mb-2">
-              Schematic SDK loading...
-            </p>
-          )}
-          <SchematicEmbed accessToken={accessToken} id={componentId} />
-        </EmbedProvider>
+        <h1 className="text-2xl font-bold mb-1">Pricing</h1>
+        <p className="text-muted-foreground mb-6">
+          Plans for teams of every size.
+        </p>
+
+        <PricingPlans />
       </div>
     </div>
-  )
+  );
 }
