@@ -1224,10 +1224,10 @@
   dependencies:
     styled-components "^6.3.12"
 
-"@schematichq/schematic-react@^1.5.0":
-  version "1.5.0"
-  resolved "https://registry.yarnpkg.com/@schematichq/schematic-react/-/schematic-react-1.5.0.tgz#1f7aacdfe38087771aee0afddf50b0dca29edce0"
-  integrity sha512-8Y9hQ75/XXj2fwuk4dfLsGki37o5/Cnc4C9/XdTrKHAqKq1Lvc1gX74IIqPPxOH6GLEmmA9rxOvPRFgyy5YywQ==
+"@schematichq/schematic-react@^1.10.0":
+  version "1.10.0"
+  resolved "https://registry.yarnpkg.com/@schematichq/schematic-react/-/schematic-react-1.10.0.tgz#5cd316006c7e8d3f4338700478ac3f92c5f7473b"
+  integrity sha512-3dMsO1lh/YagVwn5jqSeDSYyi940VsmqPbZYYBe75VOpQnN1cLYmmiJ8jFxyxahxTkC2a+ygQDBZ0mtU/leoig==
 
 "@schematichq/schematic-typescript-node@^1.5.10":
   version "1.5.12"
