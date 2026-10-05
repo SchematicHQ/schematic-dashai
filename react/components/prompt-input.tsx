@@ -7,7 +7,9 @@ import { Button } from "@/components/ui/button"
 import { Textarea } from "@/components/ui/textarea"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Toggle } from "@/components/ui/toggle"
-import { useSchematicEvents, useSchematicEntitlement, useSchematicIsPending } from "@schematichq/schematic-react"
+import { useSchematicEvents } from "@schematichq/schematic-react"
+import { SpendLimitBanner } from "@/components/spend-limits"
+import { usePromptCredits } from "@/hooks/use-prompt-credits"
 
 export function PromptInput() {
   const [prompt, setPrompt] = useState("")
@@ -17,8 +19,7 @@ export function PromptInput() {
   const [autoInsights, setAutoInsights] = useState(true)
   const router = useRouter()
   const { track } = useSchematicEvents()
-  const isPending = useSchematicIsPending()
-  const { value } = useSchematicEntitlement("dashboard-prompt")
+  const { isPending, value, creditRemaining, blockingPolicy } = usePromptCredits()
   const outOfCredits = !isPending && value === false
 
   const handleSubmit = () => {
@@ -109,7 +110,10 @@ export function PromptInput() {
           </Button>
         </div>
       </div>
-      {outOfCredits && (
+      {outOfCredits && blockingPolicy && creditRemaining != null && (
+        <SpendLimitBanner policy={blockingPolicy} balance={creditRemaining} />
+      )}
+      {outOfCredits && !blockingPolicy && (
         <div className="mt-4 rounded-lg border border-violet-200 dark:border-violet-800/80 bg-violet-50/80 dark:bg-violet-950/40 p-4 flex items-center justify-between">
           <div className="flex items-center gap-3">
             <AlertCircle className="h-5 w-5 text-violet-600 dark:text-violet-400 shrink-0" />

@@ -21,7 +21,7 @@ Frontend uses `@schematichq/schematic-react`, which provides a provider and hook
 - `useSchematicEntitlement(key)` for feature gating (seat limits, data source allocations)
 - `useSchematicIsPending()` for SDK loading state
 - `useSchematicFlag(key)` for boolean feature flags
-- `useSchematicCreditSpendPolicies()` for credit spend limits (shown on hover over the credits badge)
+- `useSchematicCreditSpendPolicies()` for credit spend limits: a hover card on the credits badge, and a spend-limit banner instead of "Buy more credits" when a limit, not the balance, blocks the next prompt
 
 Backend (Next.js API routes in `app/api/`) uses `@schematichq/schematic-typescript-node` to issue embed access tokens, update traits, and run the daily usage cron.
 
