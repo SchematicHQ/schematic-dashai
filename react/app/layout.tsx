@@ -2,6 +2,7 @@ import type React from "react"
 import type { Metadata } from "next"
 import { Geist, Geist_Mono } from "next/font/google"
 import { Analytics } from "@vercel/analytics/next"
+import { Toaster } from "sonner"
 import { ClientWrapper } from '@/components/client-wrapper'
 import { AppHeader } from '@/components/app-header'
 import "./globals.css"
@@ -26,6 +27,7 @@ export default function RootLayout({
         <ClientWrapper>
           <AppHeader />
           {children}
+          <Toaster theme="dark" position="bottom-right" />
           <Analytics />
         </ClientWrapper>
       </body>
