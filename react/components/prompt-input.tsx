@@ -7,9 +7,12 @@ import { Button } from "@/components/ui/button"
 import { Textarea } from "@/components/ui/textarea"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Toggle } from "@/components/ui/toggle"
-import { useSchematicEvents } from "@schematichq/schematic-react"
 import { SpendLimitBanner } from "@/components/spend-limits"
 import { usePromptCredits } from "@/hooks/use-prompt-credits"
+import { DEFAULT_MODEL, MODELS, type ModelId } from "@/lib/models"
+
+// How long the "Generating..." state shows before we open the dashboard.
+const GENERATING_MS = 2000
 
 export function PromptInput() {
   const [prompt, setPrompt] = useState("")
@@ -17,23 +20,34 @@ export function PromptInput() {
   const [predictiveAnalytics, setPredictiveAnalytics] = useState(false)
   const [anomalyDetection, setAnomalyDetection] = useState(false)
   const [autoInsights, setAutoInsights] = useState(true)
+  const [model, setModel] = useState<ModelId>(DEFAULT_MODEL)
   const router = useRouter()
-  const { track } = useSchematicEvents()
   const { isPending, value, creditRemaining, blockingPolicy } = usePromptCredits()
   const outOfCredits = !isPending && value === false
 
-  const handleSubmit = () => {
-    if (prompt.trim() && !outOfCredits) {
-      setIsGenerating(true)
-      
-      setTimeout(() => {
-        router.push("/dashboard")
-        track({
-          event: "dashboard-prompt",
-          quantity: Math.floor(Math.random() * 20) + 50,
-        })
-      }, 2000)
-    }
+  const handleSubmit = async () => {
+    if (!prompt.trim() || outOfCredits || isGenerating) return
+    setIsGenerating(true)
+
+    // The server makes the (fake) model calls and sends one inference event per
+    // call, which burns credits per token. Inference events need the secret key,
+    // so they can't be sent from the browser.
+    const generate = fetch("/api/generate", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        prompt,
+        model,
+        options: { predictiveAnalytics, anomalyDetection, autoInsights },
+      }),
+    })
+      .then(async (res) => {
+        if (!res.ok) throw new Error(`Generate failed: ${res.status} ${await res.text()}`)
+      })
+      .catch((err) => console.error(err))
+
+    await Promise.all([generate, new Promise((resolve) => setTimeout(resolve, GENERATING_MS))])
+    router.push("/dashboard")
   }
 
   return (
@@ -55,15 +69,16 @@ export function PromptInput() {
           <div className="flex items-center gap-4">
             <div className="flex items-center gap-2">
               <span className="text-xs text-muted-foreground">Model</span>
-              <Select defaultValue="gpt-4">
-                <SelectTrigger className="h-8 w-[140px] text-xs">
+              <Select value={model} onValueChange={(value) => setModel(value as ModelId)}>
+                <SelectTrigger className="h-8 w-[160px] text-xs">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="gpt-4">GPT-4 Turbo</SelectItem>
-                  <SelectItem value="gpt-3.5">GPT-3.5</SelectItem>
-                  <SelectItem value="claude">Claude 3</SelectItem>
-                  <SelectItem value="gemini">Gemini Pro</SelectItem>
+                  {MODELS.map((m) => (
+                    <SelectItem key={m.id} value={m.id}>
+                      {m.label}
+                    </SelectItem>
+                  ))}
                 </SelectContent>
               </Select>
             </div>

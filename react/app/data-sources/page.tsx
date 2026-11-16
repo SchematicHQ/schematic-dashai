@@ -3,8 +3,9 @@
 import { useState, useEffect } from "react"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
-import { Database, Plus, Check, Trash2, AlertCircle, ArrowUp } from "lucide-react"
+import { Database, Plus, Check, Trash2, AlertCircle, ArrowUp, ShieldCheck } from "lucide-react"
 import { useSchematicEntitlement, useSchematicIsPending } from "@schematichq/schematic-react"
+import { FLAG_KEYS } from "@/lib/models"
 
 interface DataSource {
   id: string
@@ -12,6 +13,11 @@ interface DataSource {
   type: string
   status: string
   icon: string
+}
+
+interface Validation {
+  rowsChecked: number
+  issues: number
 }
 
 const availableSources = [
@@ -29,11 +35,17 @@ export default function DataSourcesPage() {
   const [connectedSources, setConnectedSources] = useState<DataSource[]>([])
   const [isLoading, setIsLoading] = useState(true)
   const [connectingName, setConnectingName] = useState<string | null>(null)
+  const [validatingId, setValidatingId] = useState<string | null>(null)
+  const [validations, setValidations] = useState<Record<string, Validation>>({})
 
   const { featureAllocation: allocation } = useSchematicEntitlement("data-sources")
   const isPending = useSchematicIsPending()
   // Only block when we have a numeric limit and we're at or over it (don't block if entitlement not configured)
   const atLimit = allocation != null && connectedSources.length >= allocation
+
+  // Validation burns a flat number of credits per run, so it turns off when they run out.
+  const { value: canValidate } = useSchematicEntitlement(FLAG_KEYS.validateDataSource)
+  const outOfValidateCredits = !isPending && canValidate === false
 
   const fetchDataSources = async () => {
     try {
@@ -78,6 +90,28 @@ export default function DataSourcesPage() {
       alert("Failed to connect data source")
     } finally {
       setConnectingName(null)
+    }
+  }
+
+  const handleValidate = async (id: string) => {
+    if (outOfValidateCredits) return
+    setValidatingId(id)
+    try {
+      const response = await fetch("/api/data-sources/validate", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ id }),
+      })
+      if (response.ok) {
+        const { rowsChecked, issues } = await response.json()
+        setValidations((prev) => ({ ...prev, [id]: { rowsChecked, issues } }))
+      } else {
+        console.error("Failed to validate data source:", await response.text())
+      }
+    } catch (error) {
+      console.error("Error validating data source:", error)
+    } finally {
+      setValidatingId(null)
     }
   }
 
@@ -158,10 +192,22 @@ export default function DataSourcesPage() {
                           </div>
                         </div>
                         <div className="flex items-center gap-3">
+                          {validations[source.id] && <ValidationResult validation={validations[source.id]} />}
                           <div className="flex items-center gap-1">
                             <Check className="h-4 w-4 text-green-500" />
                             <span className="text-xs text-green-500">Connected</span>
                           </div>
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            className="text-xs gap-1"
+                            disabled={validatingId === source.id || outOfValidateCredits}
+                            title={outOfValidateCredits ? "Out of credits" : "Check this source's data with AI"}
+                            onClick={() => handleValidate(source.id)}
+                          >
+                            <ShieldCheck className="h-3 w-3" />
+                            {validatingId === source.id ? "Validating…" : "Validate"}
+                          </Button>
                           <Button
                             variant="ghost"
                             size="sm"
@@ -229,5 +275,14 @@ export default function DataSourcesPage() {
         </div>
       </main>
     </div>
+  )
+}
+
+function ValidationResult({ validation }: { validation: Validation }) {
+  const { rowsChecked, issues } = validation
+  return (
+    <span className={issues === 0 ? "text-xs text-muted-foreground" : "text-xs text-amber-600 dark:text-amber-400"}>
+      {rowsChecked.toLocaleString()} rows checked · {issues === 0 ? "no issues" : `${issues} issue${issues === 1 ? "" : "s"}`}
+    </span>
   )
 }

@@ -8,16 +8,17 @@ import {
   useSchematicIsPending,
 } from "@schematichq/schematic-react"
 import { findBlockingPolicy } from "@/lib/spend-policies"
+import { FLAG_KEYS } from "@/lib/models"
 
 // Wait a little past the window end, so the server's clock has rolled over too.
 const RESET_GRACE_MS = 1000
 const RESET_RETRY_MS = 30_000
 const RESET_MAX_ATTEMPTS = 5
 
-/** The dashboard-prompt credit entitlement, the spend policies on its credit, and the policy blocking it, if any. */
+/** The dashboard prompt's credit entitlement, the spend policies on its credit, and the policy blocking it, if any. */
 export function usePromptCredits() {
   const isPending = useSchematicIsPending()
-  const { value, creditId, creditRemaining } = useSchematicEntitlement("dashboard-prompt")
+  const { value, creditId, creditRemaining } = useSchematicEntitlement(FLAG_KEYS.dashboardPrompt)
   const { policies } = useSchematicCreditSpendPolicies()
 
   // Older payloads omit creditId; show every policy rather than none.
